@@ -1,0 +1,5 @@
+msgp
+/dist
+/node_modules
+.env
+.npmrc
