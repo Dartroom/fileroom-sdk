@@ -13,7 +13,7 @@
   },
   "scripts": {
     "test": "jest  --detectOpenHandles",
-    "build": "tsup src/index.ts --format cjs,esm --dts --minify --clean --sourcemap --legacy-output --out-dir dist",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --sourcemap --legacy-output --out-dir dist",
     "lint": "tsc"
   },
   "repository": {

@@ -1,5 +1,6 @@
 msgp
 /dist
 /node_modules
+index.html
 .env
 .npmrc
