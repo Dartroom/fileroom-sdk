@@ -1,7 +1,14 @@
-
 // source:github.com/strip/stripe-node;
-import { RequestData, RequestHeaders, ResponseHeaders,TimeoutError } from '../types';
- import  {HttpClientInterface, HttpClientResponseInterface} from '../interfaces';
+import {
+  RequestData,
+  RequestHeaders,
+  ResponseHeaders,
+  TimeoutError,
+} from '../types';
+import {
+  HttpClientInterface,
+  HttpClientResponseInterface,
+} from '../interfaces';
 /**
  * Encapsulates the logic for issuing a request to the our API.
  *
@@ -28,7 +35,7 @@ export class HttpClient implements HttpClientInterface {
     headers: RequestHeaders,
     requestData: RequestData,
     protocol: string,
-    timeout: number
+    timeout: number,
   ): Promise<HttpClientResponseInterface> {
     throw new Error('makeRequest not implemented.');
   }
@@ -36,7 +43,7 @@ export class HttpClient implements HttpClientInterface {
   /** Helper to make a consistent timeout error across implementations. */
   static makeTimeoutError(): TimeoutError {
     const timeoutErr: TimeoutError = new TypeError(
-      HttpClient.TIMEOUT_ERROR_CODE
+      HttpClient.TIMEOUT_ERROR_CODE,
     );
     timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE;
     return timeoutErr;
