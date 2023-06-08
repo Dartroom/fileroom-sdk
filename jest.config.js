@@ -6,9 +6,11 @@ module.exports = {
       testEnvironment: 'node',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/tests/**/*.test.ts'],
-    
-    }, 
-    
-  ]
-  
+    },
+    {
+      displayName: 'test-browser',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/tests/**/*.browser.ts'],
+    },
+  ],
 };
