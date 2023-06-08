@@ -1,18 +1,17 @@
 const path = require('path');
 
 const webTarget = {
-    target: 'web',
+  target: 'web',
   entry: './src/index.ts',
   devtool: 'source-map',
-  
+
   module: {
     rules: [
       {
         test: /\.ts?$/,
-            use: {
-                loader: 'swc-loader',
-                
-            },
+        use: {
+          loader: 'swc-loader',
+        },
         exclude: /node_modules/,
       },
     ],
@@ -25,10 +24,10 @@ const webTarget = {
     path: path.resolve(__dirname, 'dist/browser'),
     globalObject: 'this',
     library: {
-      name: 'logpack',
+      name: 'Fileroom',
       type: 'umd',
-    }
     },
+  },
   /*
   devServer: {
     static: path.join(__dirname, 'dist'),
@@ -38,14 +37,12 @@ const webTarget = {
   */
 };
 
-
-  /*
+/*
   devServer: {
     static: path.join(__dirname, 'dist'),
     compress: true,
     port: 4000,
   },
   */
-
 
 module.exports = [webTarget];
