@@ -1,6 +1,8 @@
 msgp
+msgp
 /dist
 /node_modules
 index.html
 .env
 .npmrc
+build.js
