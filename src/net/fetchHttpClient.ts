@@ -32,7 +32,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     path: string,
     method: string,
     headers: RequestHeaders,
-    requestData: RequestData|undefined,
+    requestData: RequestData | undefined,
     protocol: string,
     timeout: number,
   ): Promise<HttpClientResponseInterface> {
@@ -44,13 +44,12 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
 
     const methodHasPayload =
       method == 'POST' || method == 'PUT' || method == 'PATCH';
-      const body = requestData || (methodHasPayload ? '' : undefined);
-      
-      let options = {
-          
-          headers: headers,
-            method: method,
-      }
+    const body = requestData || (methodHasPayload ? '' : undefined);
+
+    let options = {
+      headers: headers,
+      method: method,
+    };
     const fetchPromise = fetchFn(url.toString(), {
       method: method,
       // @ts-ignore
@@ -71,8 +70,8 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     // As an example, if the timeout is set to 30s and the connection takes 20s
     // to be established followed by 20s for the body, Fetch would timeout but
     // Node would not. The more fine-grained timeout cannot be implemented with
-      // fetch.
-      
+    // fetch.
+
     let pendingTimeoutId: NodeJS.Timeout | null;
     const timeoutPromise = new Promise((_, reject) => {
       pendingTimeoutId = setTimeout(() => {
@@ -132,8 +131,8 @@ export class FetchHttpClientResponse
   static _transformHeadersToObject(headers: Headers): ResponseHeaders {
     // Fetch uses a Headers instance so this must be converted to a barebones
     // JS object to meet the HttpClient interface.
-      const headersObj: ResponseHeaders = {};
-     
+    const headersObj: ResponseHeaders = {};
+
     for (const entry of headers) {
       if (!Array.isArray(entry) || entry.length != 2) {
         throw new Error(
@@ -147,3 +146,4 @@ export class FetchHttpClientResponse
     return headersObj;
   }
 }
+
