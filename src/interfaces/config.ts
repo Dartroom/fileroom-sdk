@@ -1,9 +1,6 @@
-
-
 //** An interface for all client pass to our client */
 
-export interface ConfigOptions { 
-    //** The api key */
-    acessTOken: string;
-    
-}                        
+export interface ConfigOptions {
+  //** The api key */
+  acessToken: string;
+}
