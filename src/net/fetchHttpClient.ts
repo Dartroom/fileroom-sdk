@@ -1,5 +1,6 @@
 // source:github.com/strip/stripe-node;
 import fetch from 'cross-fetch';
+import { TestOpts, ProdOpts } from './defaultRequestOptions';
 import {
   RequestData,
   RequestHeaders,
@@ -10,12 +11,15 @@ import {
   HttpClientInterface,
   HttpClientResponseInterface,
   ConfigOptions,
+  RequestOptions,
 } from '../interfaces';
 import { HttpClient, HttpClientResponse } from './httpClient';
 
 export class FetchHttpClient extends HttpClient implements HttpClientInterface {
   protected _fetch: typeof fetch;
   protected _Headers: RequestHeaders = {};
+  protected _config?: ConfigOptions;
+  protected _requestOpts?: RequestOptions;
 
   constructor(config?: ConfigOptions) {
     super();
@@ -24,9 +28,17 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     if (config) {
       let headers = {
         Authorization: `Bearer ${config.acessToken}`,
+        'Content-Type': 'application/json',
       } as RequestHeaders;
-
+      this._config = config;
       this._Headers = headers;
+      switch (config.env) {
+        case 'test':
+          this._requestOpts = TestOpts;
+          break;
+        default:
+          this._requestOpts = ProdOpts;
+      }
     }
   }
 
@@ -38,7 +50,35 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
   getClientName(): string {
     return 'fetch';
   }
+  /** Use either our dev enviroment or production to make requests
+   * 
+   * @param path 
+   * @param method 
+   * @param body 
+   * @returns 
+   */
+  makeRequestwithDefault(
+    path: string,
+    method: string,
+    body: RequestData | undefined,
+  ): Promise<HttpClientResponseInterface> {
+    if (!this._requestOpts) {
+      throw new Error('Config is required');
+    }
 
+    let { host, port, protocol, timeout } = this._requestOpts;
+    port = port ? port.toString() : '';
+    return this.makeRequest(
+      host,
+      port,
+      path,
+      method,
+      this._Headers,
+      body,
+      protocol,
+      timeout,
+    );
+  }
   makeRequest(
     host: string,
     port: string,
@@ -103,6 +143,8 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
         }
       });
   }
+
+  /**make a request with default sdk */
 }
 
 export class FetchHttpClientResponse
