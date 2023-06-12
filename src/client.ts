@@ -14,5 +14,15 @@ export class Client {
     this._config = config;
 
     this.__HttpClient = new FetchHttpClient(config);
-  }
+    }
+    
+    private checkAuth() { 
+        if (!this._config.acessToken) {
+            throw new Error('Access token is required');
+        }
+
+        
+    }
+
+
 }
