@@ -9,16 +9,29 @@ import {
 import {
   HttpClientInterface,
   HttpClientResponseInterface,
+  ConfigOptions,
 } from '../interfaces';
 import { HttpClient, HttpClientResponse } from './httpClient';
 
 export class FetchHttpClient extends HttpClient implements HttpClientInterface {
   protected _fetch: typeof fetch;
+  protected _Headers: RequestHeaders = {};
 
-  constructor() {
+  constructor(config?: ConfigOptions) {
     super();
 
     this._fetch = fetch;
+    if (config) {
+      let headers = {
+        Authorization: `Bearer ${config.acessToken}`,
+      } as RequestHeaders;
+
+      this._Headers = headers;
+    }
+  }
+
+  extendHeaders(headers: RequestHeaders) {
+    this._Headers = { ...this._Headers, ...headers } as RequestHeaders;
   }
 
   /**override */
@@ -146,4 +159,3 @@ export class FetchHttpClientResponse
     return headersObj;
   }
 }
-
