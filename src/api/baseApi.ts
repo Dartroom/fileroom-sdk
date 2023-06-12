@@ -1,9 +1,10 @@
 /** Base class for all controllers */
+import { FetchHttpClient } from '../net/fetchHttpClient';
 export class BaseApi {
   /**create a request builder */
-  protected createHttpRequest: any;
+  protected createHttpRequest: FetchHttpClient;
 
-  constructor(client: any) {
+  constructor(client: FetchHttpClient) {
     this.createHttpRequest = client;
   }
 }
