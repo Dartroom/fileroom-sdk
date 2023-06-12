@@ -16,7 +16,7 @@ export class Client {
     this.__HttpClient = new FetchHttpClient(config);
   }
 
-   protected checkAuth() {
+  protected checkAuth() {
     if (!this._config.acessToken) {
       throw new Error('Access token is required');
     }
