@@ -4,4 +4,5 @@ export interface ConfigOptions {
   //** The api key */
   acessToken: string;
   timeout?: number; //** The timeout for the request */
+  env?: 'test' | 'production' | 'beta';
 }
