@@ -2,7 +2,7 @@
 
 export interface ConfigOptions {
   //** The api key */
-  acessToken: string;
+  accessToken: string;
   timeout?: number; //** The timeout for the request */
   env?: 'test' | 'production' | 'beta';
 }
