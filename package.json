@@ -14,10 +14,10 @@
   },
   "scripts": {
     "test": "jest  --detectOpenHandles",
-    "build:node": "tsup src/index.ts --format cjs,esm --dts --clean --sourcemap --legacy-output --out-dir dist",
+    "build:node": "tsup src/index.ts --format cjs,esm  --dts --clean --sourcemap --tree-shaking --legacy-output --out-dir dist",
     "build:browser": "webpack --config webpack.config.js --mode production",
     "build:browser:dev": "webpack --config webpack.config.js --mode development --watch",
-    "build:node:watch": "tsup src/index.ts --format cjs,esm --dts --clean --sourcemap --legacy-output --out-dir dist --watch",
+    "build:node:watch": "tsup src/index.ts --format cjs,esm --dts --clean --sourcemap  --tree-shaking --legacy-output --out-dir dist --watch",
     "build": "npm run build:node && npm run build:browser",
     "test:watch": "jest  --detectOpenHandles --watch",
     "lint": "tsc"
