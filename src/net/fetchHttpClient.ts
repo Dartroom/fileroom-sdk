@@ -1,5 +1,5 @@
 // source:github.com/strip/stripe-node;
-import fetch from 'cross-fetch';
+import fetch, { Headers } from 'cross-fetch';
 import { TestOpts, ProdOpts } from './defaultRequestOptions';
 import {
   RequestData,
@@ -16,10 +16,10 @@ import {
 import { HttpClient, HttpClientResponse } from './httpClient';
 
 export class FetchHttpClient extends HttpClient implements HttpClientInterface {
-  protected _fetch: typeof fetch;
-  protected _Headers: RequestHeaders = {};
-  protected _config?: ConfigOptions;
-  protected _requestOpts?: RequestOptions;
+  private _fetch: typeof fetch;
+  private _Headers: RequestHeaders = {};
+  private _config?: ConfigOptions;
+  private _requestOpts?: RequestOptions;
 
   constructor(config?: ConfigOptions) {
     super();
@@ -27,9 +27,9 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     this._fetch = fetch;
     if (config) {
       let headers = {
-        Authorization: `Bearer ${config.acessToken}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${config.accessToken}`,
       } as RequestHeaders;
+
       this._config = config;
       this._Headers = headers;
       switch (config.env) {
@@ -41,7 +41,10 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
       }
     }
   }
-
+   /** Extends the currents of the FetchHttpClient
+    * 
+    * @param headers 
+    */
   extendHeaders(headers: RequestHeaders) {
     this._Headers = { ...this._Headers, ...headers } as RequestHeaders;
   }
@@ -51,16 +54,16 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     return 'fetch';
   }
   /** Use either our dev enviroment or production to make requests
-   * 
-   * @param path 
-   * @param method 
-   * @param body 
-   * @returns 
+   *
+   * @param path
+   * @param method
+   * @param body
+   * @returns
    */
   makeRequestwithDefault(
     path: string,
     method: string,
-    body: RequestData | undefined,
+    body?: RequestData | undefined,
   ): Promise<HttpClientResponseInterface> {
     if (!this._requestOpts) {
       throw new Error('Config is required');
@@ -79,6 +82,18 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
       timeout,
     );
   }
+  /** Make a request 
+   * 
+   * @param host 
+   * @param port 
+   * @param path 
+   * @param method 
+   * @param headers 
+   * @param requestData 
+   * @param protocol 
+   * @param timeout 
+   * @returns 
+   */
   makeRequest(
     host: string,
     port: string,
@@ -99,17 +114,16 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
       method == 'POST' || method == 'PUT' || method == 'PATCH';
     const body = requestData || (methodHasPayload ? '' : undefined);
 
-    let options = {
-      headers: headers,
-      method: method,
+    let options: any = {
+      method,
+      headers,
     };
-    const fetchPromise = fetchFn(url.toString(), {
-      method: method,
-      // @ts-ignore
-      headers: headers,
-      // @ts-ignore
-      body: body,
-    });
+
+    if (body) {
+      options.body = new URLSearchParams(body);
+    }
+
+    const fetchPromise = fetchFn(url.toString(), options);
 
     // The Fetch API does not support passing in a timeout natively, so a
     // timeout promise is constructed to race against the fetch and preempt the
@@ -144,7 +158,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
       });
   }
 
-  /**make a request with default sdk */
+
 }
 
 export class FetchHttpClientResponse
