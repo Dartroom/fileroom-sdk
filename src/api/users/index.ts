@@ -1,29 +1,24 @@
 import { BaseApi } from '../baseApi';
-
-interface createUserOptions {
-  userId?: string;
-  email?: string;
-  password?: string;
-}
+import { createUserOptions, updateUserOptions } from '../../interfaces';
+import { EventEmitter } from 'events';
 /**
- * 
+ *
  */
 export class UsersApi extends BaseApi {
   private readonly _path: string = '/user';
-  public readonly refreshToken = () => this.login();
 
   /** checks the validity of the acessToken and returns a new one
    *
    * @returns [{data:string}]
    */
-  async login() {
+  public readonly refreshToken = async () => {
     const response = await this.createHttpRequest.makeRequestwithDefault(
-      this._path + '/login',
+      this._path + '/refreshToken',
       'POST',
     );
     let json = await response.toJSON();
     return json;
-  }
+  };
   /** create a new Fileroom User
    *
    * @param data
@@ -40,7 +35,41 @@ export class UsersApi extends BaseApi {
       'POST',
       data,
     );
-    let json =  response.getRawResponse();
+    let json = response.getRawResponse();
+    return json;
+  }
+  /** update a Fileroom User
+   *
+   * @param data
+   * @returns
+   */
+  async update(data: updateUserOptions) {
+    if (!data || (data && !Object.keys(data).length))
+      throw new TypeError(
+        'at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll',
+      );
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      this._path + '/update',
+      'POST',
+      data,
+    );
+    let json = response.getRawResponse();
+    return json;
+  }
+
+  /** login dev user with their username and password
+   * @param data
+   * @returns {data: apiKey}
+   */
+  async login(data: { username: string; password: string }) {
+    if (!data || (data && !Object.keys(data).length))
+      throw new TypeError('username and password are required');
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      this._path + '/login',
+      'POST',
+      data,
+    );
+    let json = response.getRawResponse();
     return json;
   }
 }
