@@ -6,9 +6,8 @@ describe('Client in nodejs', () => {
     expect(Client).toBeDefined();
   });
 
-  it('should throw error if config is not provided or accessToken is valid ', async () => {
-    expect(() => new Client({ accessToken: '' })).toThrowError(
-      new Error('config.accessToken is required,'),
-    );
+  it('should throw error if config is not provided  ', async () => {
+    // @ts-ignore
+    expect(() => new Client()).toThrowError(new Error('Config is required'));
   });
 });

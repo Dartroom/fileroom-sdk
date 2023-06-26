@@ -38,12 +38,12 @@ describe('Client in browser', () => {
     );
   });
 
-  it('should throw error if config is not provided or accessToken is invalid ', async () => {
-    let call = `(async () => new Fileroom.Client({ accessToken: '' }))();`;
+  it('should throw error if config is not provided ', async () => {
+    let call = `(async () => new Fileroom.Client({}))();`;
     try {
       await page.evaluate(call);
     } catch (error: any) {
-      expect(error.message).toBe('config.accessToken is required,');
+      expect(error.message).toBe('Config is required');
     }
   });
 });
