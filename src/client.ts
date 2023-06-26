@@ -1,6 +1,7 @@
 import { ConfigOptions } from './interfaces';
 import { FetchHttpClient } from './net/fetchHttpClient';
 import { UsersApi } from './api/';
+import { isApikey } from './functions';
 /**
  * The main client class
  */
@@ -19,16 +20,19 @@ export class Client {
     this.user = new UsersApi(this.__HttpClient);
     this.checkAuth();
   }
-  /**check if the authToken is valid */
+  /**if an acessToken is passed,check it's validity */
   protected checkAuth() {
-    if (!this._config.accessToken) {
-      throw new Error('config.accessToken is required,');
+    if (
+      this._config.accessToken &&
+      this._config.accessToken.length &&
+      !isApikey(this._config.accessToken)
+    ) {
+      return this.user
+        .refreshToken()
+        .then(res => res)
+        .catch(e => {
+          throw TypeError('invalid or expired AccessToken');
+        });
     }
-    return this.user
-      .login()
-      .then(res => res)
-      .catch(e => {
-        throw TypeError('invalid or expired AccessToken');
-      });
   }
 }

@@ -1,6 +1,6 @@
 import { BaseApi } from '../baseApi';
 import { createUserOptions, updateUserOptions } from '../../interfaces';
-import { EventEmitter } from 'events';
+
 /**
  *
  */
@@ -17,6 +17,9 @@ export class UsersApi extends BaseApi {
       'POST',
     );
     let json = await response.toJSON();
+    if (json.data) {
+      this.createHttpRequest.setToken(json.data);
+    }
     return json;
   };
   /** create a new Fileroom User
@@ -53,7 +56,7 @@ export class UsersApi extends BaseApi {
       'POST',
       data,
     );
-    let json = response.getRawResponse();
+    let json = response.toJSON();
     return json;
   }
 
@@ -69,7 +72,10 @@ export class UsersApi extends BaseApi {
       'POST',
       data,
     );
-    let json = response.getRawResponse();
+    let json = await response.toJSON();
+    if (json.data) {
+      this.createHttpRequest.setToken(json.data);
+    }
     return json;
   }
 }
