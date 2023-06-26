@@ -47,10 +47,26 @@ export class UsersApi extends BaseApi {
    * @returns
    */
   async update(data: updateUserOptions) {
+    let allowedFields = [
+      'addIP',
+      'removeIP',
+      'addDomain',
+      'removeDomain',
+      'restrictIPs',
+      'restrictDomains',
+      'showAll',
+    ];
+
     if (!data || (data && !Object.keys(data).length))
       throw new TypeError(
         'at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll',
       );
+
+    if (!Object.keys(data).every(k => allowedFields.includes(k))) {
+      throw new TypeError(
+        'at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll',
+      );
+    }
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + '/update',
       'POST',
