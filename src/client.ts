@@ -6,7 +6,7 @@ import { isApikey } from './functions';
  * The main client class
  */
 export class Client {
-  protected readonly _config: ConfigOptions;
+  public readonly _config: ConfigOptions;
   protected readonly __HttpClient: FetchHttpClient;
   public readonly user: UsersApi;
 
@@ -21,22 +21,12 @@ export class Client {
     this.checkAuth();
   }
   /**if an acessToken is passed,check it's validity */
-  protected checkAuth() {
-    if (
-      this._config.accessToken &&
-      this._config.accessToken.length &&
-      !isApikey(this._config.accessToken)
-    ) {
-      return this.user
-        .validatedToken()
-        .then(res => {
-          if (res && res.errors) {
-            throw TypeError('invalid or expired AccessToken');
-          }
-        })
-        .catch(e => {
-          throw TypeError(e.message);
-        });
+  protected async checkAuth() {
+    if (this._config.accessToken && this._config.accessToken.length > 0) {
+      return !isApikey(this._config.accessToken)
+        ? this.user.validatedToken().then(res => res)
+        : null;
     }
+    return;
   }
 }

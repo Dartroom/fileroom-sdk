@@ -20,7 +20,16 @@ export class UsersApi extends BaseApi {
       this._path + '/refreshToken',
       'POST',
     );
+
     let json = await response.toJSON();
+    if (json.data) {
+      this.createHttpRequest.setToken(json.data);
+    }
+
+    if (json && json.errors) {
+      throw TypeError('invalid or expired AccessToken');
+    }
+    
     return json;
   };
   /** create a new Fileroom User
