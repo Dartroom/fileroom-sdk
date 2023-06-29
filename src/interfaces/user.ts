@@ -10,15 +10,22 @@ export interface createUserOptions {
   name?: string;
 }
 
-
 /**Input Options for client.user.update */
 
 export interface updateUserOptions {
-  addIP?:string;
-  removeIP?:string;
-  addDomain?:string;
-  removeDomain?:string;
-  restrictIPs?:string;
-  restrictDomains?:boolean;
-  showAll?:boolean;
+  addIP?: string;
+  removeIP?: string;
+  addDomain?: string;
+  removeDomain?: string;
+  restrictIPs?: string;
+  restrictDomains?: boolean;
+  showAll?: boolean;
+}
+
+/**Input Options for client.user.login */
+export interface loginOptions {
+  username?: string;
+  password?: string;
+  dartroomID?: string;
+  fileroomID?: string;
 }

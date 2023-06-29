@@ -1,5 +1,9 @@
 import { BaseApi } from '../baseApi';
-import { createUserOptions, updateUserOptions } from '../../interfaces';
+import {
+  createUserOptions,
+  updateUserOptions,
+  loginOptions,
+} from '../../interfaces';
 
 /**
  *
@@ -11,15 +15,12 @@ export class UsersApi extends BaseApi {
    *
    * @returns [{data:string}]
    */
-  public readonly refreshToken = async () => {
+  public readonly validatedToken = async () => {
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + '/refreshToken',
       'POST',
     );
     let json = await response.toJSON();
-    if (json.data) {
-      this.createHttpRequest.setToken(json.data);
-    }
     return json;
   };
   /** create a new Fileroom User
@@ -80,9 +81,11 @@ export class UsersApi extends BaseApi {
    * @param data
    * @returns {data: apiKey}
    */
-  async login(data: { username: string; password: string }) {
+  async login(data: loginOptions) {
     if (!data || (data && !Object.keys(data).length))
-      throw new TypeError('username and password are required');
+      throw new TypeError(
+        'username and password  or the dartroomID & fileroomID are  required',
+      );
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + '/login',
       'POST',
