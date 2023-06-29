@@ -3,6 +3,6 @@
  *  @param {string} acessToken
  */
 
-export function isApikey  (token: string): boolean {
+export function isApikey(token: string): boolean {
   return token.length === 40 && /[0-9A-Fa-f]{6}/g.test(token);
-};
+}

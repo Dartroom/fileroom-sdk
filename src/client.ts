@@ -29,9 +29,13 @@ export class Client {
     ) {
       return this.user
         .validatedToken()
-        .then(res => res)
+        .then(res => {
+          if (res && res.errors) {
+            throw TypeError('invalid or expired AccessToken');
+          }
+        })
         .catch(e => {
-          throw TypeError('invalid or expired AccessToken');
+          throw TypeError(e.message);
         });
     }
   }
