@@ -28,7 +28,7 @@ export class Client {
       !isApikey(this._config.accessToken)
     ) {
       return this.user
-        .refreshToken()
+        .validatedToken()
         .then(res => res)
         .catch(e => {
           throw TypeError('invalid or expired AccessToken');
