@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1688126992133" clover="3.2.0">
+  <project timestamp="1688126992133" name="All files">
+    <metrics statements="134" coveredstatements="102" conditionals="51" coveredconditionals="35" methods="35" coveredmethods="22" elements="220" coveredelements="159" complexity="0" loc="134" ncloc="134" packages="6" files="11" classes="11"/>
+    <package name="src">
+      <metrics statements="18" coveredstatements="17" conditionals="6" coveredconditionals="5" methods="3" coveredmethods="2"/>
+      <file name="client.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\client.ts">
+        <metrics statements="14" coveredstatements="13" conditionals="6" coveredconditionals="5" methods="3" coveredmethods="2"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="14" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="17" count="6" type="stmt"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="25" count="6" type="cond" truecount="3" falsecount="0"/>
+        <line num="26" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="30" count="5" type="stmt"/>
+      </file>
+      <file name="index.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\index.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.api">
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="baseApi.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\api\baseApi.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="8" count="6" type="stmt"/>
+      </file>
+      <file name="index.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\api\index.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.api.users">
+      <metrics statements="31" coveredstatements="17" conditionals="18" coveredconditionals="8" methods="6" coveredmethods="4"/>
+      <file name="index.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\api\users\index.ts">
+        <metrics statements="31" coveredstatements="17" conditionals="18" coveredconditionals="8" methods="6" coveredmethods="4"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="29" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="41" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="70" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="75" count="2" type="cond" truecount="0" falsecount="1"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="80" count="1" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="86" count="1" type="stmt"/>
+        <line num="94" count="4" type="cond" truecount="4" falsecount="0"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="98" count="3" type="stmt"/>
+        <line num="103" count="3" type="stmt"/>
+        <line num="104" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="105" count="3" type="stmt"/>
+        <line num="107" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.functions">
+      <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+      <file name="index.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\functions\index.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="isApikey.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\functions\isApikey.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="1" type="cond" truecount="2" falsecount="0"/>
+      </file>
+    </package>
+    <package name="src.interfaces">
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="index.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\interfaces\index.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.net">
+      <metrics statements="74" coveredstatements="57" conditionals="25" coveredconditionals="20" methods="24" coveredmethods="14"/>
+      <file name="defaultRequestOptions.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\net\defaultRequestOptions.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+      </file>
+      <file name="fetchHttpClient.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\net\fetchHttpClient.ts">
+        <metrics statements="56" coveredstatements="47" conditionals="25" coveredconditionals="20" methods="15" coveredmethods="11"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="20" count="7" type="stmt"/>
+        <line num="25" count="7" type="stmt"/>
+        <line num="27" count="7" type="stmt"/>
+        <line num="28" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="37" count="6" type="stmt"/>
+        <line num="38" count="6" type="stmt"/>
+        <line num="39" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="41" count="6" type="stmt"/>
+        <line num="42" count="6" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="50" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="51" count="3" type="stmt"/>
+        <line num="53" count="3" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="84" count="4" type="cond" truecount="0" falsecount="1"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="88" count="4" type="stmt"/>
+        <line num="89" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="90" count="4" type="stmt"/>
+        <line num="123" count="5" type="stmt"/>
+        <line num="124" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="125" count="5" type="stmt"/>
+        <line num="127" count="5" type="stmt"/>
+        <line num="130" count="5" type="cond" truecount="3" falsecount="0"/>
+        <line num="131" count="5" type="cond" truecount="3" falsecount="1"/>
+        <line num="133" count="5" type="stmt"/>
+        <line num="138" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="139" count="4" type="stmt"/>
+        <line num="142" count="5" type="stmt"/>
+        <line num="159" count="5" type="stmt"/>
+        <line num="160" count="5" type="stmt"/>
+        <line num="161" count="0" type="stmt"/>
+        <line num="162" count="0" type="stmt"/>
+        <line num="166" count="5" type="stmt"/>
+        <line num="168" count="5" type="stmt"/>
+        <line num="171" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="172" count="5" type="stmt"/>
+        <line num="178" count="3" type="stmt"/>
+        <line num="185" count="5" type="stmt"/>
+        <line num="189" count="5" type="stmt"/>
+        <line num="193" count="1" type="stmt"/>
+        <line num="204" count="0" type="stmt"/>
+        <line num="207" count="0" type="stmt"/>
+        <line num="211" count="5" type="stmt"/>
+        <line num="217" count="5" type="stmt"/>
+        <line num="219" count="5" type="stmt"/>
+        <line num="220" count="96" type="cond" truecount="2" falsecount="1"/>
+        <line num="221" count="0" type="stmt"/>
+        <line num="226" count="96" type="stmt"/>
+        <line num="229" count="5" type="stmt"/>
+      </file>
+      <file name="httpClient.ts" path="C:\Users\Spencer\Desktop\Work\sdk\src\net\httpClient.ts">
+        <metrics statements="16" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="3"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="54" count="3" type="stmt"/>
+        <line num="55" count="3" type="stmt"/>
+        <line num="57" count="3" type="stmt"/>
+        <line num="62" count="5" type="stmt"/>
+        <line num="63" count="5" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
