@@ -10,9 +10,8 @@ let testUserDartroomID = process.env.TEST_USER_DARTROOMID;
 let testUserFileRoomID = process.env.TEST_USER_FILEROOMID;
 let fileroomEvn = process.env.FILEROOM_ENV as ConfigOptions['env'];
 
-let oldToken = '';
 describe('UserApi in nodejs should', () => {
-  it(' be exported with client', async () => {
+  it(' be imported with client', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
 
     await expect(client.user).toBeDefined();
@@ -39,18 +38,15 @@ describe('UserApi in nodejs should', () => {
       dartroomID: testUserDartroomID,
       fileroomID: testUserFileRoomID,
     });
-       oldToken = response.data;
+
     expect(response).toEqual(
       expect.objectContaining({
         data: expect.any(String),
       }),
     );
-   
   });
 
- 
-
-  it('updated the config.acessToken on login', async () => {
+  it('update the config.acessToken on login', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
     let response = await client.user.login({
       dartroomID: testUserDartroomID,
