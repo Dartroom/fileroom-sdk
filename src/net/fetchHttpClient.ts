@@ -27,7 +27,11 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     this._fetch = fetch;
     if (config) {
       let headers = {
-        Authorization: `Bearer ${config.accessToken}`,
+        Authorization: `${
+          config.accessToken && config.accessToken.length > 0
+            ? 'Bearer ' + config.accessToken
+            : ''
+        }`,
       } as RequestHeaders;
 
       this._config = config;
@@ -41,10 +45,22 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
       }
     }
   }
-   /** Extends the currents of the FetchHttpClient
-    * 
-    * @param headers 
-    */
+  /** update the acessToken */
+  setToken(token: string) {
+    if (this._config) {
+      this._config.accessToken = token;
+      //set Authorization header
+      this._Headers = {
+        ...this._Headers,
+        Authorization: `Bearer ${token}`,
+      } as RequestHeaders;
+    }
+  }
+
+  /** Extends the currents of the FetchHttpClient
+   *
+   * @param headers
+   */
   extendHeaders(headers: RequestHeaders) {
     this._Headers = { ...this._Headers, ...headers } as RequestHeaders;
   }
@@ -82,17 +98,17 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
       timeout,
     );
   }
-  /** Make a request 
-   * 
-   * @param host 
-   * @param port 
-   * @param path 
-   * @param method 
-   * @param headers 
-   * @param requestData 
-   * @param protocol 
-   * @param timeout 
-   * @returns 
+  /** Make a request
+   *
+   * @param host
+   * @param port
+   * @param path
+   * @param method
+   * @param headers
+   * @param requestData
+   * @param protocol
+   * @param timeout
+   * @returns
    */
   makeRequest(
     host: string,
@@ -157,8 +173,6 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
         }
       });
   }
-
-
 }
 
 export class FetchHttpClientResponse

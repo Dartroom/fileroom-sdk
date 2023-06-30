@@ -1,29 +1,37 @@
 import { BaseApi } from '../baseApi';
+import {
+  createUserOptions,
+  updateUserOptions,
+  loginOptions,
+} from '../../interfaces';
 
-interface createUserOptions {
-  userId?: string;
-  email?: string;
-  password?: string;
-}
 /**
- * 
+ *
  */
 export class UsersApi extends BaseApi {
   private readonly _path: string = '/user';
-  public readonly refreshToken = () => this.login();
 
   /** checks the validity of the acessToken and returns a new one
    *
    * @returns [{data:string}]
    */
-  async login() {
+  public readonly validatedToken = async () => {
     const response = await this.createHttpRequest.makeRequestwithDefault(
-      this._path + '/login',
+      this._path + '/refreshToken',
       'POST',
     );
+
     let json = await response.toJSON();
+    if (json.data) {
+      this.createHttpRequest.setToken(json.data);
+    }
+
+    if (json && json.errors) {
+      throw TypeError('invalid or expired AccessToken');
+    }
+    
     return json;
-  }
+  };
   /** create a new Fileroom User
    *
    * @param data
@@ -40,7 +48,62 @@ export class UsersApi extends BaseApi {
       'POST',
       data,
     );
-    let json =  response.getRawResponse();
+    let json = response.getRawResponse();
+    return json;
+  }
+  /** update a Fileroom User
+   *
+   * @param data
+   * @returns
+   */
+  async update(data: updateUserOptions) {
+    let allowedFields = [
+      'addIP',
+      'removeIP',
+      'addDomain',
+      'removeDomain',
+      'restrictIPs',
+      'restrictDomains',
+      'showAll',
+    ];
+
+    if (!data || (data && !Object.keys(data).length))
+      throw new TypeError(
+        'at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll',
+      );
+
+    if (!Object.keys(data).every(k => allowedFields.includes(k))) {
+      throw new TypeError(
+        'at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll',
+      );
+    }
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      this._path + '/update',
+      'POST',
+      data,
+    );
+    let json = response.toJSON();
+    return json;
+  }
+
+  /** login dev user with their username and password
+   * @param data
+   * @returns {data: apiKey}
+   */
+  async login(data: loginOptions) {
+    if (!data || (data && !Object.keys(data).length))
+      throw new TypeError(
+        'username and password  or the dartroomID & fileroomID are  required',
+      );
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      this._path + '/login',
+      'POST',
+      data,
+    );
+    let json = await response.toJSON();
+    if (json.data) {
+      this.createHttpRequest.setToken(json.data);
+    }
     return json;
   }
 }
