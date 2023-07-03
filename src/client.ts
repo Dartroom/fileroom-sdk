@@ -1,7 +1,8 @@
 import { ConfigOptions } from './interfaces';
 import { FetchHttpClient } from './net/fetchHttpClient';
-import { UsersApi } from './api/';
+import { UsersApi,IpfsApi } from './api/';
 import { isApikey } from './functions';
+
 /**
  * The main client class
  */
@@ -9,6 +10,7 @@ export class Client {
   public readonly _config: ConfigOptions;
   protected readonly __HttpClient: FetchHttpClient;
   public readonly user: UsersApi;
+  public readonly ipfs: IpfsApi;
 
   constructor(config: ConfigOptions) {
     if (!config) {
@@ -18,6 +20,7 @@ export class Client {
 
     this.__HttpClient = new FetchHttpClient(config);
     this.user = new UsersApi(this.__HttpClient);
+    this.ipfs = new IpfsApi(this.__HttpClient);
     this.checkAuth();
   }
   /**if an acessToken is passed,check it's validity */
