@@ -12,7 +12,7 @@ export class IpfsApi extends BaseApi {
    */
   async status(cid: string) {
     const response = await this.createHttpRequest.makeRequestwithDefault(
-      '/ipfs/status',
+      '/ipfs/status' + '?cid=' + cid,
       'GET',
     );
     let json: any = await response.toJSON();
