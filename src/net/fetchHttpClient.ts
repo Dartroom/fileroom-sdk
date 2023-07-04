@@ -172,6 +172,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
 
     return Promise.race([fetchPromise])
       .then(res => {
+        
         return new FetchHttpClientResponse(res as Response);
       })
       .finally(() => {

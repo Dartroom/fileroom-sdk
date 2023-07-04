@@ -12,10 +12,16 @@ export interface statusResponse {
   created: string;
 }
 
+/**Options for getResponse */
+
+export interface getOptions {
+  origin?: string;
+  size?: string;
+}
 export interface getResponse {
   errors?: FileroomError;
   stream?: ReadableStream<Uint8Array> | null;
-  metatdata?: meta;
+  metadata?: meta;
 }
 
 interface meta {
