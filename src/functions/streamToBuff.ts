@@ -1,4 +1,4 @@
-import { Stream } from 'stream';
+import { Stream, PassThrough } from 'stream';
 /**convert a readStream to a buffer */
 
 export async function streamToBuff(stream: Stream): Promise<Buffer> {

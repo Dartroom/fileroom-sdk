@@ -1,4 +1,5 @@
 import { FileroomError } from '../types';
+import { PassThrough, Stream } from 'stream';
 export interface statusResponse {
   peername: string;
   status: string;
@@ -14,13 +15,14 @@ export interface statusResponse {
 
 /**Options for getResponse */
 
+
 export interface getOptions {
   origin?: string;
   size?: string;
 }
 export interface getResponse {
   errors?: FileroomError;
-  stream?: ReadableStream<Uint8Array> | null;
+  stream?: ReadableStream<Uint8Array> | Stream | null;
   metadata?: meta;
 }
 

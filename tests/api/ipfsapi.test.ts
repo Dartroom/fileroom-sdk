@@ -2,6 +2,7 @@ import { Config } from 'jest';
 import { Client, ConfigOptions } from '../../src/';
 import { streamToBuff } from '../../src/functions';
 import dotenv from 'dotenv';
+import { Stream } from 'stream';
 
 dotenv.config();
 
@@ -79,8 +80,7 @@ describe('ipfsApi in nodejs should', () => {
     expect(response).toBeDefined();
 
     if (response.stream && response.metadata?.contentLength) {
-      // @ts-ignore
-      let buff = await streamToBuff(response.stream);
+      let buff = await streamToBuff(response.stream as Stream);
       expect(buff).toBeDefined();
       expect(buff.length.toString()).toEqual(response.metadata.contentLength);
     }

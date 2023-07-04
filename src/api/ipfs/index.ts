@@ -5,7 +5,8 @@ import {
   LegacybrowserRawResponse,
   getOptions,
 } from '../../interfaces';
-import { isBrowser } from 'browser-or-node';
+import { isBrowser, isNode } from 'browser-or-node';
+import { Stream } from 'stream';
 /**
  *  IPFS  endpoint for the Fileroom API
  */
@@ -80,7 +81,9 @@ export class IpfsApi extends BaseApi {
       result.stream = stream;
       return result;
     } else {
-      stream = response.toStream(() => {}) as ReadableStream<Uint8Array>;
+      stream = isBrowser
+        ? (response.toStream(() => {}) as ReadableStream<Uint8Array>)
+        : (response.toStream(() => {}) as Stream);
       result.stream = stream;
       return result;
     }
