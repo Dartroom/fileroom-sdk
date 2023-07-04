@@ -15,15 +15,13 @@ export interface statusResponse {
 
 /**Options for getResponse */
 
-
 export interface getOptions {
   origin?: string;
   size?: string;
 }
 export interface getResponse {
-  errors?: FileroomError;
-  stream?: ReadableStream<Uint8Array> | Stream | null;
-  metadata?: meta;
+  stream: ReadableStream<Uint8Array> | Stream | null;
+  metadata: meta;
 }
 
 interface meta {
