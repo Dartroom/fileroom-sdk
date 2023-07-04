@@ -5,7 +5,7 @@ import {
   LegacybrowserRawResponse,
   getOptions,
 } from '../../interfaces';
-import { isBrowser, isNode } from 'browser-or-node';
+import { isBrowser} from 'browser-or-node';
 import { Stream } from 'stream';
 /**
  *  IPFS  endpoint for the Fileroom API
@@ -31,6 +31,7 @@ export class IpfsApi extends BaseApi {
    * @param cid
    * */
   async get(cid: string, options?: getOptions): Promise<getResponse> {
+    if (!cid || (cid && cid.length < 5)) throw new TypeError('cid is required');
     let url = '/ipfs/' + cid;
     if (options && options.origin) {
       this.createHttpRequest.extendHeaders({ Origin: options.origin });

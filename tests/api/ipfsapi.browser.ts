@@ -135,6 +135,12 @@ describe('ipfsApi in the browser should', () => {
     })()`;
 
     expect(async () => await page.evaluate(call)).rejects.toThrowError();
+    call = `(async () => {
+            let client = new Fileroom.Client({accessToken: '', env: '${fileroomEvn}'});
+             return await client.ipfs.get("");
+    })()`;
+
+    expect(async () => await page.evaluate(call)).rejects.toThrowError();
   });
 
   it('return a complete stream of the file when fetching it', async () => {

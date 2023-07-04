@@ -1,5 +1,5 @@
 // source:github.com/strip/stripe-node;
-import fetch, { Headers } from 'cross-fetch';
+import fetch from 'cross-fetch';
 import { TestOpts, ProdOpts } from './defaultRequestOptions';
 import { isBrowser } from 'browser-or-node';
 import {
@@ -28,7 +28,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
 
     // if the Fetch API is not available in legacy browsers,  we need to use a polyfill from cross-fetch else use the native fetch(on the window object)
     this._fetch = isBrowser ? window.fetch || fetch : fetch;
-    
+
     this._isLegacyBrowser = isBrowser && !window.fetch;
 
     if (config) {
@@ -172,7 +172,6 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
 
     return Promise.race([fetchPromise])
       .then(res => {
-        
         return new FetchHttpClientResponse(res as Response);
       })
       .finally(() => {

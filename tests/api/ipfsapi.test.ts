@@ -72,6 +72,10 @@ describe('ipfsApi in nodejs should', () => {
     expect(
       async () => await client.ipfs.get('fasfdsafsdaf'),
     ).rejects.toThrowError('API_ERROR: NOT_FOUND 404');
+
+    expect(async () => await client.ipfs.get('')).rejects.toThrowError(
+      'cid is required',
+    );
   });
 
   it('return a complete stream of the file when fetching it', async () => {
