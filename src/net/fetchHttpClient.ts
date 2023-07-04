@@ -1,6 +1,7 @@
 // source:github.com/strip/stripe-node;
 import fetch, { Headers } from 'cross-fetch';
 import { TestOpts, ProdOpts } from './defaultRequestOptions';
+import { isBrowser } from 'browser-or-node';
 import {
   RequestData,
   RequestHeaders,
@@ -20,11 +21,16 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
   private _Headers: RequestHeaders = {};
   private _config?: ConfigOptions;
   private _requestOpts?: RequestOptions;
+  public readonly _isLegacyBrowser: boolean = false;
 
   constructor(config?: ConfigOptions) {
     super();
 
-    this._fetch = fetch;
+    // if the Fetch API is not available in legacy browsers,  we need to use a polyfill from cross-fetch else use the native fetch(on the window object)
+    this._fetch = isBrowser ? window.fetch || fetch : fetch;
+    
+    this._isLegacyBrowser = isBrowser && !window.fetch;
+
     if (config) {
       let headers = {
         Authorization: `${
@@ -156,14 +162,15 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     // fetch.
 
     let pendingTimeoutId: NodeJS.Timeout | null;
-    const timeoutPromise = new Promise((_, reject) => {
+    /*const timeoutPromise = new Promise((_, reject) => {
       pendingTimeoutId = setTimeout(() => {
         pendingTimeoutId = null;
         reject(HttpClient.makeTimeoutError());
       }, timeout);
     });
+    */
 
-    return Promise.race([fetchPromise, timeoutPromise])
+    return Promise.race([fetchPromise])
       .then(res => {
         return new FetchHttpClientResponse(res as Response);
       })
