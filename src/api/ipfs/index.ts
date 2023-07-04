@@ -2,7 +2,7 @@ import { BaseApi } from '../baseApi';
 import {
   statusResponse,
   getResponse,
-  browserRawResponse,
+  LegacybrowserRawResponse,
 } from '../../interfaces';
 import { isBrowser } from 'browser-or-node';
 /**
@@ -52,8 +52,13 @@ export class IpfsApi extends BaseApi {
       return result;
     }
     result.metatdata = metatdata;
-    if (isBrowser) {
-      let raw = (await response.getRawResponse()) as browserRawResponse;
+    /** if its legacy browsers with no fetch support, the response from fetch polyfill doesn't contain a streamable body instead it contains a blob
+       so we need to get the blob and convert it to a stream (there is a performance hit here)
+    *  see https://caniuse.com/fetch
+      */
+
+    if (this.createHttpRequest._isLegacyBrowser) {
+      let raw = (await response.getRawResponse()) as LegacybrowserRawResponse;
       console.log(raw);
 
       stream = raw._bodyInit.stream();

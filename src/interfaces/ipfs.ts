@@ -23,7 +23,10 @@ interface meta {
   contentLength: number;
 }
 
-export interface browserRawResponse {
+/** Fetch polyfill response for legacy browsers
+
+ */
+export interface LegacybrowserRawResponse {
   _bodyBlob: Blob;
   _bodyInit: Blob;
   type: string;
