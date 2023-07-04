@@ -13,13 +13,13 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest  --detectOpenHandles --verbose",
+    "test": "jest   --verbose",
     "build:node": "tsup src/index.ts --format cjs,esm  --dts --clean --sourcemap --treeshake --legacy-output --out-dir dist",
     "build:browser": "webpack --config webpack.config.js --mode production",
     "build:browser:dev": "webpack --config webpack.config.js --mode development --watch",
     "build:node:watch": "tsup src/index.ts --format cjs,esm --dts --clean --sourcemap  --treeshake --legacy-output --out-dir dist --watch",
     "build": "npm run build:node && npm run build:browser",
-    "test:watch": "jest  --detectOpenHandles --watch --verbose",
+    "test:watch": "jest  --watch --verbose",
     "lint": "tsc"
   },
   "repository": {
