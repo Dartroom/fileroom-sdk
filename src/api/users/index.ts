@@ -3,6 +3,9 @@ import {
   createUserOptions,
   updateUserOptions,
   loginOptions,
+  createUserResponse,
+  updateUserResponse,
+  loginResponse,
 } from '../../interfaces';
 
 /**
@@ -11,9 +14,9 @@ import {
 export class UsersApi extends BaseApi {
   private readonly _path: string = '/user';
 
-  /** checks the validity of the acessToken and returns a new one
+  /** checks the validity of the acessToken
    *
-   * @returns [{data:string}]
+   * @returns void
    */
   public readonly validatedToken = async () => {
     const response = await this.createHttpRequest.makeRequestwithDefault(
@@ -22,22 +25,17 @@ export class UsersApi extends BaseApi {
     );
 
     let json = await response.toJSON();
-    if (json.data) {
-      this.createHttpRequest.setToken(json.data);
-    }
 
     if (json && json.errors) {
       throw TypeError('invalid or expired AccessToken');
     }
-    
-    return json;
   };
   /** create a new Fileroom User
    *
-   * @param data
-   * @returns
+   * @param data - {createUserOptions}
+   * @returns createUserResponse - {data: string | { id: string,token: string}}
    */
-  async create(data: createUserOptions) {
+  async create(data: createUserOptions): Promise<createUserResponse> {
     if (!data || (data && !Object.keys(data).length))
       throw new TypeError(
         'username, email and password are required or a userId for dartroomUsers',
@@ -48,7 +46,7 @@ export class UsersApi extends BaseApi {
       'POST',
       data,
     );
-    let json = response.getRawResponse();
+    let json = response.toJSON();
     return json;
   }
   /** update a Fileroom User
@@ -56,7 +54,7 @@ export class UsersApi extends BaseApi {
    * @param data
    * @returns
    */
-  async update(data: updateUserOptions) {
+  async update(data: updateUserOptions): Promise<updateUserResponse> {
     let allowedFields = [
       'addIP',
       'removeIP',
@@ -88,9 +86,9 @@ export class UsersApi extends BaseApi {
 
   /** login dev user with their username and password
    * @param data
-   * @returns {data: apiKey}
+   * @returns loginResponse - {data:string} - the accessToken
    */
-  async login(data: loginOptions) {
+  async login(data: loginOptions): Promise<loginResponse> {
     if (!data || (data && !Object.keys(data).length))
       throw new TypeError(
         'username and password  or the dartroomID & fileroomID are  required',

@@ -29,3 +29,25 @@ export interface loginOptions {
   dartroomID?: string;
   fileroomID?: string;
 }
+
+/** Return Object from client.user.create */
+export interface createUserResponse {
+  data:
+    | string
+    | {
+        id: string;
+        token: string;
+      };
+}
+
+/** Return Object from client.user.update */
+export interface updateUserResponse {
+  data: {
+    updated: Record<string, any>; // update the document
+  };
+}
+
+/** Return Object from client.user.login */
+export interface loginResponse { 
+  data: string; // the accessToken
+}
