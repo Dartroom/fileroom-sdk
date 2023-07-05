@@ -4,8 +4,10 @@ import {
   getResponse,
   LegacybrowserRawResponse,
   getOptions,
+  pinOptions,
+  pinResponse,
 } from '../../interfaces';
-import { isBrowser} from 'browser-or-node';
+import { isBrowser } from 'browser-or-node';
 import { Stream } from 'stream';
 /**
  *  IPFS  endpoint for the Fileroom API
@@ -30,7 +32,7 @@ export class IpfsApi extends BaseApi {
   /**
    *  get a file from the gateway
    * @param cid - cid of the file to fetch
-   * @param options - {origin: string, size: number} 
+   * @param options - {origin: string, size: number}
    * */
   async get(cid: string, options?: getOptions): Promise<getResponse> {
     if (!cid || (cid && cid.length < 5)) throw new TypeError('cid is required');
@@ -90,5 +92,37 @@ export class IpfsApi extends BaseApi {
       result.stream = stream;
       return result;
     }
+  }
+  /** import a file by cid, create previews and pin it to our ipfs cluster
+   * @param cid
+   * @param  options - {resize: string[]} - array of sizes to create previews for given file(image or video)
+   */
+  async pin(cid: string, options?: pinOptions): Promise<pinResponse> {
+    if (!cid || (cid && cid.length < 5)) throw new TypeError('cid is required');
+    let url = '/ipfs/pin/' + cid;
+
+    if (options && options.resize) {
+      let resizeParams = new URLSearchParams();
+      for (let size of options.resize) resizeParams.append('resize', size);
+      url = url + '?' + resizeParams.toString();
+    }
+
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      url,
+      'POST',
+    );
+
+    let json: any = await response.toJSON();
+
+    if (json && json.errors) {
+      let error = json.errors[0];
+      let status = (error.status as number) || 404;
+      let message = status >= 403 ? 'NOT_FOUND' : error.message;
+      status = status >= 403 ? 404 : status;
+
+      throw new Error('API_ERROR: ' + message + ' ' + status);
+    }
+
+    return json as pinResponse;
   }
 }

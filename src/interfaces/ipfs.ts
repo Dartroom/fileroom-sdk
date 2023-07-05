@@ -41,3 +41,21 @@ export interface LegacybrowserRawResponse {
   ok: boolean;
   headers: Headers;
 }
+
+/** Pinning options for import a file by cid */
+export interface pinOptions {
+  resize: string[]; // array of sizes to create previews for given file(image or video)
+}
+
+/** Return Object from pin/cid */
+
+export interface pinResponse {
+  data: {
+    message: string;
+    result?: Record<string, any>; // current awating pinning status and preview generation;
+    listenTo?: {
+      wsUrl: string;
+      event: string;
+    };
+  };
+}

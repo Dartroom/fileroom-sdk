@@ -89,4 +89,21 @@ describe('ipfsApi in nodejs should', () => {
       expect(buff.length.toString()).toEqual(response.metadata.contentLength);
     }
   });
+  it("import a file by cid and pin it's cid", async () => {
+    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+    let response = await client.ipfs.pin(testFilecid);
+    expect(response).toBeDefined();
+    expect(response.data).toEqual(
+      expect.objectContaining({
+        message: expect.any(String),
+      }),
+    );
+  });
+
+  it('throw error if cid is incorrect or file is not found when pinning a file', async () => {
+    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+    expect(async () => await client.ipfs.pin('fasfdsafsdaf')).rejects.toThrow(
+      'API_ERROR: NOT_FOUND 404',
+    );
+  });
 });

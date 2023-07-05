@@ -174,4 +174,36 @@ describe('ipfsApi in the browser should', () => {
     expect(bytes).toBeDefined();
     expect(bytes.toString()).toEqual(contentLength);
   });
+
+  it("import a file by cid and pin it's cid", async () => {
+    let call = ` 
+           
+          async function importBycid () {
+        let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+        let result = await client.ipfs.pin('${testFilecid}');
+        
+        respo = result;
+        
+          };
+         importBycid();
+ `;
+    await page.evaluate(call);
+    let response: any = await page.evaluate('respo');
+    expect(response).toBeDefined();
+    expect(response.data).toBeDefined();
+    expect(response.data).toEqual(
+      expect.objectContaining({
+        message: expect.any(String),
+      }),
+    );
+  });
+
+  it('throw error if cid is incorrect or file is not found when pinning a file', async () => {
+    let call = `(async () => {
+            let client = new Fileroom.Client({accessToken: '', env: '${fileroomEvn}'});
+             return await client.ipfs.pin("fsadfdsa");
+    })()`;
+
+    expect(async () => await page.evaluate(call)).rejects.toThrowError();
+  });
 });
