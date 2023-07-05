@@ -27,8 +27,10 @@ export class IpfsApi extends BaseApi {
     return json as statusResponse;
   }
 
-  /** get a file from the gateway
-   * @param cid
+  /**
+   *  get a file from the gateway
+   * @param cid - cid of the file to fetch
+   * @param options - {origin: string, size: number} 
    * */
   async get(cid: string, options?: getOptions): Promise<getResponse> {
     if (!cid || (cid && cid.length < 5)) throw new TypeError('cid is required');
