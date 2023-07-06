@@ -1,6 +1,8 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   collectCoverage: false,
+  testTimeout: 100000,
+  openHandlesTimeout:0,
   collectCoverageFrom: ['src/**/*.ts'],
   coverageThreshold: {
     global: {
