@@ -39,4 +39,10 @@ describe('filesAPi in nodejs should', () => {
       }),
     );
   });
+  it('await for an uploaded file', async () => {
+    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+    let response: any = await client.files.awaitUpload(testFilecid);
+
+    expect(response).toBeDefined();
+  });
 });

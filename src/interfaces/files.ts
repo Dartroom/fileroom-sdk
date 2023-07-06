@@ -20,3 +20,9 @@ export interface listResponse {
   prevPage: number;
   nextPage: number;
 }
+
+/**Expected Response from awaitUpload */
+
+export interface awaitUploadResponse {
+  data: Record<string, any>; // the uploaded file
+}

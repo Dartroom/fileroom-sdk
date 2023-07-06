@@ -79,4 +79,28 @@ describe('filesApi in the browser should', () => {
       }),
     );
   });
+
+  it('await for an uploaded file', async () => {
+    let call = ` 
+          
+          async function  awaitUpload() {
+        let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+        let status  = await client.files.list();
+        
+        response = status;
+      
+        
+          };
+        awaitUpload();
+ `;
+
+    await page.evaluate(call);
+    let response: any = await page.evaluate('response');
+    expect(response).toBeDefined();
+    expect(response).toEqual(
+      expect.objectContaining({
+        data: expect.any(Object),
+      }),
+    );
+  });
 });

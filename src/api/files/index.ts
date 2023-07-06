@@ -1,5 +1,10 @@
 import { BaseApi } from '../baseApi';
-import { listOptions, listResponse } from '../../interfaces';
+import {
+  listOptions,
+  listResponse,
+  awaitUploadResponse,
+} from '../../interfaces';
+import { propagateErrors } from '../../functions';
 
 /**
  * Files  endpoint of  Fileroom API for:
@@ -31,16 +36,24 @@ export class FilesApi extends BaseApi {
     );
 
     let json: any = await response.toJSON();
-
-    if (json && json.errors) {
-      let error = json.errors[0];
-      let status = (error.status as number) || 404;
-      let message = status >= 403 ? 'NOT_FOUND' : error.message;
-      status = status >= 403 ? 404 : status;
-
-      throw new Error('API_ERROR: ' + message + ' ' + status);
-    }
+    propagateErrors(json);
 
     return json as listResponse;
+  }
+  /** Wait for an uploaded or imported file and return updated its updated record
+   *@param id -  trackingID of uploaded file, or cid of the imported file
+   * @returns awaitUploadResponse
+   */
+  async awaitUpload(id: string) {
+    let url = '/await/upload/' + id;
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      url,
+      'GET',
+    );
+
+    let json: any = await response.toJSON();
+
+    propagateErrors(json);
+    return json as awaitUploadResponse;
   }
 }
