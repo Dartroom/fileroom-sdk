@@ -2,8 +2,9 @@
 module.exports = {
   collectCoverage: false,
   testTimeout: 100000,
-  openHandlesTimeout:0,
+  openHandlesTimeout: 0,
   collectCoverageFrom: ['src/**/*.ts'],
+  setupFilesAfterEnv: ['jest-extended/all'],
   coverageThreshold: {
     global: {
       lines: 70,
