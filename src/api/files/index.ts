@@ -40,7 +40,7 @@ export class FilesApi extends BaseApi {
 
     return json as listResponse;
   }
-  /** Wait for an uploaded or imported file and return updated its updated record
+  /** Wait for an uploaded or imported file and return its updated record
    *@param id -  trackingID of uploaded file, or cid of the imported file
    * @returns awaitUploadResponse
    */
