@@ -1,6 +1,6 @@
 import { ConfigOptions } from './interfaces';
 import { FetchHttpClient } from './net/fetchHttpClient';
-import { UsersApi, IpfsApi } from './api/';
+import { UsersApi, IpfsApi,FilesApi } from './api/';
 import { isApikey } from './functions';
 
 /**
@@ -21,6 +21,7 @@ export class Client {
   protected readonly __HttpClient: FetchHttpClient;
   public readonly user: UsersApi;
   public readonly ipfs: IpfsApi;
+  public readonly files:FilesApi; 
   /**
    *
    * @param config  - {accessToken:string,env:'test' | 'production' | 'beta',timeout?:number}
@@ -34,6 +35,7 @@ export class Client {
     this.__HttpClient = new FetchHttpClient(config);
     this.user = new UsersApi(this.__HttpClient);
     this.ipfs = new IpfsApi(this.__HttpClient);
+    this.files = new FilesApi(this.__HttpClient);
     this.checkAuth();
   }
   /**if an acessToken is passed,check it's validity */

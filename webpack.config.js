@@ -4,6 +4,10 @@ const webTarget = {
   target: 'web',
   entry: './src/index.ts',
   devtool: 'source-map',
+  watchOptions: {
+    ignored: /node_modules/,
+    poll: true,
+  },
 
   module: {
     rules: [

@@ -1,5 +1,5 @@
 import { FileroomError } from '../types';
-import { PassThrough, Stream } from 'stream';
+
 export interface statusResponse {
   peername: string;
   status: string;
@@ -19,15 +19,7 @@ export interface getOptions {
   origin?: string;
   size?: string;
 }
-export interface getResponse {
-  stream: ReadableStream<Uint8Array> | Stream | null;
-  metadata: meta;
-}
 
-interface meta {
-  contentType: string;
-  contentLength: number;
-}
 
 /** Fetch polyfill response for legacy browsers
 
