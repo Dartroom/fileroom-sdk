@@ -3,6 +3,8 @@ import {
   listOptions,
   listResponse,
   awaitUploadResponse,
+  deleteOneOptions,
+  deleteOneResponse,
 } from '../../interfaces';
 import { propagateErrors } from '../../functions';
 
@@ -55,5 +57,31 @@ export class FilesApi extends BaseApi {
 
     propagateErrors(json);
     return json as awaitUploadResponse;
+  }
+  /**
+   * Delete a file and its previews
+   * @param opts - {cid: string, docID: string}
+   * @returns deleteOneResponse - {{data:Record<string,any>}}
+   *
+   */
+  async deleteOne(opts: deleteOneOptions) {
+    if (
+      !opts ||
+      (opts && !Object.keys(opts).length && (opts.cid || opts.docID))
+    )
+      throw new TypeError('   cid or docID is required');
+
+    if (opts.cid && opts.docID)
+      throw new TypeError(' cid or docID is required,not both');
+
+    let response = await this.createHttpRequest.makeRequestwithDefault(
+      'delete/one',
+      'POST',
+      opts,
+    );
+
+    let json: any = await response.toJSON();
+    propagateErrors(json);
+    return json as deleteOneResponse;
   }
 }

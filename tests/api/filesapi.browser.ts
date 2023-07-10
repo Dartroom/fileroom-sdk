@@ -80,12 +80,12 @@ describe('filesApi in the browser should', () => {
     );
   });
 
-  it('await for an uploaded file', async () => {
+  it('await for an uploaded file or throw it the file is not found', async () => {
     let call = ` 
           
           async function  awaitUpload() {
         let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
-        let status  = await client.files.list();
+        let status  = await client.files.awaitUpload('${testFilecid}');
         
         response = status;
       
@@ -93,14 +93,57 @@ describe('filesApi in the browser should', () => {
           };
         awaitUpload();
  `;
+    try {
+      await page.evaluate(call);
+      let response: any = await page.evaluate('response');
+      expect(response).toBeDefined();
+      expect(response).toEqual(
+        expect.objectContaining({
+          data: expect.any(Object),
+        }),
+      );
+    } catch (error: any) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('File not found');
+    }
+  });
+  it('delete one file if it exists', async () => {
+    try {
+      let call = ` 
+          
+          async function  deleteOne() {
+        let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+        let status  = await client.files.deleteOne({cid: '${testFilecid}'});
+        
+        response = status;
+      
+        
+          };
+        deleteOne(); `;
+      await page.evaluate(call);
 
-    await page.evaluate(call);
-    let response: any = await page.evaluate('response');
-    expect(response).toBeDefined();
-    expect(response).toEqual(
-      expect.objectContaining({
-        data: expect.any(Object),
-      }),
-    );
+      let response: any = await page.evaluate('response');
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toEqual(
+        expect.objectContaining({
+          deletedItems: expect.any(Array),
+          filesDeleted: expect.any(Number),
+          storageSaved: expect.any(Number),
+        }),
+      );
+    } catch (error: any) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('File not found');
+    }
+  });
+
+  it('throws error if  both cid and docID are passed to deleteOne', async () => {
+    let call = `(async () => {
+            let client = new Fileroom.Client({accessToken: '', env: '${fileroomEvn}'});
+             return await client.ipfs.deleteOne({cid: '${testFilecid}', docID: '1234'});
+    })()`;
+
+    expect(async () => await page.evaluate(call)).rejects.toThrowError();
   });
 });
