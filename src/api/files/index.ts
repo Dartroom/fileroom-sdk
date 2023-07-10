@@ -4,7 +4,7 @@ import {
   listResponse,
   awaitUploadResponse,
   deleteOneOptions,
-  deleteOneResponse,
+  deleteResponse,
 } from '../../interfaces';
 import { propagateErrors } from '../../functions';
 
@@ -61,7 +61,7 @@ export class FilesApi extends BaseApi {
   /**
    * Delete a file and its previews
    * @param opts - {cid: string, docID: string}
-   * @returns deleteOneResponse - {{data:Record<string,any>}}
+   * @returns deleteResponse - {{data:Record<string,any>}}
    *
    */
   async deleteOne(opts: deleteOneOptions) {
@@ -82,6 +82,33 @@ export class FilesApi extends BaseApi {
 
     let json: any = await response.toJSON();
     propagateErrors(json);
-    return json as deleteOneResponse;
+    return json as deleteResponse;
+  }
+
+  /**
+   *  Delete a list of  files and their previews
+   * @param cids - list of cids to delete
+   * @returns DeleteResponse - {{data:Record<string,any>}}
+   */
+
+  async deleteMany(cids: string[]) {
+    let url = '/delete/many';
+    if (!cids || !cids.length) throw new TypeError('cids is required');
+
+    let cidParams = new URLSearchParams();
+    for (let cid of cids) {
+      cidParams.append('cid', cid);
+    }
+    url = url + '?' + cidParams.toString();
+
+    let response = await this.createHttpRequest.makeRequestwithDefault(
+      url,
+      'POST',
+    );
+
+    let json: any = await response.toJSON();
+
+    propagateErrors(json);
+    return json as deleteResponse;
   }
 }

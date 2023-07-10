@@ -146,4 +146,35 @@ describe('filesApi in the browser should', () => {
 
     expect(async () => await page.evaluate(call)).rejects.toThrowError();
   });
+
+  it('delete one file if it exists', async () => {
+    try {
+      let call = ` 
+          
+          async function  deleteMany() {
+        let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+        let status  = await client.files.deleteMany( ['${testFilecid}']);
+        
+        response = status;
+      
+        
+          };
+        deleteMany(); `;
+      await page.evaluate(call);
+
+      let response: any = await page.evaluate('response');
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toEqual(
+        expect.objectContaining({
+          deletedItems: expect.any(Array),
+          filesDeleted: expect.any(Number),
+          storageSaved: expect.any(Number),
+        }),
+      );
+    } catch (error: any) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('NOT_FOUND');
+    }
+  });
 });

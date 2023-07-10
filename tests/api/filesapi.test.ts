@@ -3,7 +3,6 @@ import * as matchers from 'jest-extended';
 expect.extend(matchers);
 import dotenv from 'dotenv';
 
-
 dotenv.config();
 
 let testDevApiKEY = process.env.TEST_DEV_API_KEY as string;
@@ -87,5 +86,26 @@ describe('filesAPi in nodejs should', () => {
       async () =>
         await client.files.deleteOne({ cid: 'fasdfsaf', docID: 'fadsfsafsa' }),
     ).rejects.toThrowError(new TypeError(' cid or docID is required,not both'));
+  });
+
+  it('delete a list of files  if they exist', async () => {
+    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+
+    try {
+      let response: any = await client.files.deleteMany([testFilecid]);
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toEqual(
+        expect.objectContaining({
+          deletedItems: expect.any(Array),
+          filesDeleted: expect.any(Number),
+          storageSaved: expect.any(Number),
+        }),
+      );
+    } catch (error: any) {
+      expect(error).toBeDefined();
+    
+      expect(error.message).toContain('NOT_FOUND');
+    }
   });
 });

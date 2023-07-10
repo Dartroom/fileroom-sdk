@@ -35,7 +35,7 @@ export interface deleteOneOptions {
 
 /**Expected Response from deleteOne */
 
-export interface deleteOneResponse {
+export interface deleteResponse {
   data: {
     deleted?: boolean; // true if the file was delete
     docID?: Record<string, any>; // the updated document (when docID is provided)
