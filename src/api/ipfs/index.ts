@@ -1,7 +1,7 @@
 import { BaseApi } from '../baseApi';
+import { StreamResponse } from '../../types';
 import {
   statusResponse,
-  getResponse,
   LegacybrowserRawResponse,
   getOptions,
   pinOptions,
@@ -9,6 +9,7 @@ import {
 } from '../../interfaces';
 import { isBrowser } from 'browser-or-node';
 import { Stream } from 'stream';
+import { propagateErrors } from '../../functions';
 /**
  *  IPFS  endpoint for the Fileroom API
  */
@@ -32,9 +33,9 @@ export class IpfsApi extends BaseApi {
   /**
    *  get a file from the gateway
    * @param cid - cid of the file to fetch
-   * @param options - {origin: string, size: number}
+   * @param options - ReadableStream<Uint8Array> || NodeJS.Stream
    * */
-  async get(cid: string, options?: getOptions): Promise<getResponse> {
+  async get(cid: string, options?: getOptions): Promise<StreamResponse> {
     if (!cid || (cid && cid.length < 5)) throw new TypeError('cid is required');
     let url = '/ipfs/' + cid;
     if (options && options.origin) {
@@ -53,26 +54,13 @@ export class IpfsApi extends BaseApi {
     this.returnedHeaders = headers;
 
     let contentType = headers['content-type'];
-    let fileLength = headers['content-length'];
-    let metatdata = {
-      contentType: contentType,
-      contentLength: fileLength,
-    };
-    let result = {} as getResponse;
 
     let stream = null;
     if (contentType.includes('application/json')) {
       let json = await response.toJSON();
-      if (json.errors) {
-        let error = json.errors[0];
-        let status = error.status as number;
-        let message = status >= 403 ? 'NOT_FOUND' : error.message;
-        status = status >= 403 ? 404 : status;
-
-        throw new Error('API_ERROR: ' + message + ' ' + status);
-      }
+      propagateErrors(json);
     }
-    result.metadata = metatdata;
+
     /** if its legacy browsers with no fetch support, the response from fetch polyfill doesn't contain a streamable body instead it contains a blob
        so we need to get the blob and convert it to a stream (there is a performance hit here)
     *  see https://caniuse.com/fetch
@@ -83,14 +71,14 @@ export class IpfsApi extends BaseApi {
       console.log(raw);
 
       stream = raw._bodyInit.stream();
-      result.stream = stream;
-      return result;
+
+      return stream;
     } else {
       stream = isBrowser
         ? (response.toStream(() => {}) as ReadableStream<Uint8Array>)
         : (response.toStream(() => {}) as Stream);
-      result.stream = stream;
-      return result;
+
+      return stream;
     }
   }
   /** import a file by cid, create previews and pin it to our ipfs cluster
@@ -114,14 +102,7 @@ export class IpfsApi extends BaseApi {
 
     let json: any = await response.toJSON();
 
-    if (json && json.errors) {
-      let error = json.errors[0];
-      let status = (error.status as number) || 404;
-      let message = status >= 403 ? 'NOT_FOUND' : error.message;
-      status = status >= 403 ? 404 : status;
-
-      throw new Error('API_ERROR: ' + message + ' ' + status);
-    }
+    propagateErrors(json);
 
     return json as pinResponse;
   }

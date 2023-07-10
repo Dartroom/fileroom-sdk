@@ -42,12 +42,7 @@ describe('ipfsApi in nodejs should', () => {
       origin: 'https://v2.dartroom.xyz',
     });
     expect(response).toBeDefined();
-    expect(response).toEqual(
-      expect.objectContaining({
-        stream: expect.any(Object),
-        metadata: expect.any(Object),
-      }),
-    );
+    expect(response).toEqual(expect.any(Stream));
   });
 
   it('fetch a preview from gateway with sizes set', async () => {
@@ -58,12 +53,7 @@ describe('ipfsApi in nodejs should', () => {
     let Previewcid = String(client.ipfs.returnedHeaders['etag']);
 
     expect(response).toBeDefined();
-    expect(response).toEqual(
-      expect.objectContaining({
-        stream: expect.any(Object),
-        metadata: expect.any(Object),
-      }),
-    );
+    
     expect(JSON.parse(Previewcid)).not.toEqual(testFilecid);
   });
 
@@ -83,10 +73,11 @@ describe('ipfsApi in nodejs should', () => {
     let response = await client.ipfs.get(testFilecid);
     expect(response).toBeDefined();
 
-    if (response.stream && response.metadata?.contentLength) {
-      let buff = await streamToBuff(response.stream as Stream);
+    if (response) {
+      let contentLength = client.ipfs.returnedHeaders['content-length'];
+      let buff = await streamToBuff(response as Stream);
       expect(buff).toBeDefined();
-      expect(buff.length.toString()).toEqual(response.metadata.contentLength);
+      expect(buff.length.toString()).toEqual(contentLength);
     }
   });
   it("import a file by cid and pin it's cid", async () => {

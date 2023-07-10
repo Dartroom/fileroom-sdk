@@ -92,12 +92,7 @@ describe('ipfsApi in the browser should', () => {
     await page.evaluate(call);
     let response: any = await page.evaluate('respo');
     expect(response).toBeDefined();
-    expect(response).toEqual(
-      expect.objectContaining({
-        stream: expect.any(Object),
-        metadata: expect.any(Object),
-      }),
-    );
+    expect(response).toEqual(expect.any(Object));
   });
 
   it('fetch a preview from gateway with sizes set', async () => {
@@ -120,12 +115,7 @@ describe('ipfsApi in the browser should', () => {
     expect(response).toBeDefined();
     expect(Previewcid).toBeDefined();
 
-    expect(response).toEqual(
-      expect.objectContaining({
-        stream: expect.any(Object),
-        metadata: expect.any(Object),
-      }),
-    );
+    expect(response).toEqual(expect.any(Object));
     expect(Previewcid).not.toEqual(testFilecid);
   });
   it('throw error if cid is incorrect or file is not found when fetching a file', async () => {
@@ -152,9 +142,9 @@ describe('ipfsApi in the browser should', () => {
         let client = new Fileroom.Client({accessToken: '', env: '${fileroomEvn}'});
         let result = await client.ipfs.get('${testFilecid}');
         
-        _contentLength = result.metadata.contentLength;
+        _contentLength = client.ipfs.returnedHeaders['content-length']
          
-        let reader = result.stream.getReader();
+        let reader = result.getReader();
          while (true) {
           let { done, value } = await reader.read();
              if(done) break;
