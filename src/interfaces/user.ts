@@ -26,8 +26,7 @@ export interface updateUserOptions {
 export interface loginOptions {
   username?: string;
   password?: string;
-  dartroomID?: string;
-  fileroomID?: string;
+  dartroomToken?: string;
 }
 
 /** Return Object from client.user.create */
@@ -48,6 +47,13 @@ export interface updateUserResponse {
 }
 
 /** Return Object from client.user.login */
-export interface loginResponse { 
+export interface loginResponse {
   data: string; // the accessToken
+}
+
+/** Return Object from client.user.validatedToken */
+export interface validatedTokenResponse {
+  data: {
+    isValid: boolean;
+  };
 }

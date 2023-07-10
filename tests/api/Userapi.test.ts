@@ -8,6 +8,7 @@ let testDevPassword = process.env.TEST_DEV_PASSWORD;
 let testDevUsername = process.env.TEST_DEV_USERNAME;
 let testUserDartroomID = process.env.TEST_USER_DARTROOMID;
 let testUserFileRoomID = process.env.TEST_USER_FILEROOMID;
+let testUserDartroomToken = process.env.TEST_USER_DARTROOM_TOKEN as string;
 let fileroomEvn = process.env.FILEROOM_ENV as ConfigOptions['env'];
 
 describe('UserApi in nodejs should', () => {
@@ -16,6 +17,8 @@ describe('UserApi in nodejs should', () => {
 
     await expect(client.user).toBeDefined();
   });
+
+  
 
   it('login a Dev user with his password and username', async () => {
     let client = new Client({
@@ -32,11 +35,10 @@ describe('UserApi in nodejs should', () => {
       }),
     );
   });
-  it('login a dartroom artist with their dartroomID and fileroomID', async () => {
+  it('login a dartroom artist with their dartroom Token', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
     let response = await client.user.login({
-      dartroomID: testUserDartroomID,
-      fileroomID: testUserFileRoomID,
+      dartroomToken: testUserDartroomToken,
     });
 
     expect(response).toEqual(
@@ -49,8 +51,8 @@ describe('UserApi in nodejs should', () => {
   it('update the config.acessToken on login', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
     let response = await client.user.login({
-      dartroomID: testUserDartroomID,
-      fileroomID: testUserFileRoomID,
+      username: testDevUsername,
+      password: testDevPassword,
     });
 
     expect(client._config.accessToken).toEqual(response.data);
@@ -60,7 +62,7 @@ describe('UserApi in nodejs should', () => {
 
     expect(async () => await client.user.login({})).rejects.toThrowError(
       new Error(
-        'username and password  or the dartroomID & fileroomID are  required',
+        'username and password  or dartroomToken is required are  required',
       ),
     );
   });

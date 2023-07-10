@@ -11,6 +11,7 @@ let testDevPassword = process.env.TEST_DEV_PASSWORD;
 let testDevUsername = process.env.TEST_DEV_USERNAME;
 let testUserDartroomID = process.env.TEST_USER_DARTROOMID;
 let testUserFileRoomID = process.env.TEST_USER_FILEROOMID;
+let testUserDartroomToken = process.env.TEST_USER_DARTROOM_TOKEN as string;
 let fileroomEvn = process.env.FILEROOM_ENV;
 let oldToken = '';
 
@@ -69,12 +70,12 @@ describe('UserApi in the browser should', () => {
     );
   });
 
-  it('login a dartroom artist with their dartroomID and fileroomID', async () => {
+  it('login a dartroom artist with their dartroomToken', async () => {
     let call = ` 
     
           async function MakeRequest () {
         let client = new Fileroom.Client({accessToken: '', env: '${fileroomEvn}'});
-        let user = await client.user.login({dartroomID:'${testUserDartroomID}', fileroomID: '${testUserFileRoomID}'});
+        let user = await client.user.login({dartroomToken: '${testUserDartroomToken}'});
           return  user;
           };
         MakeRequest();
@@ -117,7 +118,7 @@ describe('UserApi in the browser should', () => {
 
     expect(async () => await page.evaluate(call)).rejects.toThrowError(
       new Error(
-        'username and password  or the dartroomID & fileroomID are  required',
+        'username and password  or dartroomToken is required are  required',
       ),
     );
   });

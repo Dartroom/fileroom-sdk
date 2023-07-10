@@ -6,7 +6,9 @@ import {
   createUserResponse,
   updateUserResponse,
   loginResponse,
+  validatedTokenResponse,
 } from '../../interfaces';
+import { propagateErrors } from '../../functions';
 
 /**
  *
@@ -20,15 +22,14 @@ export class UsersApi extends BaseApi {
    */
   public readonly validatedToken = async () => {
     const response = await this.createHttpRequest.makeRequestwithDefault(
-      this._path + '/refreshToken',
+      this._path + '/validateToken',
       'POST',
     );
 
     let json = await response.toJSON();
 
-    if (json && json.errors) {
-      throw TypeError('invalid or expired AccessToken');
-    }
+    propagateErrors(json);
+    return json as validatedTokenResponse;
   };
   /** create a new Fileroom User
    *
@@ -85,14 +86,20 @@ export class UsersApi extends BaseApi {
   }
 
   /** login dev user with their username and password
-   * @param data
+   * @param data -  username & password Or a dartroomToken
    * @returns loginResponse - {data:string} - the accessToken
    */
   async login(data: loginOptions): Promise<loginResponse> {
     if (!data || (data && !Object.keys(data).length))
       throw new TypeError(
-        'username and password  or the dartroomID & fileroomID are  required',
+        'username and password  or dartroomToken is required are  required',
       );
+
+    if (data.dartroomToken && data.dartroomToken.length > 0) {
+      this.createHttpRequest.extendHeaders({
+        Authorization: `refresh ${data.dartroomToken}`,
+      });
+    }
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + '/login',
       'POST',
