@@ -48,6 +48,29 @@ describe('UserApi in the browser should', () => {
     expect(client.has('user')).toBe(true);
   });
 
+  it("validate a user's token", async () => {
+    let call = `
+              let res;
+             async function ValidateToken () {
+                 let client  = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+                  res = await client.user.validateToken();
+             };
+              ValidateToken();
+    `;
+    try {
+      await page.evaluate(call);
+      let response: any = await page.evaluate('res');
+
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data.isValid).toBeDefined();
+      expect(response.data.isValid).toBe(true);
+    } catch (error: any) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('Invalid access token');
+    }
+  });
+
   it('login a Dev user with his password and username', async () => {
     let call = ` 
            let response;

@@ -18,7 +18,21 @@ describe('UserApi in nodejs should', () => {
     await expect(client.user).toBeDefined();
   });
 
-  
+  it("validate a user's token", async () => {
+    try {
+      let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+
+      let response = await client.user.validateToken();
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data.isValid).toBeDefined();
+      expect(response.data.isValid).toBe(true);
+      
+    } catch (error: any) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('Invalid access token');
+    }
+  });
 
   it('login a Dev user with his password and username', async () => {
     let client = new Client({

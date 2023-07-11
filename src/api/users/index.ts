@@ -20,13 +20,13 @@ export class UsersApi extends BaseApi {
    *
    * @returns void
    */
-  public readonly validatedToken = async () => {
+  public readonly validateToken = async () => {
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + '/validateToken',
       'POST',
     );
 
-    let json = await response.toJSON();
+     let json = await response.toJSON();
 
     propagateErrors(json);
     return json as validatedTokenResponse;
