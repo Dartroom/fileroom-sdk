@@ -5,8 +5,12 @@ import {
   awaitUploadResponse,
   deleteOneOptions,
   deleteResponse,
+  uploadOptions,
 } from '../../interfaces';
 import { propagateErrors } from '../../functions';
+
+import { UploadApi } from '../upload';
+import { UploadFile } from '../../types';
 
 /**
  * Files  endpoint of  Fileroom API for:
@@ -17,6 +21,7 @@ import { propagateErrors } from '../../functions';
  *
  */
 export class FilesApi extends BaseApi {
+  public upload: UploadApi | null = null;
   /**
    *  list  a user files
    * @param options
@@ -110,5 +115,16 @@ export class FilesApi extends BaseApi {
 
     propagateErrors(json);
     return json as deleteResponse;
+  }
+
+  async uploadFile(file: UploadFile, options?: uploadOptions) {
+    let reqOpts = this.createHttpRequest._requestOpts;
+    let config = this.createHttpRequest._config;
+
+    if (reqOpts && config) {
+      this.upload = new UploadApi(file, reqOpts, this, config, options);
+
+      return this.upload;
+    }
   }
 }

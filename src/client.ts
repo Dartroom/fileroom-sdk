@@ -1,7 +1,6 @@
 import { ConfigOptions } from './interfaces';
 import { FetchHttpClient } from './net/fetchHttpClient';
 import { UsersApi, IpfsApi, FilesApi } from './api/';
-import { isApikey } from './functions';
 
 /**
  * The main client class
@@ -22,6 +21,7 @@ export class Client {
   public readonly user: UsersApi;
   public readonly ipfs: IpfsApi;
   public readonly files: FilesApi;
+
   /**
    *
    * @param config  - {accessToken:string,env:'test' | 'production' | 'beta',timeout?:number}
