@@ -1,4 +1,10 @@
-import { FileDoc, ProgressEvent, UploadResult } from '../types';
+import {
+  EventName,
+  FileDoc,
+  GlobalProgress,
+  ProgressEvent,
+  UploadResult,
+} from '../types';
 export interface statusResponse {
   peername: string;
   status: string;
@@ -53,7 +59,7 @@ export interface pinResponse {
 export interface socketEvent {
   event: string;
   data?: {
-    status: string;
+    status: EventName;
     progress?: {
       percent: number | string;
       job: string;
@@ -76,4 +82,6 @@ export interface UploadListners {
   progress: (progress: ProgressEvent) => void;
   completed: (result: UploadResult) => void;
   error: (error: Error) => void;
+  globalProgress: (progress: GlobalProgress) => void;
+  allCompleted: (result: UploadResult[]) => void;
 }

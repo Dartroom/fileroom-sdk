@@ -1,13 +1,19 @@
 import { EventEmitter } from 'ee-ts';
 import { Upload } from 'tus-js-client';
 
-import { UploadFile, ProgressEvent, UploadEvents } from '../../types';
+import {
+  UploadFile,
+  ProgressEvent,
+  GlobalProgress,
+  UploadResult,
+} from '../../types';
 import {
   uploadOptions,
   RequestOptions,
   ConfigOptions,
   socketEvent,
   UploadListners,
+  EventProgress,
 } from '../../interfaces';
 import { isBrowser, isNode } from 'browser-or-node';
 
@@ -16,15 +22,64 @@ import { generateUUID } from '../../functions';
 import { proxyHandler } from '../../functions';
 import WebSocket from 'isomorphic-ws';
 
-
 /**
  * Upload  endpoint for the FilesAPI of the Fileroom API
+ * @param reqOpts - {host,port,protocol,timeout} 
+ * @param config - {accessToken,env} 
+ * @options - uploadOptions  
+ * 
+ * @example 
+ * ```js
+
+      const client = new Client({accessToken: 'your token',env:'test' | 'production' | 'beta'});
+
+      let readStream = fs.createReadStream('path/to/file');
+      // usage with files APi (single file upload)
+      let {files} = client;
+        let upload = await files.uploadFile(readStream,{
+          resize:[1080]
+        });
+
+        upload.on('progress',(progress)=>{
+        // get the progress of the upload
+        }) 
+
+        upload.on('completed',(result)=>{
+        // get the result of the upload
+        
+        }) 
+
+        upload.on("error",(error)=>{}) // get the error of the upload
+
+        // usage with upload API (multiple file upload)
+
+        import {Upload} from 'fileroom-sdk';
+
+        let upload = new UploadApi(reqOpts,config,options);
+
+        let files = [file1,file2,file3];
+
+        for(let file of files){
+          await upload.start(file);
+        }
+
+        upload.on("globalProgress",(progress)=>{
+          // get the ProgressMap of the uploads
+           
+        }) 
+
+          upload.on("allCompleted",(results)=>{
+          // await for all uploads to complete and get the results
+          })
+          upload.on("error",(error)=>{}) // get the error of the upload
+ ```
  *
  */
 export class UploadApi extends EventEmitter<UploadListners> {
   _path: string = '/upload';
   _url: string = '';
   _uploadOptions: Record<string, string> = {};
+  _results: Array<UploadResult> = []; // all collections of results from uploads
 
   _headers: Record<string, string> = {};
   _tus: Upload | null = null;
@@ -33,6 +88,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
   _progressMap: Map<string, any> = new Map();
   _isSecure: boolean = false; // if the protocol is https
   _fileID: string = '';
+  _uploadCount: number = 0;
 
   constructor(
     reqOpts: RequestOptions,
@@ -98,8 +154,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
       chunkSize: 10 * 1024 * 1024,
 
       onError: error => {
-
-         throw new Error(error.message);
+        throw new Error(error.message);
       },
       onProgress: (bytesUploaded, bytesTotal) => {
         var percentage = (bytesUploaded / bytesTotal) * 100;
@@ -162,6 +217,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
   }
   /**
    * Method to handle the websocket messages
+   * emits progress, globalProgress, completed, allCompleted
    * @param event
    * @param fileID
    */
@@ -175,9 +231,17 @@ export class UploadApi extends EventEmitter<UploadListners> {
       let result = data.result || data.progress?.result;
 
       this.emit('progress', value);
+      // global;
+      let map = this._progressMap as GlobalProgress;
+      this.emit('globalProgress', map);
 
       if (status === 'Preview Completed' && result) {
         this.emit('completed', result);
+        this._results.push(result);
+        // when each upload is completed, upload
+        this._uploadCount++;
+        if (this._uploadCount === this._progressMap.size)
+          this.emit('allCompleted', this._results);
       }
     }
   }

@@ -18,7 +18,8 @@ type OverallProgress = {
 };
 export type ProgressEvent = Record<EventName, EventProgress> & OverallProgress;
 
-export type UploadEvents = 'progress' | 'completed' | 'error' | 'success';
+export type UploadEvents = 'progress' | 'completed' | 'error' | 'success' | "Globalprogress";
+export type GlobalProgress = Map<string, ProgressEvent> 
 
 export type Color = string | RGBA;
 
