@@ -24,8 +24,8 @@ export class FilesApi extends BaseApi {
   public upload: UploadApi | null = null;
   /**
    *  list  a user files
-   * @param options
-   * @returns listResponse
+   * @param {listOptions} options
+   * @returns {listOptions} listResponse
    */
   async list(options?: listOptions) {
     let url = '/files/list';
@@ -48,8 +48,8 @@ export class FilesApi extends BaseApi {
     return json as listResponse;
   }
   /** Wait for an uploaded or imported file and return its updated record
-   *@param id -  trackingID of uploaded file, or cid of the imported file
-   * @returns awaitUploadResponse
+   *@param {string} id - tracking id of the file
+   * @returns {awaitUploadResponse} awaitUploadResponse
    */
   async awaitUpload(id: string) {
     let url = '/await/upload/' + id;
@@ -65,8 +65,8 @@ export class FilesApi extends BaseApi {
   }
   /**
    * Delete a file and its previews
-   * @param opts - {cid: string, docID: string}
-   * @returns deleteResponse - {{data:Record<string,any>}}
+   * @param  {deleteOneOptions} opts 
+   * @returns {deleteResponse} deleteResponse
    *
    */
   async deleteOne(opts: deleteOneOptions) {
@@ -93,7 +93,7 @@ export class FilesApi extends BaseApi {
   /**
    *  Delete a list of  files and their previews
    * @param cids - list of cids to delete
-   * @returns DeleteResponse - {{data:Record<string,any>}}
+   * @returns {deleteResponse} - {{data:Record<string,any>}}
    */
 
   async deleteMany(cids: string[]) {
@@ -118,9 +118,9 @@ export class FilesApi extends BaseApi {
   }
   /**
    *
-   * @param file
-   * @param options
-   * @returns
+   * @param {UploadFile} file
+   * @param {uploadOptions} options
+   * @returns {UploadApi | undefined} - UploadApi instance
    */
   async uploadFile(file: UploadFile, options?: uploadOptions) {
     let reqOpts = this.createHttpRequest._requestOpts;
