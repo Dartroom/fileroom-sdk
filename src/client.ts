@@ -17,7 +17,7 @@ import { UsersApi, IpfsApi, FilesApi } from './api/';
  */
 export class Client {
   public readonly _config: ConfigOptions;
-  protected readonly __HttpClient: FetchHttpClient;
+  public readonly __HttpClient: FetchHttpClient;
   public readonly user: UsersApi;
   public readonly ipfs: IpfsApi;
   public readonly files: FilesApi;
