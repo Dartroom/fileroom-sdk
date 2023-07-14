@@ -1,3 +1,5 @@
+import { PinStatus } from '../enums';
+import { FileDoc, Color } from '../types';
 export interface listOptions {
   limit?: number;
   skip?: number;
@@ -8,23 +10,25 @@ export interface listOptions {
 /**Expected Response from list */
 
 export interface listResponse {
-  docs: Record<string, any>[]; // list of available files
-  totalDocs: number; // total number of files
-  limit: number;
-  offest: number;
-  totalPages: number;
-  page: number;
-  pagingCounter: number;
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  prevPage: number;
-  nextPage: number;
+  data: {
+    docs: FileDoc[]; // list of available files
+    totalDocs: number; // total number of files
+    limit: number;
+    offest: number;
+    totalPages: number;
+    page: number;
+    pagingCounter: number;
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
+    prevPage: number;
+    nextPage: number;
+  };
 }
 
 /**Expected Response from awaitUpload */
 
 export interface awaitUploadResponse {
-  data: Record<string, any>; // the uploaded file
+  data: FileDoc; // the uploaded file
 }
 
 /**deleteOne Options */
@@ -38,12 +42,12 @@ export interface deleteOneOptions {
 export interface deleteResponse {
   data: {
     deleted?: boolean; // true if the file was delete
-    docID?: Record<string, any>; // the updated document (when docID is provided)
-    modified?: Record<string, any>; //  modified duplicates (when cid is provided)
+    docID?: FileDoc; // the updated document (when docID is provided)
+    modified?: FileDoc; //  modified duplicates (when cid is provided)
     deletedItems?: string[]; // list of cids of deleted files
     filesDeleted?: number; // number of files deleted
     storageSaved?: number; // amount of storage saved
-    duplicatesDeleted?: Record<string, any>; // number of duplicates deleted
+    duplicatesDeleted?: number; // number of duplicates deleted
   };
 }
 
@@ -87,11 +91,9 @@ interface KernelEnum {
   lanczos3: 'lanczos3';
 }
 
-interface RGBA {
+export interface RGBA {
   r?: number | undefined;
   g?: number | undefined;
   b?: number | undefined;
   alpha?: number | undefined;
 }
-
-type Color = string | RGBA;

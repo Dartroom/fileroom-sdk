@@ -1,5 +1,4 @@
-import { FileroomError } from '../types';
-
+import { FileDoc, ProgressEvent, UploadResult } from '../types';
 export interface statusResponse {
   peername: string;
   status: string;
@@ -19,7 +18,6 @@ export interface getOptions {
   origin?: string;
   size?: string;
 }
-
 
 /** Fetch polyfill response for legacy browsers
 
@@ -44,10 +42,38 @@ export interface pinOptions {
 export interface pinResponse {
   data: {
     message: string;
-    result?: Record<string, any>; // current awating pinning status and preview generation;
+    result?: FileDoc; // current awating pinning status and preview generation;
     listenTo?: {
       wsUrl: string;
       event: string;
     };
   };
+}
+
+export interface socketEvent {
+  event: string;
+  data?: {
+    status: string;
+    progress?: {
+      percent: number | string;
+      job: string;
+      result?: UploadResult;
+    };
+    filename?: string;
+    result?: UploadResult;
+    current?: number;
+    totalJobs?: number;
+  };
+}
+
+export interface EventProgress {
+  percent: number | string;
+  jobs: Map<string, number>;
+  result?: UploadResult;
+}
+
+export interface UploadListners {
+  progress: (progress: ProgressEvent) => void;
+  completed: (result: UploadResult) => void;
+  error: (error: Error) => void;
 }
