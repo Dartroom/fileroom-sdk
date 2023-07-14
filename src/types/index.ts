@@ -24,3 +24,5 @@ export type UploadFile =
   | Blob
   | Pick<ReadableStreamDefaultReader<any>, 'read'>
   | Readable;
+
+export * from './upload';
