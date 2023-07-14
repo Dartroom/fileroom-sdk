@@ -1,25 +1,31 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'ee-ts';
 import { Upload } from 'tus-js-client';
 
-import { UploadFile } from '../../types';
-import { uploadOptions, RequestOptions, ConfigOptions } from '../../interfaces';
+import { UploadFile, ProgressEvent, UploadEvents } from '../../types';
+import {
+  uploadOptions,
+  RequestOptions,
+  ConfigOptions,
+  socketEvent,
+  UploadListners,
+} from '../../interfaces';
 import { isBrowser, isNode } from 'browser-or-node';
 
 import { Readable, Stream } from 'stream';
 import { generateUUID } from '../../functions';
 import { proxyHandler } from '../../functions';
 import WebSocket from 'isomorphic-ws';
-import { FilesApi } from '../files';
+
 
 /**
  * Upload  endpoint for the FilesAPI of the Fileroom API
  *
  */
-export class UploadApi extends EventEmitter {
+export class UploadApi extends EventEmitter<UploadListners> {
   _path: string = '/upload';
   _url: string = '';
   _uploadOptions: Record<string, string> = {};
-  file: UploadFile;
+
   _headers: Record<string, string> = {};
   _tus: Upload | null = null;
   _rawUrl = '';
@@ -27,17 +33,15 @@ export class UploadApi extends EventEmitter {
   _progressMap: Map<string, any> = new Map();
   _isSecure: boolean = false; // if the protocol is https
   _fileID: string = '';
-  _filesApi: FilesApi | null = null;
 
   constructor(
-    file: UploadFile,
     reqOpts: RequestOptions,
-    fileApi: FilesApi,
+
     cofig: ConfigOptions,
     options?: uploadOptions,
   ) {
     super();
-    this._filesApi = fileApi;
+
     let { host, port, protocol, timeout } = reqOpts;
 
     const Secure = protocol === 'https';
@@ -46,7 +50,6 @@ export class UploadApi extends EventEmitter {
     const url = new URL(this._path, this._rawUrl);
     url.port = port as string;
     this._url = url.toString();
-    this.file = file;
 
     this._headers = {
       Authorization: `Bearer ${cofig.accessToken}`,
@@ -60,8 +63,8 @@ export class UploadApi extends EventEmitter {
 
     // if the file Type is File or Blob, add the file size and type to the metadata (Browser only)
   }
-  async start() {
-    await this.setfileMeta();
+  async start(file: UploadFile): Promise<UploadApi> {
+    await this.setfileMeta(file);
     let fileID = generateUUID();
 
     this._url = this._url + '?fileID=' + fileID;
@@ -82,12 +85,11 @@ export class UploadApi extends EventEmitter {
     this._socket.on('message', async (data: any) => {
       if (data) {
         data = data.toString();
-        data = JSON.parse(data);
+        data = JSON.parse(data) as socketEvent;
         this.handleWsMessage(data, fileID);
-        this.emit('overallProgress', this._progressMap.get(fileID));
       }
     });
-    let upload = new Upload(this.file, {
+    let upload = new Upload(file, {
       endpoint: this._url,
       metadata: this._uploadOptions,
       headers: this._headers,
@@ -96,23 +98,28 @@ export class UploadApi extends EventEmitter {
       chunkSize: 10 * 1024 * 1024,
 
       onError: error => {
-        this.emit('error', error);
+
+         throw new Error(error.message);
       },
       onProgress: (bytesUploaded, bytesTotal) => {
-        this.emit('progress', bytesUploaded / bytesTotal);
+        var percentage = (bytesUploaded / bytesTotal) * 100;
+
+        let payload: socketEvent = {
+          event: 'progress',
+          data: {
+            progress: {
+              percent: Math.round(percentage),
+              job: 'original',
+            },
+            status: 'Tus Upload',
+          },
+        };
+        this.handleWsMessage(payload, fileID);
       },
-      onSuccess: () => {
-        this.emit('success');
-      },
+      onSuccess: () => {},
     });
     upload.start();
     this._tus = upload;
-
-    if (this._filesApi) {
-      let completed = await this._filesApi.awaitUpload(fileID);
-
-      this.emit('result', completed);
-    }
 
     return this;
   }
@@ -120,9 +127,9 @@ export class UploadApi extends EventEmitter {
    * set the file metadata to be uploaded (size and type)
    * @returns boolean - true if the file metadata is set
    */
-  async setfileMeta() {
+  async setfileMeta(file: UploadFile) {
     let done = false;
-    let file = this.file;
+
     if (
       isBrowser &&
       ((typeof File !== 'undefined' && file instanceof File) ||
@@ -135,18 +142,15 @@ export class UploadApi extends EventEmitter {
 
     // if the file Type is ReadableStream, add the file size and type to the metadata (Node only)
 
-    if (this.file instanceof Stream) {
-      let file = this.file as Readable;
-
+    if (file instanceof Stream) {
       let { fileTypeFromStream } = await import('file-type');
-      let mimeType = await fileTypeFromStream(file);
+      let mimeType = await fileTypeFromStream(file as Readable);
       if (!mimeType) throw new Error('File type not supported');
       this._uploadOptions['filetype'] = mimeType.mime;
       // get the file size
       let size = 0;
       for await (const chunk of file) {
         size += chunk.length;
-        this.emit('progress', size);
       }
 
       this._uploadOptions['size'] = size.toString();
@@ -156,17 +160,25 @@ export class UploadApi extends EventEmitter {
 
     return done;
   }
-   /**
-    * Method to handle the websocket messages
-    * @param event 
-    * @param fileID 
-    */
-  handleWsMessage(event: any, fileID: string) {
+  /**
+   * Method to handle the websocket messages
+   * @param event
+   * @param fileID
+   */
+  handleWsMessage(event: socketEvent, fileID: string) {
     let { data } = event;
 
     if (data) {
-      this._progressMap.get(fileID)[data.status] = data;
-      let result = data.result || data.progress.result;
+      let status = data.status;
+      this._progressMap.get(fileID)[status] = data;
+      let value = this._progressMap.get(fileID) as ProgressEvent;
+      let result = data.result || data.progress?.result;
+
+      this.emit('progress', value);
+
+      if (status === 'Preview Completed' && result) {
+        this.emit('completed', result);
+      }
     }
   }
 }

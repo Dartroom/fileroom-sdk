@@ -10,7 +10,7 @@ import {
 import { propagateErrors } from '../../functions';
 
 import { UploadApi } from '../upload';
-import { UploadFile } from '../../types';
+import { UploadFile, UploadEvents } from '../../types';
 
 /**
  * Files  endpoint of  Fileroom API for:
@@ -116,15 +116,20 @@ export class FilesApi extends BaseApi {
     propagateErrors(json);
     return json as deleteResponse;
   }
-
+  /**
+   *
+   * @param file
+   * @param options
+   * @returns
+   */
   async uploadFile(file: UploadFile, options?: uploadOptions) {
     let reqOpts = this.createHttpRequest._requestOpts;
     let config = this.createHttpRequest._config;
 
     if (reqOpts && config) {
-      this.upload = new UploadApi(file, reqOpts, this, config, options);
+      this.upload = new UploadApi(reqOpts, config, options);
 
-      return this.upload;
+      return this.upload.start(file);
     }
   }
 }
