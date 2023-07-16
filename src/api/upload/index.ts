@@ -89,6 +89,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
   _isSecure: boolean = false; // if the protocol is https
   _fileID: string = '';
   _uploadCount: number = 0;
+  uploads: Record<string, string> = {};
 
   constructor(
     reqOpts: RequestOptions,
@@ -123,12 +124,16 @@ export class UploadApi extends EventEmitter<UploadListners> {
     await this.setfileMeta(file);
     let fileID = generateUUID();
 
-    this._url = this._url + '?fileID=' + fileID;
+    this._url = this._rawUrl + this._path + '?fileID=' + fileID;
 
     // populate progressMap with the fileID
 
     let p = new Proxy({}, proxyHandler);
     this._progressMap.set(fileID, p);
+
+    if (this._uploadOptions.hasOwnProperty('name')) {
+      this.uploads[fileID] = this._uploadOptions['name'];
+    }
 
     let wsUrl = this._rawUrl.replace('http', 'ws') + '/file-events/' + fileID;
 
@@ -138,13 +143,13 @@ export class UploadApi extends EventEmitter<UploadListners> {
     }
     this._socket = new WebSocket(wsUrl);
 
-    this._socket.on('message', async (data: any) => {
+    this._socket.onmessage = async (event: MessageEvent) => {
+      let data = event.data;
       if (data) {
-        data = data.toString();
         data = JSON.parse(data) as socketEvent;
         this.handleWsMessage(data, fileID);
       }
-    });
+    };
     let upload = new Upload(file, {
       endpoint: this._url,
       metadata: this._uploadOptions,
@@ -156,7 +161,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
       onError: error => {
         throw new Error(error.message);
       },
-      onProgress: (bytesUploaded, bytesTotal) => {
+      onProgress: async (bytesUploaded, bytesTotal) => {
         var percentage = (bytesUploaded / bytesTotal) * 100;
 
         let payload: socketEvent = {
@@ -169,7 +174,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
             status: 'Tus Upload',
           },
         };
-        this.handleWsMessage(payload, fileID);
+        await this.handleWsMessage(payload, fileID);
       },
       onSuccess: () => {},
     });
@@ -191,6 +196,9 @@ export class UploadApi extends EventEmitter<UploadListners> {
         (typeof Blob !== 'undefined' && file instanceof Blob))
     ) {
       this._uploadOptions['filetype'] = file.type;
+      // name
+      this._uploadOptions['name'] = file.name;
+
       this._uploadOptions['size'] = file.size.toString();
       done = true;
     }
@@ -199,9 +207,17 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
     if (file instanceof Stream) {
       let { fileTypeFromStream } = await import('file-type');
+      // @ts-ignore
+      if (file.hasOwnProperty('path') && file.path) {
+        // @ts-ignore
+        this._uploadOptions['name'] = file.path;
+      }
+
       let mimeType = await fileTypeFromStream(file as Readable);
       if (!mimeType) throw new Error('File type not supported');
       this._uploadOptions['filetype'] = mimeType.mime;
+      //name
+
       // get the file size
       let size = 0;
       for await (const chunk of file) {
@@ -221,19 +237,23 @@ export class UploadApi extends EventEmitter<UploadListners> {
    * @param event
    * @param fileID
    */
-  handleWsMessage(event: socketEvent, fileID: string) {
+  async handleWsMessage(event: socketEvent, fileID: string) {
     let { data } = event;
 
     if (data) {
       let status = data.status;
       this._progressMap.get(fileID)[status] = data;
-      let value = this._progressMap.get(fileID) as ProgressEvent;
-      let result = data.result || data.progress?.result;
 
-      this.emit('progress', value);
+      this.emit('progress', this._progressMap.get(fileID) as ProgressEvent);
+
+      let result = data.result || data.progress?.result;
       // global;
-      let map = this._progressMap as GlobalProgress;
-      this.emit('globalProgress', map);
+
+      this.emit(
+        'globalProgress',
+        this._progressMap as GlobalProgress,
+        Object.keys(this.uploads)?.length ? this.uploads : undefined,
+      );
 
       if (status === 'Preview Completed' && result) {
         this.emit('completed', result);
