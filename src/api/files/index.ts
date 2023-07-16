@@ -65,7 +65,7 @@ export class FilesApi extends BaseApi {
   }
   /**
    * Delete a file and its previews
-   * @param  {deleteOneOptions} opts 
+   * @param  {deleteOneOptions} opts
    * @returns {deleteResponse} deleteResponse
    *
    */
