@@ -1,6 +1,6 @@
 export function incrementGlobalProgress(target: Record<string, any>) {
   // increment global progress;
-  let values = Object.values(target).filter(v => v && v.progress);
+  let values = Object.values(target).filter(v => v && v.progress&&v.used);
 
   let overall =
     (values.reduce((a, b) => a + Number(b.progress), 0) /
@@ -13,6 +13,7 @@ export function incrementGlobalProgress(target: Record<string, any>) {
 /** Proxy handler for the progressMap */
 export const proxyHandler = {
   set(target: any, prop: string, value: any) {
+    //console.log(typeof value, value)
     // if the target doesn't has the property, add with default value {progress:0};
 
     const hasProgress =
@@ -21,18 +22,18 @@ export const proxyHandler = {
       hasProgress &&
       typeof value.progress === 'object' &&
       Reflect.has(value['progress'] || {}, 'percent');
-
-    if (!target[prop] && prop) {
-      target[prop] = { progress: 0, jobs: new Map() };
-    }
+    //console.log(`${prop}: ${hasProgress}`, value)
+    // prop is should be defined;
 
     if (hasProgress) {
       if (hasPercent) {
+        target[prop].used = true;
         target[prop].jobs.set(value.progress.job, value.progress.percent);
         let jobs = target[prop].jobs;
+        let expectedStage = target[prop].expectedStage;
         target[prop].progress =
           ([...jobs.values()].reduce((a, b) => a + Number(b), 0) /
-            (jobs.size * 100)) *
+            (expectedStage * 100)) *
           100;
         if (value.result) {
           target[prop].result = value.result;
@@ -42,11 +43,12 @@ export const proxyHandler = {
       }
       // just set the target property;
       target[prop] = value;
-
+      target[prop].used = true;
       incrementGlobalProgress(target); // increment overall progress
       return true;
     } else {
       target[prop] = value.progress || value;
+      target[prop].used = true;
 
       target[prop].progress = 100;
       incrementGlobalProgress(target); // increment overall progress
