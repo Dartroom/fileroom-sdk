@@ -3,3 +3,12 @@ export const enum PinStatus {
   QUEUED = 'queued',
   UNPINNED = 'unpinned',
 }
+
+
+export const enum FileType {
+  IMAGE = 'image',
+  ANIMATION = 'animation',
+  VIDEO = 'video',
+  ANY = 'any',
+  UNSUPPORTED = 'unsupported',
+}

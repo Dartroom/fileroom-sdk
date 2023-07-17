@@ -19,7 +19,7 @@ import { isBrowser, isNode } from 'browser-or-node';
 
 import { Readable, Stream } from 'stream';
 import { generateUUID } from '../../functions';
-import { proxyHandler } from '../../functions';
+import { proxyHandler, createObjTemplate, classifyFile } from '../../functions';
 import WebSocket from 'isomorphic-ws';
 
 /**
@@ -127,8 +127,16 @@ export class UploadApi extends EventEmitter<UploadListners> {
     this._url = this._rawUrl + this._path + '?fileID=' + fileID;
 
     // populate progressMap with the fileID
+    let mime = this._uploadOptions['filetype'] || '';
+    let sizes: string[] = this._uploadOptions['resize']
+      ? JSON.parse(this._uploadOptions['resize'])
+      : [];
 
-    let p = new Proxy({}, proxyHandler);
+    let fileType = await classifyFile({ mimetype: mime });
+
+    let obj = createObjTemplate(sizes.length, fileType);
+
+    let p = new Proxy(obj, proxyHandler);
     this._progressMap.set(fileID, p);
 
     if (this._uploadOptions.hasOwnProperty('name')) {

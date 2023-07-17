@@ -1,11 +1,13 @@
 export function incrementGlobalProgress(target: Record<string, any>) {
   // increment global progress;
-  let values = Object.values(target).filter(v => v && v.progress&&v.used);
+  let values = Object.values(target).filter(
+    v => v && v.hasOwnProperty('progress'),
+  );
+
+  let total = values.length * 100;
 
   let overall =
-    (values.reduce((a, b) => a + Number(b.progress), 0) /
-      (values.length * 100)) *
-    100;
+    (values.reduce((a, b) => a + Number(b.progress), 0) / total) * 100;
   overall = Number.isNaN(overall) ? 0 : Number(overall.toFixed(2));
 
   target.overallProgress = overall;
@@ -25,9 +27,14 @@ export const proxyHandler = {
     //console.log(`${prop}: ${hasProgress}`, value)
     // prop is should be defined;
 
+    if (target[prop] && !target[prop]['jobs']) {
+      target[prop].used = true;
+      target[prop].jobs = new Map();
+    }
+
     if (hasProgress) {
+      target[prop].used = true;
       if (hasPercent) {
-        target[prop].used = true;
         target[prop].jobs.set(value.progress.job, value.progress.percent);
         let jobs = target[prop].jobs;
         let expectedStage = target[prop].expectedStage;
@@ -38,15 +45,19 @@ export const proxyHandler = {
         if (value.result) {
           target[prop].result = value.result;
         }
+
         incrementGlobalProgress(target);
         return true;
       }
       // just set the target property;
-      target[prop] = value;
-      target[prop].used = true;
+
+      let v = target[prop];
+      target[prop] = { ...v, ...value };
+
       incrementGlobalProgress(target); // increment overall progress
       return true;
     } else {
+      // got here
       target[prop] = value.progress || value;
       target[prop].used = true;
 
