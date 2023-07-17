@@ -1,4 +1,4 @@
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
 export type RequestData = Record<string, any>;
 export type RequestHeaders =
   | Record<string, string | number | string[]>
@@ -19,3 +19,10 @@ export type FileroomError = Array<{
 }>;
 
 export type StreamResponse = ReadableStream<Uint8Array> | Stream;
+export type UploadFile =
+  | File
+  | Blob
+  | Pick<ReadableStreamDefaultReader<any>, 'read'>
+  | Readable;
+
+export * from './upload';

@@ -19,8 +19,8 @@ import { HttpClient, HttpClientResponse } from './httpClient';
 export class FetchHttpClient extends HttpClient implements HttpClientInterface {
   private _fetch: typeof fetch;
   private _Headers: RequestHeaders = {};
-  private _config?: ConfigOptions;
-  private _requestOpts?: RequestOptions;
+  readonly _config?: ConfigOptions;
+  readonly _requestOpts?: RequestOptions;
   public readonly _isLegacyBrowser: boolean = false;
 
   constructor(config?: ConfigOptions) {

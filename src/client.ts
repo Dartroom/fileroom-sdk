@@ -1,13 +1,12 @@
 import { ConfigOptions } from './interfaces';
 import { FetchHttpClient } from './net/fetchHttpClient';
 import { UsersApi, IpfsApi, FilesApi } from './api/';
-import { isApikey } from './functions';
 
 /**
  * The main client class
  *params: config - default {env:'production'}
  * @example ```js 
-  const client = new Client({accessToken: 'your token',env:'test' | 'production' | 'beta'});
+ * const client = new Client({accessToken: 'your token',env:'test' | 'production' | 'beta'});
   // import the ipfs and user api
   let {ipfs,user} = client;
 
@@ -15,13 +14,14 @@ import { isApikey } from './functions';
 
 
   ```
- */
+ **/
 export class Client {
   public readonly _config: ConfigOptions;
-  protected readonly __HttpClient: FetchHttpClient;
+  public readonly __HttpClient: FetchHttpClient;
   public readonly user: UsersApi;
   public readonly ipfs: IpfsApi;
   public readonly files: FilesApi;
+
   /**
    *
    * @param config  - {accessToken:string,env:'test' | 'production' | 'beta',timeout?:number}

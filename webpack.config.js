@@ -1,5 +1,5 @@
 const path = require('path');
-
+const webpack = require('webpack');
 const webTarget = {
   target: 'web',
   entry: './src/index.ts',
@@ -8,7 +8,11 @@ const webTarget = {
     ignored: /node_modules/,
     poll: true,
   },
-
+  plugins: [
+    new webpack.NormalModuleReplacementPlugin(/node:/, resource => {
+      resource.request = resource.request.replace(/^node:/, '');
+    }),
+  ],
   module: {
     rules: [
       {
@@ -22,6 +26,12 @@ const webTarget = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    fallback: {
+      stream: require.resolve('stream-browserify'),
+      util: require.resolve('util/'),
+      path: require.resolve('path-browserify'),
+      fs: false,
+    },
   },
   output: {
     filename: 'index.js',
