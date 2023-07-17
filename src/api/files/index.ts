@@ -6,6 +6,7 @@ import {
   deleteOneOptions,
   deleteResponse,
   uploadOptions,
+  existsResponse,
 } from '../../interfaces';
 import { propagateErrors } from '../../functions';
 
@@ -123,13 +124,34 @@ export class FilesApi extends BaseApi {
    * @returns {UploadApi | undefined} - UploadApi instance
    */
   async uploadFile(file: UploadFile, options?: uploadOptions) {
-    let reqOpts = this.createHttpRequest._requestOpts;
-    let config = this.createHttpRequest._config;
+    this.upload = new UploadApi(this.createHttpRequest, options);
 
-    if (reqOpts && config) {
-      this.upload = new UploadApi(reqOpts, config, options);
+    return this.upload.start(file);
+  }
 
-      return this.upload.start(file);
-    }
+  /**
+   *  Check if a file exists
+   * @param search - cid or an integrityhash or OjHash
+   * @returns 
+   */
+  async exists(search: string) {
+    let url = '/files/exists';
+
+    if (!search)
+      throw new TypeError('cid or an integrityhash or OjHash is required');
+
+    let searchParams = new URLSearchParams();
+    searchParams.append('search', search);
+    url = url + '?' + searchParams.toString();
+
+    let response = await this.createHttpRequest.makeRequestwithDefault(
+      url,
+      'GET',
+    );
+
+    let json: any = await response.toJSON();
+
+    propagateErrors(json);
+    return json as existsResponse;
   }
 }

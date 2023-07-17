@@ -134,8 +134,32 @@ describe('filesApi in the browser should', () => {
       );
     } catch (error: any) {
       expect(error).toBeDefined();
-      expect(error.message).toContain('File not found');
+      expect(error.message).toContain('NOT_FOUND');
     }
+  });
+
+  it('check if a file exists', async () => {
+    let call = ` 
+          
+          async function  exists() {
+        let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+        let status  = await client.files.exists('${testFilecid}');
+        
+        response = status;
+      
+        
+          };
+        exists(); `;
+    await page.evaluate(call);
+
+    let response: any = await page.evaluate('response');
+    expect(response).toBeDefined();
+    expect(response.data).toBeDefined();
+    expect(response.data).toEqual(
+      expect.objectContaining({
+        exists: expect.any(Boolean),
+      }),
+    );
   });
 
   it('throws error if  both cid and docID are passed to deleteOne', async () => {

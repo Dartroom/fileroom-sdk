@@ -87,7 +87,22 @@ describe('filesAPi in nodejs should', () => {
         await client.files.deleteOne({ cid: 'fasdfsaf', docID: 'fadsfsafsa' }),
     ).rejects.toThrowError(new TypeError(' cid or docID is required,not both'));
   });
+  it('check if a file exists', async () => {
+    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
 
+    let response: any = await client.files.exists(testFilecid);
+
+    expect(response).toBeDefined();
+    expect(response.data).toBeDefined();
+
+    expect(response.data).toEqual(
+      expect.objectContaining({
+        exists: expect.any(Boolean),
+      }),
+    );
+  });
+
+  
   it('delete a list of files  if they exist', async () => {
     let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
 
@@ -104,7 +119,7 @@ describe('filesAPi in nodejs should', () => {
       );
     } catch (error: any) {
       expect(error).toBeDefined();
-    
+
       expect(error.message).toContain('NOT_FOUND');
     }
   });
