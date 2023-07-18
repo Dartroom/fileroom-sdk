@@ -6,14 +6,14 @@ import {
   ProgressEvent,
   GlobalProgress,
   UploadResult,
+  RequestHeaders,
+  FileDoc,
 } from '../../types';
 import {
   uploadOptions,
   RequestOptions,
-  ConfigOptions,
   socketEvent,
   UploadListners,
-  EventProgress,
 } from '../../interfaces';
 import { isBrowser, isNode } from 'browser-or-node';
 
@@ -21,6 +21,9 @@ import { Readable, Stream } from 'stream';
 import { generateUUID } from '../../functions';
 import { proxyHandler, createObjTemplate, classifyFile } from '../../functions';
 import WebSocket from 'isomorphic-ws';
+import crypo from 'crypto';
+import { FetchHttpClient } from '../../net/fetchHttpClient';
+import { FilesApi } from '../files';
 
 /**
  * Upload  endpoint for the FilesAPI of the Fileroom API
@@ -81,7 +84,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
   _uploadOptions: Record<string, string> = {};
   _results: Array<UploadResult> = []; // all collections of results from uploads
 
-  _headers: Record<string, string> = {};
+  _headers: RequestHeaders;
   _tus: Upload | null = null;
   _rawUrl = '';
   _socket: WebSocket | null = null;
@@ -90,16 +93,16 @@ export class UploadApi extends EventEmitter<UploadListners> {
   _fileID: string = '';
   _uploadCount: number = 0;
   uploads: Record<string, string> = {};
+  protected createHttpRequest: FetchHttpClient;
+  protected fileApi: FilesApi;
 
-  constructor(
-    reqOpts: RequestOptions,
-
-    cofig: ConfigOptions,
-    options?: uploadOptions,
-  ) {
+  constructor(client: FetchHttpClient, options?: uploadOptions) {
     super();
-
+    let reqOpts = client._requestOpts as RequestOptions;
     let { host, port, protocol, timeout } = reqOpts;
+    let config = client._config;
+    this.createHttpRequest = client;
+    this.fileApi = new FilesApi(client);
 
     const Secure = protocol === 'https';
     this._isSecure = Secure;
@@ -107,11 +110,10 @@ export class UploadApi extends EventEmitter<UploadListners> {
     const url = new URL(this._path, this._rawUrl);
     url.port = port as string;
     this._url = url.toString();
-
-    this._headers = {
-      Authorization: `Bearer ${cofig.accessToken}`,
+    this.createHttpRequest.extendHeaders({
       'X-Forwarded-Proto': protocol as string,
-    };
+    });
+    this._headers = this.createHttpRequest._Headers;
     if (options) {
       for (let [key, value] of Object.entries(options)) {
         this._uploadOptions[key] = JSON.stringify(value);
@@ -132,9 +134,14 @@ export class UploadApi extends EventEmitter<UploadListners> {
       ? JSON.parse(this._uploadOptions['resize'])
       : [];
 
+    let checksum = this._uploadOptions['checksum'] || '';
+
+    let fileExists = await this.fileApi.exists(checksum);
+    let exists = fileExists.data.exists;
+
     let fileType = await classifyFile({ mimetype: mime });
 
-    let obj = createObjTemplate(sizes.length, fileType);
+    let obj = createObjTemplate(sizes.length, fileType, exists);
 
     let p = new Proxy(obj, proxyHandler);
     this._progressMap.set(fileID, p);
@@ -161,13 +168,13 @@ export class UploadApi extends EventEmitter<UploadListners> {
     let upload = new Upload(file, {
       endpoint: this._url,
       metadata: this._uploadOptions,
-      headers: this._headers,
+      headers: this._headers as any,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       removeFingerprintOnSuccess: true,
       chunkSize: 10 * 1024 * 1024,
 
       onError: error => {
-        throw new Error(error.message);
+        this.emit('error', error);
       },
       onProgress: async (bytesUploaded, bytesTotal) => {
         var percentage = (bytesUploaded / bytesTotal) * 100;
@@ -208,6 +215,19 @@ export class UploadApi extends EventEmitter<UploadListners> {
       this._uploadOptions['name'] = file.name;
 
       this._uploadOptions['size'] = file.size.toString();
+
+      let hash = crypo.createHash('sha256');
+      let stream = await file.stream();
+      let reader = stream.getReader();
+
+      while (true) {
+        let { done, value } = await reader.read();
+        if (done) break;
+        if (value) hash.update(value);
+      }
+      file = reader;
+      let checksum = hash.digest('base64');
+      this._uploadOptions['checksum'] = checksum;
       done = true;
     }
 
@@ -228,10 +248,13 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
       // get the file size
       let size = 0;
+      let hash = crypo.createHash('sha256');
       for await (const chunk of file) {
         size += chunk.length;
+        hash.update(chunk);
       }
-
+      let checksum = hash.digest('base64');
+      this._uploadOptions['checksum'] = checksum;
       this._uploadOptions['size'] = size.toString();
       done = true;
     }
@@ -256,6 +279,19 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
       let result = data.result || data.progress?.result;
       // global;
+      let totalProgress = 0;
+      let expectedSize = [...this._progressMap.keys()].filter(
+        event => event !== 'totalProgress',
+      ).length;
+
+      for (let [key, value] of this._progressMap) {
+        let progress = value as ProgressEvent;
+        let { overallProgress } = progress;
+        if (overallProgress) totalProgress += overallProgress;
+      }
+
+      let percent = (totalProgress / (expectedSize * 100)) * 100;
+      this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
 
       this.emit(
         'globalProgress',
@@ -263,12 +299,20 @@ export class UploadApi extends EventEmitter<UploadListners> {
         Object.keys(this.uploads)?.length ? this.uploads : undefined,
       );
 
-      if (status === 'Preview Completed' && result) {
+      let completed =
+        result && result.hasOwnProperty('file')
+          ? result.file
+          : (result as FileDoc);
+
+      if (
+        result &&
+        completed.expectedPreviewCount === completed.currentPreviewCount
+      ) {
         this.emit('completed', result);
         this._results.push(result);
         // when each upload is completed, upload
         this._uploadCount++;
-        if (this._uploadCount === this._progressMap.size)
+        if (this._uploadCount === this._progressMap.size - 1)
           this.emit('allCompleted', this._results);
       }
     }

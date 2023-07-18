@@ -30,6 +30,7 @@ const webTarget = {
       stream: require.resolve('stream-browserify'),
       util: require.resolve('util/'),
       path: require.resolve('path-browserify'),
+      crypto: require.resolve('crypto-browserify'),
       fs: false,
     },
   },

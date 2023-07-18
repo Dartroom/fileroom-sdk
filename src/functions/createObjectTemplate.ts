@@ -4,7 +4,11 @@
  * @param {"image"|'animation'|'video'} fileType
  * @return {{stage:string,expectedStage:number}}
  */
-export function createObjTemplate(sizes: number, fileType: string) {
+export function createObjTemplate(
+  sizes: number,
+  fileType: string,
+  duplicate = false,
+) {
   if (fileType === 'video') {
     let obj = {
       'Tus Upload': {
@@ -48,7 +52,20 @@ export function createObjTemplate(sizes: number, fileType: string) {
         expectedStage: sizes,
       },
     };
-    return obj;
+    return duplicate
+      ? {
+          'Tus Upload': {
+            progress: 0,
+            used: false,
+            expectedStage: 1,
+          },
+          'Original Processed': {
+            progress: 100,
+            used: false,
+            expectedStage: 1,
+          },
+        }
+      : obj;
   }
 
   if (fileType === 'image' || fileType === 'animation') {
@@ -103,7 +120,21 @@ export function createObjTemplate(sizes: number, fileType: string) {
         expectedStage: 1,
       },
     };
-    return obj;
+    return duplicate
+      ? {
+          'Tus Upload': {
+            progress: 0,
+            used: false,
+            expectedStage: 1,
+          },
+
+          'Preview Completed': {
+            progress: 100,
+            used: false,
+            expectedStage: 1,
+          },
+        }
+      : obj;
   }
 
   return {};
