@@ -2,6 +2,7 @@ import { EventProgress, RGBA } from '../interfaces';
 import { PinStatus } from '../enums';
 /**Events recieved from  fileroom*/
 export type EventName =
+  | 'Create checksum'
   | 'Tus Upload'
   | 'Original Processed'
   | 'InterFs Upload'
@@ -16,10 +17,20 @@ export type EventName =
 type OverallProgress = {
   overallProgress: number;
 };
-export type ProgressEvent = Record<EventName, EventProgress> & OverallProgress;
+export type ProgressEvent = {
+  [key in EventName]: EventProgress;
+} & OverallProgress;
 
-export type UploadEvents = 'progress' | 'completed' | 'error' | 'success' | "Globalprogress";
-export type GlobalProgress = Map<string, ProgressEvent> 
+export type UploadEvents =
+  | 'progress'
+  | 'completed'
+  | 'error'
+  | 'success'
+  | 'Globalprogress';
+export type GlobalProgress = Map<
+  string | 'totalProgress',
+  ProgressEvent & number
+>;
 
 export type Color = string | RGBA;
 
