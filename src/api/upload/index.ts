@@ -34,47 +34,47 @@ import { FilesApi } from '../files';
  * @example 
  * ```js
 
-      const client = new Client({accessToken: 'your token',env:'test' | 'production' | 'beta'});
+  const client = new Client({accessToken: 'your token',env:'test' | 'production' | 'beta'});
 
-      let readStream = fs.createReadStream('path/to/file');
-      // usage with files APi (single file upload)
-      let {files} = client;
-        let upload = await files.uploadFile(readStream,{
-          resize:[1080]
-        });
+  let readStream = fs.createReadStream('path/to/file');
+  // usage with files APi (single file upload)
+  let {files} = client;
+    let upload = await files.uploadFile(readStream,{
+      resize:[1080]
+    });
 
-        upload.on('progress',(progress)=>{
-        // get the progress of the upload
-        }) 
+    upload.on('progress',(progress)=>{
+    // get the progress of the upload
+    }) 
 
-        upload.on('completed',(result)=>{
-        // get the result of the upload
+    upload.on('completed',(result)=>{
+    // get the result of the upload
+    
+    }) 
+
+    upload.on("error",(error)=>{}) // get the error of the upload
+
+    // usage with upload API (multiple file upload)
+
+    import {Upload} from 'fileroom-sdk';
+
+    let upload = new UploadApi(reqOpts,config,options);
+
+    let files = [file1,file2,file3];
+
+    for(let file of files){
+      await upload.start(file);
+    }
+
+    upload.on("globalProgress",(progress)=>{
+      // get the ProgressMap of the uploads
         
-        }) 
+    }) 
 
-        upload.on("error",(error)=>{}) // get the error of the upload
-
-        // usage with upload API (multiple file upload)
-
-        import {Upload} from 'fileroom-sdk';
-
-        let upload = new UploadApi(reqOpts,config,options);
-
-        let files = [file1,file2,file3];
-
-        for(let file of files){
-          await upload.start(file);
-        }
-
-        upload.on("globalProgress",(progress)=>{
-          // get the ProgressMap of the uploads
-           
-        }) 
-
-          upload.on("allCompleted",(results)=>{
-          // await for all uploads to complete and get the results
-          })
-          upload.on("error",(error)=>{}) // get the error of the upload
+      upload.on("allCompleted",(results)=>{
+      // await for all uploads to complete and get the results
+      })
+      upload.on("error",(error)=>{}) // get the error of the upload
  ```
  *
  */
