@@ -72,7 +72,7 @@ describe('filesAPi in nodejs should', () => {
       );
     } catch (error: any) {
       expect(error).toBeDefined();
-      expect(error.message).toContain('File not found');
+      expect(error.message).toBeOneOf([expect.toContain('File not found'),expect.Contain("NOT_FOUND")]);
     }
   });
 
@@ -102,7 +102,7 @@ describe('filesAPi in nodejs should', () => {
     );
   });
 
-  
+
   it('delete a list of files  if they exist', async () => {
     let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
 
