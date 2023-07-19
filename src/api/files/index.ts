@@ -128,7 +128,7 @@ export class FilesApi extends BaseApi {
    * @event  globalProgress - progressEvents  for when multiple files are uploaded
    * @returns {UploadApi | Array<UploadApi> |undefined} - UploadApi instance
    */
-  async uploadFile(
+  async uploadFiles(
     files: UploadFile | Array<UploadFile>,
     options?: uploadOptions | Array<uploadOptions>,
   ) {
