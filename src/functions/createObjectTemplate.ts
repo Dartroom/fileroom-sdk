@@ -65,6 +65,30 @@ export function createObjTemplate(
             expectedStage: 1,
           },
         }
+      : sizes === 0
+      ? {
+          'Tus Upload': {
+            progress: 0,
+            used: false,
+            expectedStage: 1,
+          },
+          'InterFs Upload': {
+            progress: 0,
+            used: false,
+            expectedStage: sizes + 1,
+          },
+
+          'InterFs Download': {
+            progress: 0,
+            used: false,
+            expectedStage: sizes + 1,
+          },
+          'Original Processed': {
+            progress: 100,
+            used: false,
+            expectedStage: 1,
+          },
+        }
       : obj;
   }
 
@@ -93,7 +117,26 @@ export function createObjTemplate(
         expectedStage: 1,
       },
     };
-    return obj;
+    return sizes === 0
+      ? {
+          'Tus Upload': {
+            progress: 0,
+            used: false,
+            expectedStage: 1,
+          },
+          'Ipfs Upload': {
+            progress: 0,
+            used: false,
+            expectedStage: sizes + 1,
+          },
+
+          'Preview Completed': {
+            progress: 100,
+            used: false,
+            expectedStage: 1,
+          },
+        }
+      : obj;
   }
   if (fileType === 'any') {
     let obj = {

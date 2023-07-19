@@ -128,14 +128,15 @@ export class UploadApi extends EventEmitter<UploadListners> {
     // if the file Type is File or Blob, add the file size and type to the metadata (Browser only)
   }
   async start(file: UploadFile, options?: uploadOptions): Promise<UploadApi> {
-    await this.setfileMeta(file);
-    let fileID = generateUUID();
-    // overide options on the the class;
     if (options) {
       for (let [key, value] of Object.entries(options)) {
         this._uploadOptions[key] = JSON.stringify(value);
       }
     }
+    let sha = await this.setfileMeta(file);
+    let fileID = generateUUID();
+    // overide options on the the class;
+
     this._url = this._rawUrl + this._path + '?fileID=' + fileID;
 
     // populate progressMap with the fileID
@@ -144,7 +145,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
       ? JSON.parse(this._uploadOptions['resize'])
       : [];
 
-    let checksum = this._uploadOptions['checksum'] || '';
+    let checksum = this._uploadOptions['checksum'] || sha;
 
     let fileExists = await this.fileApi.exists(checksum);
     let exists = fileExists.data.exists;
@@ -213,7 +214,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
    * @returns boolean - true if the file metadata is set
    */
   async setfileMeta(file: UploadFile) {
-    let done = false;
+    let sha = '';
 
     if (
       isBrowser &&
@@ -238,7 +239,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
       file = reader;
       let checksum = hash.digest('base64');
       this._uploadOptions['checksum'] = checksum;
-      done = true;
+      sha = checksum;
     }
 
     // if the file Type is ReadableStream, add the file size and type to the metadata (Node only)
@@ -266,11 +267,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
       let checksum = hash.digest('base64');
       this._uploadOptions['checksum'] = checksum;
       this._uploadOptions['size'] = size.toString();
-      done = true;
+      sha = checksum;
     }
     // wait till upload is comoleted
 
-    return done;
+    return sha;
   }
   /**
    * Method to handle the websocket messages

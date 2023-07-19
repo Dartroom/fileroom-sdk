@@ -27,13 +27,12 @@ export const proxyHandler = {
     //console.log(`${prop}: ${hasProgress}`, value)
     // prop is should be defined;
 
-    if (target[prop] && !target[prop]['jobs']) {
+    if (!target[prop]['jobs']) {
       target[prop].used = true;
       target[prop].jobs = new Map();
     }
 
     if (hasProgress) {
-      target[prop].used = true;
       if (hasPercent) {
         target[prop].jobs.set(value.progress.job, value.progress.percent);
         let jobs = target[prop].jobs;
