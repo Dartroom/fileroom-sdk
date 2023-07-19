@@ -82,6 +82,6 @@ export interface UploadListners {
   progress: (progress: ProgressEvent) => void;
   completed: (result: UploadResult) => void;
   error: (error: Error) => void;
-  globalProgress: (progress: GlobalProgress,uploads?:Record<string,string>) => void;
+  globalProgress: (progress: GlobalProgress) => void;
   allCompleted: (result: UploadResult[]) => void;
 }

@@ -284,8 +284,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
         event => event !== 'totalProgress',
       ).length;
 
+      let obj: any = {};
       for (let [key, value] of this._progressMap) {
         let progress = value as ProgressEvent;
+        let newKey = this.uploads[key] || key;
+        if (newKey) obj[newKey] = value;
         let { overallProgress } = progress;
         if (overallProgress) totalProgress += overallProgress;
       }
@@ -293,13 +296,9 @@ export class UploadApi extends EventEmitter<UploadListners> {
       let percent = (totalProgress / (expectedSize * 100)) * 100;
       this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
 
-      let obj = Object.fromEntries(this._progressMap) as GlobalProgress;
+      obj.totalProgress = Number(percent.toFixed(2));
 
-      this.emit(
-        'globalProgress',
-        obj,
-        Object.keys(this.uploads)?.length ? this.uploads : undefined,
-      );
+      this.emit('globalProgress', obj);
 
       let completed =
         result && result.hasOwnProperty('file')
