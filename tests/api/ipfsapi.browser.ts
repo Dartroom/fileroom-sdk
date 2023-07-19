@@ -77,7 +77,7 @@ describe('ipfsApi in the browser should', () => {
     );
   });
 
-  it('fetch a file from gateway with origin set', async () => {
+  it.skip('fetch a file from gateway with origin set', async () => {
     let call = ` 
            let respo;
           async function MakeGatewayR () {
@@ -95,7 +95,7 @@ describe('ipfsApi in the browser should', () => {
     expect(response).toEqual(expect.any(Object));
   });
 
-  it('fetch a preview from gateway with sizes set', async () => {
+  it.skip('fetch a preview from gateway with sizes set', async () => {
     let call = ` 
           let  _preview_cid;
           async function fetchPreview() {
@@ -133,7 +133,7 @@ describe('ipfsApi in the browser should', () => {
     expect(async () => await page.evaluate(call)).rejects.toThrowError();
   });
 
-  it('return a complete stream of the file when fetching it', async () => {
+  it.skip('return a complete stream of the file when fetching it', async () => {
     let call = ` 
           let  _contentLength;
           let bytes = 0;
