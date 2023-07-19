@@ -284,10 +284,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
     if (data) {
       let status = data.status;
       this._progressMap.get(fileID)[status] = data;
-
-      this.emit('progress', this._progressMap.get(fileID) as ProgressEvent);
-
       let result = data.result || data.progress?.result;
+
+      if (!this.uploadMultiple)
+        this.emit('progress', this._progressMap.get(fileID) as ProgressEvent);
+
       let Globallisteners = [
         ...this.listeners('globalProgress'),
         ...this.listeners('allCompleted'),
@@ -299,7 +300,15 @@ export class UploadApi extends EventEmitter<UploadListners> {
         );
       }
       if (this.uploadMultiple) {
-        // global;
+        let Singlelisteners = [
+          ...this.listeners('progress'),
+          ...this.listeners('completed'),
+        ];
+        if (Singlelisteners.length) {
+          throw new Error(
+            'progress and completed listeners are required for single uploads, listen to the globalProgress and allCompleted events instead',
+          );
+        }
         let totalProgress = 0;
         let expectedSize = [...this._progressMap.keys()].filter(
           event => event !== 'totalProgress',
@@ -331,7 +340,6 @@ export class UploadApi extends EventEmitter<UploadListners> {
         result &&
         completed.expectedPreviewCount === completed.currentPreviewCount
       ) {
-        this.emit('completed', result);
         if (this.uploadMultiple) {
           this._results.push(result);
           // when each upload is completed, upload
@@ -339,6 +347,8 @@ export class UploadApi extends EventEmitter<UploadListners> {
           if (this._uploadCount === this._progressMap.size - 1)
             this.emit('allCompleted', this._results);
         }
+
+        this.emit('completed', result);
       }
     }
   }
