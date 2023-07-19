@@ -95,15 +95,20 @@ export class UploadApi extends EventEmitter<UploadListners> {
   uploads: Record<string, string> = {};
   protected createHttpRequest: FetchHttpClient;
   protected fileApi: FilesApi;
+  uploadMultiple: boolean = false;
 
-  constructor(client: FetchHttpClient, options?: uploadOptions) {
+  constructor(
+    client: FetchHttpClient,
+    options?: uploadOptions,
+    multiple = false,
+  ) {
     super();
     let reqOpts = client._requestOpts as RequestOptions;
     let { host, port, protocol, timeout } = reqOpts;
     let config = client._config;
     this.createHttpRequest = client;
     this.fileApi = new FilesApi(client);
-
+    this.uploadMultiple = multiple;
     const Secure = protocol === 'https';
     this._isSecure = Secure;
     this._rawUrl = `${Secure ? 'https' : 'http'}://${host}:${port}`;
@@ -283,27 +288,39 @@ export class UploadApi extends EventEmitter<UploadListners> {
       this.emit('progress', this._progressMap.get(fileID) as ProgressEvent);
 
       let result = data.result || data.progress?.result;
-      // global;
-      let totalProgress = 0;
-      let expectedSize = [...this._progressMap.keys()].filter(
-        event => event !== 'totalProgress',
-      ).length;
+      let Globallisteners = [
+        ...this.listeners('globalProgress'),
+        ...this.listeners('allCompleted'),
+      ];
 
-      let obj: any = {};
-      for (let [key, value] of this._progressMap) {
-        let progress = value as ProgressEvent;
-        let newKey = this.uploads[key] || key;
-        if (newKey) obj[newKey] = value;
-        let { overallProgress } = progress;
-        if (overallProgress) totalProgress += overallProgress;
+      if (!this.uploadMultiple && Globallisteners.length) {
+        throw new Error(
+          'globalProgress and allCompleted listeners are required for multiple uploads, listen to the completed and progress events instead',
+        );
       }
+      if (this.uploadMultiple) {
+        // global;
+        let totalProgress = 0;
+        let expectedSize = [...this._progressMap.keys()].filter(
+          event => event !== 'totalProgress',
+        ).length;
 
-      let percent = (totalProgress / (expectedSize * 100)) * 100;
-      this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
+        let obj: any = {};
+        for (let [key, value] of this._progressMap) {
+          let progress = value as ProgressEvent;
+          let newKey = this.uploads[key] || key;
+          if (newKey) obj[newKey] = value;
+          let { overallProgress } = progress;
+          if (overallProgress) totalProgress += overallProgress;
+        }
 
-      obj.totalProgress = Number(percent.toFixed(2));
+        let percent = (totalProgress / (expectedSize * 100)) * 100;
+        this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
 
-      this.emit('globalProgress', obj);
+        obj.totalProgress = Number(percent.toFixed(2));
+
+        this.emit('globalProgress', obj);
+      }
 
       let completed =
         result && result.hasOwnProperty('file')
@@ -315,11 +332,13 @@ export class UploadApi extends EventEmitter<UploadListners> {
         completed.expectedPreviewCount === completed.currentPreviewCount
       ) {
         this.emit('completed', result);
-        this._results.push(result);
-        // when each upload is completed, upload
-        this._uploadCount++;
-        if (this._uploadCount === this._progressMap.size - 1)
-          this.emit('allCompleted', this._results);
+        if (this.uploadMultiple) {
+          this._results.push(result);
+          // when each upload is completed, upload
+          this._uploadCount++;
+          if (this._uploadCount === this._progressMap.size - 1)
+            this.emit('allCompleted', this._results);
+        }
       }
     }
   }

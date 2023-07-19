@@ -134,9 +134,10 @@ export class FilesApi extends BaseApi {
   ) {
     if (!arguments.length) throw new TypeError('file(s) is required');
 
+    let multipleFiles = Array.isArray(files);
     let globalOpts = Array.isArray(options) ? undefined : options;
 
-    this.upload = new UploadApi(this.createHttpRequest, globalOpts);
+    this.upload = new UploadApi(this.createHttpRequest, globalOpts,multipleFiles);
 
     if (!Array.isArray(files)) {
       this.upload = await this.upload.start(files, globalOpts);
