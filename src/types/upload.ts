@@ -27,10 +27,13 @@ export type UploadEvents =
   | 'error'
   | 'success'
   | 'Globalprogress';
-export type GlobalProgress = Map<
-  string | 'totalProgress',
-  ProgressEvent & number
->;
+
+  export type ProgressMap = Map<string, EventProgress>;
+export type GlobalProgress = {
+  [key in ProgressMap as string]: EventProgress;
+} & {
+  totalProgress: number;
+}
 
 export type Color = string | RGBA;
 

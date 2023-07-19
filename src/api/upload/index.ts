@@ -293,9 +293,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
       let percent = (totalProgress / (expectedSize * 100)) * 100;
       this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
 
+      let obj = Object.fromEntries(this._progressMap) as GlobalProgress;
+
       this.emit(
         'globalProgress',
-        this._progressMap as GlobalProgress,
+        obj,
         Object.keys(this.uploads)?.length ? this.uploads : undefined,
       );
 
