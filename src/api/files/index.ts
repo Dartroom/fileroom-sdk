@@ -118,21 +118,42 @@ export class FilesApi extends BaseApi {
     return json as deleteResponse;
   }
   /**
-   *
+   * upload a file or an array of files with individual options(array)  or one globaloptions(see uploadOptions)
    * @param {UploadFile} file
    * @param {uploadOptions} options
-   * @returns {UploadApi | undefined} - UploadApi instance
+   * @event  error - when an error occurs
+   * @event progress - progressEvents  for when a single file is uploaded
+   * @event  complete - when a single file is uploaded and the upload is complete
+   * @event  completeAll - when multiple files are uploaded and their upload is complete
+   * @event  globalProgress - progressEvents  for when multiple files are uploaded
+   * @returns {UploadApi | Array<UploadApi> |undefined} - UploadApi instance
    */
-  async uploadFile(file: UploadFile, options?: uploadOptions) {
-    this.upload = new UploadApi(this.createHttpRequest, options);
+  async uploadFile(
+    files: UploadFile | Array<UploadFile>,
+    options?: uploadOptions | Array<uploadOptions>,
+  ) {
+    if (!arguments.length) throw new TypeError('file(s) is required');
 
-    return this.upload.start(file);
+    let globalOpts = Array.isArray(options) ? undefined : options;
+
+    this.upload = new UploadApi(this.createHttpRequest, globalOpts);
+
+    if (!Array.isArray(files)) {
+      this.upload = await this.upload.start(files, globalOpts);
+      return this.upload;
+    }
+
+    for (let [index, file] of Object.entries(files)) {
+      let opts = Array.isArray(options) ? options[Number(index)] : undefined;
+      this.upload = await this.upload.start(file, opts);
+    }
+    return this.upload;
   }
 
   /**
    *  Check if a file exists
    * @param search - cid or an integrityhash or OjHash
-   * @returns 
+   * @returns
    */
   async exists(search: string) {
     let url = '/files/exists';

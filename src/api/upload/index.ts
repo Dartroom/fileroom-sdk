@@ -122,10 +122,15 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
     // if the file Type is File or Blob, add the file size and type to the metadata (Browser only)
   }
-  async start(file: UploadFile): Promise<UploadApi> {
+  async start(file: UploadFile, options?: uploadOptions): Promise<UploadApi> {
     await this.setfileMeta(file);
     let fileID = generateUUID();
-
+    // overide options on the the class;
+    if (options) {
+      for (let [key, value] of Object.entries(options)) {
+        this._uploadOptions[key] = JSON.stringify(value);
+      }
+    }
     this._url = this._rawUrl + this._path + '?fileID=' + fileID;
 
     // populate progressMap with the fileID
