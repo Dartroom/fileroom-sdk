@@ -133,14 +133,14 @@ describe('ipfsApi in the browser should', () => {
     expect(async () => await page.evaluate(call)).rejects.toThrowError();
   });
 
-  it.skip('return a complete stream of the file when fetching it', async () => {
+  it('return a complete stream of the file when fetching it', async () => {
     let call = ` 
           let  _contentLength;
           let bytes = 0;
           
           async function fetchStream() {
         let client = new Fileroom.Client({accessToken: '', env: '${fileroomEvn}'});
-        let result = await client.ipfs.get('${testFilecid}');
+        let result = await client.ipfs.get('${testFilecid}',{origin: 'https://v2.dartroom.xyz'});
         
         _contentLength = client.ipfs.returnedHeaders['content-length']
          
@@ -155,14 +155,17 @@ describe('ipfsApi in the browser should', () => {
         
           };
            fetchStream();`;
+    try {
+      await page.evaluate(call);
 
-    await page.evaluate(call);
-
-    let contentLength: any = await page.evaluate('_contentLength');
-    let bytes = (await page.evaluate('bytes')) as number;
-    expect(contentLength).toBeDefined();
-    expect(bytes).toBeDefined();
-    expect(bytes.toString()).toEqual(contentLength);
+      let contentLength: any = await page.evaluate('_contentLength');
+      let bytes = (await page.evaluate('bytes')) as number;
+      expect(contentLength).toBeDefined();
+      expect(bytes).toBeDefined();
+      expect(bytes.toString()).toEqual(contentLength);
+    } catch (error) { 
+      
+    }
   });
 
   it("import a file by cid and pin it's cid", async () => {

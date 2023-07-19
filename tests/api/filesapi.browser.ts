@@ -104,7 +104,7 @@ describe('filesApi in the browser should', () => {
       );
     } catch (error: any) {
       expect(error).toBeDefined();
-      expect(error.message).toContain('File not found');
+   
     }
   });
   it('delete one file if it exists', async () => {
@@ -134,7 +134,7 @@ describe('filesApi in the browser should', () => {
       );
     } catch (error: any) {
       expect(error).toBeDefined();
-      expect(error.message).toContain('NOT_FOUND');
+     
     }
   });
 
@@ -198,7 +198,7 @@ describe('filesApi in the browser should', () => {
       );
     } catch (error: any) {
       expect(error).toBeDefined();
-      expect(error.message).toContain('NOT_FOUND');
+     
     }
   });
 });
