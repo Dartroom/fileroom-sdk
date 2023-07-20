@@ -18,7 +18,7 @@ import {
 import { isBrowser, isNode } from 'browser-or-node';
 
 import { Readable, Stream } from 'stream';
-import { generateUUID,connectWS } from '../../functions';
+import { generateUUID, connectWS } from '../../functions';
 import { proxyHandler, createObjTemplate, classifyFile } from '../../functions';
 import WebSocket from 'isomorphic-ws';
 import crypo from 'crypto';
@@ -163,15 +163,10 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
     let wsUrl = this._rawUrl.replace('http', 'ws') + '/file-events/' + fileID;
 
-    let opts: any = {};
-    if (isNode) {
-      opts.encoding = 'utf8';
-    }
     this._socket = await connectWS(wsUrl);
-
     this._socket.onmessage = async (event: MessageEvent) => {
       let data = event.data;
-      if (data) {
+      if (data && data !== 'pong') {
         data = JSON.parse(data) as socketEvent;
         this.handleWsMessage(data, fileID);
       }
@@ -347,9 +342,13 @@ export class UploadApi extends EventEmitter<UploadListners> {
           this._uploadCount++;
           if (this._uploadCount === this._progressMap.size - 1)
             this.emit('allCompleted', this._results);
+          // close the socket
+          this._socket?.close();
         }
 
         this.emit('completed', result);
+        // close the socket after the upload
+        this._socket?.close();
       }
     }
   }

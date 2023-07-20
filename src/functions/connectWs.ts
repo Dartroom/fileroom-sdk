@@ -1,5 +1,4 @@
 import WebSocket from 'isomorphic-ws';
-
 export async function connectWS(url: string): Promise<WebSocket> {
   return new Promise(function (resolve, reject) {
     var server = new WebSocket(url);
@@ -16,7 +15,7 @@ export async function connectWS(url: string): Promise<WebSocket> {
       server.send('ping');
     }, 3000);
 
-    server.onerror = (err: Error) => {
+    server.onerror = (err: any) => {
       clearInterval(interval);
       reject(err);
     };
