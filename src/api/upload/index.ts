@@ -18,7 +18,7 @@ import {
 import { isBrowser, isNode } from 'browser-or-node';
 
 import { Readable, Stream } from 'stream';
-import { generateUUID } from '../../functions';
+import { generateUUID,connectWS } from '../../functions';
 import { proxyHandler, createObjTemplate, classifyFile } from '../../functions';
 import WebSocket from 'isomorphic-ws';
 import crypo from 'crypto';
@@ -167,7 +167,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
     if (isNode) {
       opts.encoding = 'utf8';
     }
-    this._socket = new WebSocket(wsUrl);
+    this._socket = await connectWS(wsUrl);
 
     this._socket.onmessage = async (event: MessageEvent) => {
       let data = event.data;
