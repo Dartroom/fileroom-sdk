@@ -6,21 +6,24 @@ import {
   ProgressEvent,
   GlobalProgress,
   UploadResult,
+  RequestHeaders,
+  FileDoc,
 } from '../../types';
 import {
   uploadOptions,
   RequestOptions,
-  ConfigOptions,
   socketEvent,
   UploadListners,
-  EventProgress,
 } from '../../interfaces';
 import { isBrowser, isNode } from 'browser-or-node';
 
 import { Readable, Stream } from 'stream';
-import { generateUUID } from '../../functions';
+import { generateUUID, connectWS } from '../../functions';
 import { proxyHandler, createObjTemplate, classifyFile } from '../../functions';
 import WebSocket from 'isomorphic-ws';
+import crypo from 'crypto';
+import { FetchHttpClient } from '../../net/fetchHttpClient';
+import { FilesApi } from '../files';
 
 /**
  * Upload  endpoint for the FilesAPI of the Fileroom API
@@ -31,47 +34,47 @@ import WebSocket from 'isomorphic-ws';
  * @example 
  * ```js
 
-      const client = new Client({accessToken: 'your token',env:'test' | 'production' | 'beta'});
+  const client = new Client({accessToken: 'your token',env:'test' | 'production' | 'beta'});
 
-      let readStream = fs.createReadStream('path/to/file');
-      // usage with files APi (single file upload)
-      let {files} = client;
-        let upload = await files.uploadFile(readStream,{
-          resize:[1080]
-        });
+  let readStream = fs.createReadStream('path/to/file');
+  // usage with files APi (single file upload)
+  let {files} = client;
+    let upload = await files.uploadFile(readStream,{
+      resize:[1080]
+    });
 
-        upload.on('progress',(progress)=>{
-        // get the progress of the upload
-        }) 
+    upload.on('progress',(progress)=>{
+    // get the progress of the upload
+    }) 
 
-        upload.on('completed',(result)=>{
-        // get the result of the upload
+    upload.on('completed',(result)=>{
+    // get the result of the upload
+    
+    }) 
+
+    upload.on("error",(error)=>{}) // get the error of the upload
+
+    // usage with upload API (multiple file upload)
+
+    import {Upload} from 'fileroom-sdk';
+
+    let upload = new UploadApi(reqOpts,config,options);
+
+    let files = [file1,file2,file3];
+
+    for(let file of files){
+      await upload.start(file);
+    }
+
+    upload.on("globalProgress",(progress)=>{
+      // get the ProgressMap of the uploads
         
-        }) 
+    }) 
 
-        upload.on("error",(error)=>{}) // get the error of the upload
-
-        // usage with upload API (multiple file upload)
-
-        import {Upload} from 'fileroom-sdk';
-
-        let upload = new UploadApi(reqOpts,config,options);
-
-        let files = [file1,file2,file3];
-
-        for(let file of files){
-          await upload.start(file);
-        }
-
-        upload.on("globalProgress",(progress)=>{
-          // get the ProgressMap of the uploads
-           
-        }) 
-
-          upload.on("allCompleted",(results)=>{
-          // await for all uploads to complete and get the results
-          })
-          upload.on("error",(error)=>{}) // get the error of the upload
+      upload.on("allCompleted",(results)=>{
+      // await for all uploads to complete and get the results
+      })
+      upload.on("error",(error)=>{}) // get the error of the upload
  ```
  *
  */
@@ -81,7 +84,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
   _uploadOptions: Record<string, string> = {};
   _results: Array<UploadResult> = []; // all collections of results from uploads
 
-  _headers: Record<string, string> = {};
+  _headers: RequestHeaders;
   _tus: Upload | null = null;
   _rawUrl = '';
   _socket: WebSocket | null = null;
@@ -90,28 +93,32 @@ export class UploadApi extends EventEmitter<UploadListners> {
   _fileID: string = '';
   _uploadCount: number = 0;
   uploads: Record<string, string> = {};
+  protected createHttpRequest: FetchHttpClient;
+  protected fileApi: FilesApi;
+  uploadMultiple: boolean = false;
 
   constructor(
-    reqOpts: RequestOptions,
-
-    cofig: ConfigOptions,
+    client: FetchHttpClient,
     options?: uploadOptions,
+    multiple = false,
   ) {
     super();
-
+    let reqOpts = client._requestOpts as RequestOptions;
     let { host, port, protocol, timeout } = reqOpts;
-
+    let config = client._config;
+    this.createHttpRequest = client;
+    this.fileApi = new FilesApi(client);
+    this.uploadMultiple = multiple;
     const Secure = protocol === 'https';
     this._isSecure = Secure;
     this._rawUrl = `${Secure ? 'https' : 'http'}://${host}:${port}`;
     const url = new URL(this._path, this._rawUrl);
     url.port = port as string;
     this._url = url.toString();
-
-    this._headers = {
-      Authorization: `Bearer ${cofig.accessToken}`,
+    this.createHttpRequest.extendHeaders({
       'X-Forwarded-Proto': protocol as string,
-    };
+    });
+    this._headers = this.createHttpRequest._Headers;
     if (options) {
       for (let [key, value] of Object.entries(options)) {
         this._uploadOptions[key] = JSON.stringify(value);
@@ -120,9 +127,15 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
     // if the file Type is File or Blob, add the file size and type to the metadata (Browser only)
   }
-  async start(file: UploadFile): Promise<UploadApi> {
-    await this.setfileMeta(file);
+  async start(file: UploadFile, options?: uploadOptions): Promise<UploadApi> {
+    if (options) {
+      for (let [key, value] of Object.entries(options)) {
+        this._uploadOptions[key] = JSON.stringify(value);
+      }
+    }
+    let sha = await this.setfileMeta(file);
     let fileID = generateUUID();
+    // overide options on the the class;
 
     this._url = this._rawUrl + this._path + '?fileID=' + fileID;
 
@@ -132,9 +145,14 @@ export class UploadApi extends EventEmitter<UploadListners> {
       ? JSON.parse(this._uploadOptions['resize'])
       : [];
 
+    let checksum = this._uploadOptions['checksum'] || sha;
+
+    let fileExists = await this.fileApi.exists(checksum);
+    let exists = fileExists.data.exists;
+
     let fileType = await classifyFile({ mimetype: mime });
 
-    let obj = createObjTemplate(sizes.length, fileType);
+    let obj = createObjTemplate(sizes.length, fileType, exists);
 
     let p = new Proxy(obj, proxyHandler);
     this._progressMap.set(fileID, p);
@@ -145,15 +163,10 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
     let wsUrl = this._rawUrl.replace('http', 'ws') + '/file-events/' + fileID;
 
-    let opts: any = {};
-    if (isNode) {
-      opts.encoding = 'utf8';
-    }
-    this._socket = new WebSocket(wsUrl);
-
+    this._socket = await connectWS(wsUrl);
     this._socket.onmessage = async (event: MessageEvent) => {
       let data = event.data;
-      if (data) {
+      if (data && data !== 'pong') {
         data = JSON.parse(data) as socketEvent;
         this.handleWsMessage(data, fileID);
       }
@@ -161,13 +174,13 @@ export class UploadApi extends EventEmitter<UploadListners> {
     let upload = new Upload(file, {
       endpoint: this._url,
       metadata: this._uploadOptions,
-      headers: this._headers,
+      headers: this._headers as any,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       removeFingerprintOnSuccess: true,
       chunkSize: 10 * 1024 * 1024,
 
       onError: error => {
-        throw new Error(error.message);
+        this.emit('error', error);
       },
       onProgress: async (bytesUploaded, bytesTotal) => {
         var percentage = (bytesUploaded / bytesTotal) * 100;
@@ -196,7 +209,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
    * @returns boolean - true if the file metadata is set
    */
   async setfileMeta(file: UploadFile) {
-    let done = false;
+    let sha = '';
 
     if (
       isBrowser &&
@@ -208,7 +221,20 @@ export class UploadApi extends EventEmitter<UploadListners> {
       this._uploadOptions['name'] = file.name;
 
       this._uploadOptions['size'] = file.size.toString();
-      done = true;
+
+      let hash = crypo.createHash('sha256');
+      let stream = await file.stream();
+      let reader = stream.getReader();
+
+      while (true) {
+        let { done, value } = await reader.read();
+        if (done) break;
+        if (value) hash.update(value);
+      }
+      file = reader;
+      let checksum = hash.digest('base64');
+      this._uploadOptions['checksum'] = checksum;
+      sha = checksum;
     }
 
     // if the file Type is ReadableStream, add the file size and type to the metadata (Node only)
@@ -228,16 +254,19 @@ export class UploadApi extends EventEmitter<UploadListners> {
 
       // get the file size
       let size = 0;
+      let hash = crypo.createHash('sha256');
       for await (const chunk of file) {
         size += chunk.length;
+        hash.update(chunk);
       }
-
+      let checksum = hash.digest('base64');
+      this._uploadOptions['checksum'] = checksum;
       this._uploadOptions['size'] = size.toString();
-      done = true;
+      sha = checksum;
     }
     // wait till upload is comoleted
 
-    return done;
+    return sha;
   }
   /**
    * Method to handle the websocket messages
@@ -251,25 +280,75 @@ export class UploadApi extends EventEmitter<UploadListners> {
     if (data) {
       let status = data.status;
       this._progressMap.get(fileID)[status] = data;
-
-      this.emit('progress', this._progressMap.get(fileID) as ProgressEvent);
-
       let result = data.result || data.progress?.result;
-      // global;
 
-      this.emit(
-        'globalProgress',
-        this._progressMap as GlobalProgress,
-        Object.keys(this.uploads)?.length ? this.uploads : undefined,
-      );
+      if (!this.uploadMultiple)
+        this.emit('progress', this._progressMap.get(fileID) as ProgressEvent);
 
-      if (status === 'Preview Completed' && result) {
+      let Globallisteners = [
+        ...this.listeners('globalProgress'),
+        ...this.listeners('allCompleted'),
+      ];
+
+      if (!this.uploadMultiple && Globallisteners.length) {
+        throw new Error(
+          'globalProgress and allCompleted listeners are required for multiple uploads, listen to the completed and progress events instead',
+        );
+      }
+      if (this.uploadMultiple) {
+        let Singlelisteners = [
+          ...this.listeners('progress'),
+          ...this.listeners('completed'),
+        ];
+        if (Singlelisteners.length) {
+          throw new Error(
+            'progress and completed listeners are required for single uploads, listen to the globalProgress and allCompleted events instead',
+          );
+        }
+        let totalProgress = 0;
+        let expectedSize = [...this._progressMap.keys()].filter(
+          event => event !== 'totalProgress',
+        ).length;
+
+        let obj: any = {};
+        for (let [key, value] of this._progressMap) {
+          let progress = value as ProgressEvent;
+          let newKey = this.uploads[key] || key;
+          if (newKey) obj[newKey] = value;
+          let { overallProgress } = progress;
+          if (overallProgress) totalProgress += overallProgress;
+        }
+
+        let percent = (totalProgress / (expectedSize * 100)) * 100;
+        this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
+
+        obj.totalProgress = Number(percent.toFixed(2));
+
+        this.emit('globalProgress', obj);
+      }
+
+      let completed =
+        result && result.hasOwnProperty('file')
+          ? result.file
+          : (result as FileDoc);
+
+      if (
+        result &&
+        completed.expectedPreviewCount === completed.currentPreviewCount
+      ) {
+        if (this.uploadMultiple) {
+          this._results.push(result);
+          // when each upload is completed, upload
+          this._uploadCount++;
+          if (this._uploadCount === this._progressMap.size - 1)
+            this.emit('allCompleted', this._results);
+          // close the socket
+          this._socket?.close();
+        }
+
         this.emit('completed', result);
-        this._results.push(result);
-        // when each upload is completed, upload
-        this._uploadCount++;
-        if (this._uploadCount === this._progressMap.size)
-          this.emit('allCompleted', this._results);
+        // close the socket after the upload
+        this._socket?.close();
       }
     }
   }

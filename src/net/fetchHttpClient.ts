@@ -2,12 +2,7 @@
 import fetch from 'cross-fetch';
 import { TestOpts, ProdOpts } from './defaultRequestOptions';
 import { isBrowser } from 'browser-or-node';
-import {
-  RequestData,
-  RequestHeaders,
-  ResponseHeaders,
-  TimeoutError,
-} from '../types';
+import { RequestData, RequestHeaders, ResponseHeaders } from '../types';
 import {
   HttpClientInterface,
   HttpClientResponseInterface,
@@ -18,7 +13,7 @@ import { HttpClient, HttpClientResponse } from './httpClient';
 
 export class FetchHttpClient extends HttpClient implements HttpClientInterface {
   private _fetch: typeof fetch;
-  private _Headers: RequestHeaders = {};
+  _Headers: RequestHeaders = {};
   readonly _config?: ConfigOptions;
   readonly _requestOpts?: RequestOptions;
   public readonly _isLegacyBrowser: boolean = false;

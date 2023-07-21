@@ -6,6 +6,7 @@ import {
   deleteOneOptions,
   deleteResponse,
   uploadOptions,
+  existsResponse,
 } from '../../interfaces';
 import { propagateErrors } from '../../functions';
 
@@ -117,19 +118,62 @@ export class FilesApi extends BaseApi {
     return json as deleteResponse;
   }
   /**
-   *
+   * upload a file or an array of files with individual options(array)  or one globaloptions(see uploadOptions)
    * @param {UploadFile} file
    * @param {uploadOptions} options
-   * @returns {UploadApi | undefined} - UploadApi instance
+   * @event  error - when an error occurs
+   * @event progress - progressEvents  for when a single file is uploaded
+   * @event  complete - when a single file is uploaded and the upload is complete
+   * @event  completeAll - when multiple files are uploaded and their upload is complete
+   * @event  globalProgress - progressEvents  for when multiple files are uploaded
+   * @returns {UploadApi | Array<UploadApi> |undefined} - UploadApi instance
    */
-  async uploadFile(file: UploadFile, options?: uploadOptions) {
-    let reqOpts = this.createHttpRequest._requestOpts;
-    let config = this.createHttpRequest._config;
+  async uploadFiles(
+    files: UploadFile | Array<UploadFile>,
+    options?: uploadOptions | Array<uploadOptions>,
+  ) {
+    if (!arguments.length) throw new TypeError('file(s) is required');
 
-    if (reqOpts && config) {
-      this.upload = new UploadApi(reqOpts, config, options);
+    let multipleFiles = Array.isArray(files);
+    let globalOpts = Array.isArray(options) ? undefined : options;
 
-      return this.upload.start(file);
+    this.upload = new UploadApi(this.createHttpRequest, globalOpts,multipleFiles);
+
+    if (!Array.isArray(files)) {
+      this.upload = await this.upload.start(files, globalOpts);
+      return this.upload;
     }
+
+    for (let [index, file] of Object.entries(files)) {
+      let opts = Array.isArray(options) ? options[Number(index)] : undefined;
+      this.upload = await this.upload.start(file, opts);
+    }
+    return this.upload;
+  }
+
+  /**
+   *  Check if a file exists
+   * @param search - cid or an integrityhash or OjHash
+   * @returns
+   */
+  async exists(search: string) {
+    let url = '/files/exists';
+
+    if (!search)
+      throw new TypeError('cid or an integrityhash or OjHash is required');
+
+    let searchParams = new URLSearchParams();
+    searchParams.append('search', search);
+    url = url + '?' + searchParams.toString();
+
+    let response = await this.createHttpRequest.makeRequestwithDefault(
+      url,
+      'GET',
+    );
+
+    let json: any = await response.toJSON();
+
+    propagateErrors(json);
+    return json as existsResponse;
   }
 }

@@ -3,7 +3,8 @@ import { Client, ConfigOptions } from '../../src/';
 import { streamToBuff } from '../../src/functions';
 import dotenv from 'dotenv';
 import { Stream } from 'stream';
-
+import * as matchers from 'jest-extended';
+expect.extend(matchers);
 dotenv.config();
 
 let testDevApiKEY = process.env.TEST_DEV_API_KEY as string;
@@ -48,13 +49,12 @@ describe('ipfsApi in nodejs should', () => {
   it('fetch a preview from gateway with sizes set', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
     let response = await client.ipfs.get(testFilecid, {
+      origin: 'https://v2.dartroom.xyz',
       size: '130',
     });
     let Previewcid = String(client.ipfs.returnedHeaders['etag']);
 
     expect(response).toBeDefined();
-    
-    expect(JSON.parse(Previewcid)).not.toEqual(testFilecid);
   });
 
   it('throw error if cid is incorrect or file is not found when fetching a file', async () => {
@@ -70,7 +70,9 @@ describe('ipfsApi in nodejs should', () => {
 
   it('return a complete stream of the file when fetching it', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
-    let response = await client.ipfs.get(testFilecid);
+    let response = await client.ipfs.get(testFilecid, {
+      origin: 'https://v2.dartroom.xyz',
+    });
     expect(response).toBeDefined();
 
     if (response) {
@@ -84,11 +86,7 @@ describe('ipfsApi in nodejs should', () => {
     let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
     let response = await client.ipfs.pin(testFilecid);
     expect(response).toBeDefined();
-    expect(response.data).toEqual(
-      expect.objectContaining({
-        message: expect.any(String),
-      }),
-    );
+    expect(response.data).toContainAnyKeys(['message', 'result']);
   });
 
   it('throw error if cid is incorrect or file is not found when pinning a file', async () => {

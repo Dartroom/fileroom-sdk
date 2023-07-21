@@ -25,6 +25,12 @@ export interface listResponse {
   };
 }
 
+export interface existsResponse {
+  data: {
+    exists: boolean; // true if the file exists
+  };
+}
+
 /**Expected Response from awaitUpload */
 
 export interface awaitUploadResponse {
