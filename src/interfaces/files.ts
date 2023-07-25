@@ -63,6 +63,7 @@ export interface uploadOptions {
   resize?: string[]; // preview sizes
   replaceId?: string; // The ObjectID or cid of the file to replace
   resizeOptions?: SharpResizeOptions; // resize options
+  name?: string;
 }
 /**Sharp Resize Options */
 interface SharpResizeOptions {
