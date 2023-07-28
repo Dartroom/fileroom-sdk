@@ -98,6 +98,7 @@ try {
 - [IpfsAPI]
 - [FilesAPI]
 
+## Tests
 First, clone the repo locally and cd into the directory
 
 ```bash
