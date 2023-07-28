@@ -1,7 +1,9 @@
-import { Client, ConfigOptions } from '../../src';
+import { Client, ConfigOptions } from '../../';
+import fs from 'fs';
 import * as matchers from 'jest-extended';
 expect.extend(matchers);
 import dotenv from 'dotenv';
+import exp from 'constants';
 
 dotenv.config();
 
@@ -118,6 +120,25 @@ describe('filesAPi in nodejs should', () => {
       expect(error).toBeDefined();
 
       expect(error.message).toContain('NOT_FOUND');
+    }
+  });
+
+  it.skip('upload a single file to fileroom with resizeOptions', async () => {
+    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+
+    let path = process.cwd() + '/tests/';
+    let readStream = fs.createReadStream(path + 'sample.gif');
+    try {
+      let upload = await client.files.uploadFiles(readStream, {
+        resize: ['500x500'],
+      });
+
+      expect(upload).toBeDefined();
+      // listen for upload progress
+      let progress: any = {};
+    } catch (error: any) {
+      console.log(error);
+      expect(error).toBeDefined();
     }
   });
 });

@@ -5,6 +5,7 @@ module.exports = {
   openHandlesTimeout: 0,
   collectCoverageFrom: ['src/**/*.ts'],
   setupFilesAfterEnv: ['jest-extended/all'],
+  maxWorkers:2,
   coverageThreshold: {
     global: {
       lines: 70,

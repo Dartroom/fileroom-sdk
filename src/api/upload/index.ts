@@ -177,10 +177,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
       headers: this._headers as any,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       removeFingerprintOnSuccess: true,
-      chunkSize: 10 * 1024 * 1024,
+      chunkSize: 5 * 1024 * 1024,
 
       onError: error => {
         this.emit('error', error);
+        throw Error;
       },
       onProgress: async (bytesUploaded, bytesTotal) => {
         var percentage = (bytesUploaded / bytesTotal) * 100;
@@ -295,37 +296,37 @@ export class UploadApi extends EventEmitter<UploadListners> {
           'globalProgress and allCompleted listeners are required for multiple uploads, listen to the completed and progress events instead',
         );
       }
-      if (this.uploadMultiple) {
-        let Singlelisteners = [
-          ...this.listeners('progress'),
-          ...this.listeners('completed'),
-        ];
+
+      let Singlelisteners = [
+        ...this.listeners('progress'),
+        ...this.listeners('completed'),
+      ];
+      if (this.uploadMultiple)
         if (Singlelisteners.length) {
           throw new Error(
             'progress and completed listeners are required for single uploads, listen to the globalProgress and allCompleted events instead',
           );
         }
-        let totalProgress = 0;
-        let expectedSize = [...this._progressMap.keys()].filter(
-          event => event !== 'totalProgress',
-        ).length;
+      let totalProgress = 0;
+      let expectedSize = [...this._progressMap.keys()].filter(
+        event => event !== 'totalProgress',
+      ).length;
 
-        let obj: any = {};
-        for (let [key, value] of this._progressMap) {
-          let progress = value as ProgressEvent;
-          let newKey = this.uploads[key] || key;
-          if (newKey) obj[newKey] = value;
-          let { overallProgress } = progress;
-          if (overallProgress) totalProgress += overallProgress;
-        }
-
-        let percent = (totalProgress / (expectedSize * 100)) * 100;
-        this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
-
-        obj.totalProgress = Number(percent.toFixed(2));
-
-        this.emit('globalProgress', obj);
+      let obj: any = {};
+      for (let [key, value] of this._progressMap) {
+        let progress = value as ProgressEvent;
+        let newKey = this.uploads[key] || key;
+        if (newKey) obj[newKey] = value;
+        let { overallProgress } = progress;
+        if (overallProgress) totalProgress += overallProgress;
       }
+
+      let percent = (totalProgress / (expectedSize * 100)) * 100;
+      this._progressMap.set('totalProgress', Number(percent.toFixed(2)));
+
+      obj.totalProgress = Number(percent.toFixed(2));
+
+      this.emit('globalProgress', obj);
 
       let completed =
         result && result.hasOwnProperty('file')

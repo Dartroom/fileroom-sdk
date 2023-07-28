@@ -86,7 +86,9 @@ describe('ipfsApi in nodejs should', () => {
     let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
     let response = await client.ipfs.pin(testFilecid);
     expect(response).toBeDefined();
+    expect(response.data).toBeDefined();
     expect(response.data).toContainAnyKeys(['message', 'result']);
+    await client.files.deleteOne({ cid: testFilecid });
   });
 
   it('throw error if cid is incorrect or file is not found when pinning a file', async () => {
