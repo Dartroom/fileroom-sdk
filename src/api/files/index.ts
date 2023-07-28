@@ -137,18 +137,26 @@ export class FilesApi extends BaseApi {
     let multipleFiles = Array.isArray(files);
     let globalOpts = Array.isArray(options) ? undefined : options;
 
-    this.upload = new UploadApi(this.createHttpRequest, globalOpts,multipleFiles);
+    this.upload = new UploadApi(
+      this.createHttpRequest,
+      globalOpts,
+      multipleFiles,
+    );
 
-    if (!Array.isArray(files)) {
-      this.upload = await this.upload.start(files, globalOpts);
+    try {
+      if (!Array.isArray(files)) {
+        this.upload = await this.upload.start(files, globalOpts);
+        return this.upload;
+      }
+
+      for (let [index, file] of Object.entries(files)) {
+        let opts = Array.isArray(options) ? options[Number(index)] : undefined;
+        this.upload = await this.upload.start(file, opts);
+      }
       return this.upload;
+    } catch (err) {
+      console.error(err);
     }
-
-    for (let [index, file] of Object.entries(files)) {
-      let opts = Array.isArray(options) ? options[Number(index)] : undefined;
-      this.upload = await this.upload.start(file, opts);
-    }
-    return this.upload;
   }
 
   /**

@@ -177,12 +177,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
       headers: this._headers as any,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       removeFingerprintOnSuccess: true,
-      chunkSize: 10 * 1024 * 1024,
+      chunkSize: 5 * 1024 * 1024,
 
       onError: error => {
         this.emit('error', error);
-        // remove this upload from map;
-        this._progressMap.delete(fileID)
+        throw Error;
       },
       onProgress: async (bytesUploaded, bytesTotal) => {
         var percentage = (bytesUploaded / bytesTotal) * 100;
