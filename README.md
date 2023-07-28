@@ -7,7 +7,7 @@ A package to interact with the fileroom-api for both the browser and nodejs.
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [ Basic Usage](#usage)
-- [SDK Reference](#documentation)
+- [SDK Reference](#sdk-reference)
 - [Tests](#tests)
 - [License](#license)
 
