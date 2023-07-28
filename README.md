@@ -22,7 +22,7 @@ Use of this SDK requires the following:
 
 ### nodejs
 
-```bash
+```sh
  npm install @dartroom/fileroom-sdk
 #or
     yarn add @dartroom/fileroom-sdk
@@ -101,22 +101,22 @@ try {
 ## Tests
 First, clone the repo locally and cd into the directory
 
-```bash
+```sh
 git clone https//github.com/dartroom/fileroom-sdk.git
 cd fileroom-sdk
 ```
 
 Next, create a .env file, and add the following environment variables
 
-```bash
+```sh
 #credentials for test Fileroom Dev User
-TEST_DEV_USERNAME = 'your test fileroom dev username' ## this can be a random username
-TEST_DEV_PASSWORD = 'your test fileroom dev password' ## this can be a random password
-TEST_DEV_API_KEY= 'any active api key for the test fileroom dev user'
+TEST_DEV_USERNAME='your test fileroom dev username' ## this can be a random username
+TEST_DEV_PASSWORD= 'your test fileroom dev password' ## this can be a random password
+TEST_DEV_API_KEY='any active api key for the test fileroom dev user'
 
 # fileroom Environment
-FILEROOM_ENV = 'test | production| beta'
-TEST_FILECID = "your test file cid"
+FILEROOM_ENV='test | production| beta'
+TEST_FILECID= "your test file cid"
 
 ```
 
@@ -124,8 +124,10 @@ TEST_FILECID = "your test file cid"
 
 Finally, run the tests.
 
-```bash
+```sh
   npm test
+  # run tests in watch mode
+    npm run test:watch
 ```
 
 ## License
