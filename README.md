@@ -46,8 +46,6 @@ let client = new Client({
 
 ### Usage
 
-The client is the main entry point for the SDK. It is used to create instances of the various API classes, and to set the access token for the SDK.
-
 **Commonjs with promises**
 
 ```js
@@ -99,6 +97,7 @@ try {
 - [FilesAPI]
 
 ## Tests
+
 First, clone the repo locally and cd into the directory
 
 ```sh
