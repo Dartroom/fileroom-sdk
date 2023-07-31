@@ -34,5 +34,5 @@ The available APIs are:
 
 - `ipfs` - The [IpfsAPI](ipfs.md) for interacting with IPFS
 - `files` - The [FilesAPI](files.md) for managing files
-- `users` - The [UsersAPI](users.md) for managing user accounts
+- `users` - The [UsersAPI](user.md) for managing user accounts
 
