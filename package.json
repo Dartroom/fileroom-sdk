@@ -12,6 +12,9 @@
   "directories": {
     "test": "tests"
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "test": " cross-env NODE_OPTIONS=--experimental-vm-modules  jest   --verbose ",
     "build:node": "tsup src/index.ts --format cjs,esm  --dts --clean --sourcemap --treeshake --legacy-output --out-dir dist",
