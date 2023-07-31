@@ -3,9 +3,10 @@ module.exports = {
   collectCoverage: false,
   testTimeout: 100000,
   openHandlesTimeout: 0,
+  detectOpenHandles:true, 
   collectCoverageFrom: ['src/**/*.ts'],
   setupFilesAfterEnv: ['jest-extended/all'],
-  maxWorkers:2,
+  maxWorkers: 2,
   coverageThreshold: {
     global: {
       lines: 70,
@@ -18,6 +19,13 @@ module.exports = {
       testEnvironment: 'node',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/tests/**/*.test.ts'],
+    },
+
+    {
+      displayName: 'test-functions',
+      testEnvironment: 'node',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/tests/**/*-func.ts'],
     },
     {
       displayName: 'test-browser',
