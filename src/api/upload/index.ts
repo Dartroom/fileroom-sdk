@@ -164,7 +164,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
     let wsUrl = this._rawUrl.replace('http', 'ws') + '/file-events/' + fileID;
 
     this._socket = await connectWS(wsUrl);
-    this._socket.onmessage = async (event: MessageEvent) => {
+    this._socket.onmessage = async (event: any) => {
       let data = event.data;
       if (data && data !== 'pong') {
         data = JSON.parse(data) as socketEvent;

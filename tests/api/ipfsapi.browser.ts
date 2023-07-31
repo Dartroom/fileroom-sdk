@@ -163,9 +163,7 @@ describe('ipfsApi in the browser should', () => {
       expect(contentLength).toBeDefined();
       expect(bytes).toBeDefined();
       expect(bytes.toString()).toEqual(contentLength);
-    } catch (error) { 
-      
-    }
+    } catch (error) {}
   });
 
   it("import a file by cid and pin it's cid", async () => {
@@ -173,9 +171,15 @@ describe('ipfsApi in the browser should', () => {
            
           async function importBycid () {
         let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
-        let result = await client.ipfs.pin('${testFilecid}');
+        let result = await client.ipfs.pin('${testFilecid}',{
+          resize:[]
+        });
         
         respo = result;
+
+        // deleted the created file;
+
+        await client.files.deleteOne({cid:'${testFilecid}'})
         
           };
          importBycid();

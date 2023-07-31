@@ -84,7 +84,9 @@ describe('ipfsApi in nodejs should', () => {
   });
   it("import a file by cid and pin it's cid", async () => {
     let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
-    let response = await client.ipfs.pin(testFilecid);
+    let response = await client.ipfs.pin(testFilecid, {
+      resize: [],
+    });
     expect(response).toBeDefined();
     expect(response.data).toBeDefined();
     expect(response.data).toContainAnyKeys(['message', 'result']);
