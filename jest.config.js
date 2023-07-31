@@ -3,7 +3,7 @@ module.exports = {
   collectCoverage: false,
   testTimeout: 100000,
   openHandlesTimeout: 0,
-  detectOpenHandles: true,
+  detectOpenHandles: false,
 
   collectCoverageFrom: ['src/**/*.ts'],
   setupFilesAfterEnv: ['jest-extended/all'],
