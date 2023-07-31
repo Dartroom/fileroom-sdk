@@ -101,6 +101,7 @@ Parameters:
 - cids - Array of file CIDs
 
 Returns: `Promise<{data: DeleteResponse}>`
+
 ### uploadFiles(files, options)
 
 Upload files with progress events. 
