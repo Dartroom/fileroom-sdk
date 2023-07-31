@@ -104,22 +104,23 @@ Returns: `Promise<{data: DeleteResponse}>`
 
 ### uploadFiles(files, options)
 
-Upload files with progress events.
+Upload files with progress events. 
 
 This method returns an UploadApi instance that emits events for upload progress and results.
 
 Parameters:
 
 - files - The file or array of files to upload
+
 - options - Global upload options or an array of options for each file
 
-Events:
-
-- progress - Emitted on upload progress for a single file
-- completed - Emitted when a single file upload is complete
-- error - Emitted on any error
-- globalProgress - Emitted on overall progress for multiple files
-- allCompleted - Emitted when all files have completed uploading
+  - resize - Array of preview sizes to generate
+  
+  - replaceId - CID or docID of file to replace
+  
+  - resizeOptions - Sharp resize options (fit, position, etc)
+  
+  - name - Custom name for the file
 
 The UploadApi instance returned has methods like `start` to control the upload.
 
