@@ -1,3 +1,5 @@
+import { SocketData } from '../types';
+
 export function incrementGlobalProgress(target: Record<string, any>) {
   // increment global progress;
   let values = Object.values(target).filter(
@@ -14,7 +16,7 @@ export function incrementGlobalProgress(target: Record<string, any>) {
 }
 /** Proxy handler for the progressMap */
 export const proxyHandler = {
-  set(target: any, prop: string, value: any) {
+  set(target: any, prop: string, value: SocketData) {
     //console.log(typeof value, value)
     // if the target doesn't has the property, add with default value {progress:0};
 
@@ -34,15 +36,15 @@ export const proxyHandler = {
 
     if (hasProgress) {
       if (hasPercent) {
-        target[prop].jobs.set(value.progress.job, value.progress.percent);
+        target[prop].jobs.set(value.progress?.job, value.progress?.percent);
         let jobs = target[prop].jobs;
         let expectedStage = target[prop].expectedStage;
         target[prop].progress =
           ([...jobs.values()].reduce((a, b) => a + Number(b), 0) /
             (expectedStage * 100)) *
           100;
-        if (value.result) {
-          target[prop].result = value.result;
+        if (value.result || value.progress?.result) {
+          target[prop].result = value.result || value.progress?.result;
         }
 
         incrementGlobalProgress(target);

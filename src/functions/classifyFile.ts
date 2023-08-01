@@ -11,10 +11,11 @@ export function classifyFile(file: { mimetype: string }): Promise<string> {
     let fileFormat = file.mimetype.split('/')[1] as string;
     // use a regExp instead of a switch statements to make it compatible and readable.
     let supportedAudio =
-      /(mpeg)|(mp4)|(ogg)|(wav)|(webm)|(flac)|(aac)|(weba)|(amr)|(opus)|(m4a)|(oga)/g;
+      /(mpeg)|(mp3)|(mp4)|(ogg)|(wav)|(webm)|(flac)|(aac)|(weba)|(amr)|(opus)|(m4a)|(oga)/g;
     // ACC audio -> acc
 
-    supportedAudio.test(fileFormat);
+
+     
     if (
       file.mimetype === 'image/png' ||
       file.mimetype === 'image/jpg' ||
