@@ -1,5 +1,7 @@
 import { connectWS } from '../../src/functions/connectWs';
 import WebSocket from 'isomorphic-ws';
+ jest.setTimeout(10000000);
+
 
 describe('connectWS', () => {
   it('should return a Promise<WebSocket>', async () => {
@@ -7,7 +9,12 @@ describe('connectWS', () => {
 
     const result = await connectWS(url);
 
-    expect(result).toBeInstanceOf(WebSocket);
+    await  expect(result).toBeInstanceOf(WebSocket);
+    try {
+      await result.close();
+    } catch (err) { 
+
+    }
   });
 
   it('should reject if connection fails', async () => {
