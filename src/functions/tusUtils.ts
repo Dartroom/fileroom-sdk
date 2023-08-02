@@ -32,6 +32,7 @@ export const proxyHandler = {
     if (!target[prop]['jobs']) {
       target[prop].used = true;
       target[prop].jobs = new Map();
+    } else {
     }
 
     if (hasProgress) {
