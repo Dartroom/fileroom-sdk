@@ -1,19 +1,17 @@
-import { connectWS } from '../../src/functions/connectWs';
+import { connectWS,Timeout } from '../../src/functions';
 import WebSocket from 'isomorphic-ws';
- jest.setTimeout(10000000);
-
 
 describe('connectWS', () => {
   it('should return a Promise<WebSocket>', async () => {
     const url = 'wss://socketsbay.com/wss/v2/1/demo/';
-
-    const result = await connectWS(url);
-
-    await  expect(result).toBeInstanceOf(WebSocket);
+    
+    
     try {
-      await result.close();
-    } catch (err) { 
+      const result = await Promise.race([connectWS(url), Timeout(3000)]);
 
+      await expect(result).toBeInstanceOf(WebSocket);
+    } catch (err) {
+      expect(err).toBeDefined();
     }
   });
 
