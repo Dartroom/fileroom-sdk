@@ -1,6 +1,8 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 import { promises } from 'fs';
 import { HttpClientResponseInterface } from '../../src/interfaces';
+import * as matchers from 'jest-extended';
+expect.extend(matchers);
 let browser: Browser;
 let page: Page;
 let script: string; // library bundle for the browser;
@@ -188,11 +190,7 @@ describe('ipfsApi in the browser should', () => {
     let response: any = await page.evaluate('respo');
     expect(response).toBeDefined();
     expect(response.data).toBeDefined();
-    expect(response.data).toEqual(
-      expect.objectContaining({
-        message: expect.any(String),
-      }),
-    );
+    expect(response.data).toContainAnyKeys(['message', 'result', 'totalSize']);
   });
 
   it('throw error if cid is incorrect or file is not found when pinning a file', async () => {

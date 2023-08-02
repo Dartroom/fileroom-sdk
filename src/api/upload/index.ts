@@ -1,6 +1,6 @@
 import { EventEmitter } from 'ee-ts';
 import { Upload } from 'tus-js-client';
-
+import mime from 'mime-types';
 import {
   UploadFile,
   ProgressEvent,
@@ -241,16 +241,16 @@ export class UploadApi extends EventEmitter<UploadListners> {
     // if the file Type is ReadableStream, add the file size and type to the metadata (Node only)
 
     if (file instanceof Stream) {
-      let { fileTypeFromStream } = await import('file-type');
       // @ts-ignore
       if (file.hasOwnProperty('path') && file.path) {
         // @ts-ignore
         this._uploadOptions['name'] = file.path;
+        // @ts-ignore
+        let mimeType = mime.lookup(file.path);
+        if (!mimeType) throw new Error('File type not supported');
+        this._uploadOptions['filetype'] = mimeType;
       }
 
-      let mimeType = await fileTypeFromStream(file as Readable);
-      if (!mimeType) throw new Error('File type not supported');
-      this._uploadOptions['filetype'] = mimeType.mime;
       //name
 
       // get the file size
@@ -341,10 +341,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
           this._results.push(result);
           // when each upload is completed, upload
           this._uploadCount++;
-          if (this._uploadCount === this._progressMap.size - 1)
+          if (this._uploadCount === this._progressMap.size - 1) {
             this.emit('allCompleted', this._results);
-          // close the socket
-          this._socket?.close();
+            // close the socket
+            this._socket?.close();
+          }
         }
 
         this.emit('completed', result);

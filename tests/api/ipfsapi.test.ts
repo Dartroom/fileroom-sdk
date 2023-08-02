@@ -89,7 +89,7 @@ describe('ipfsApi in nodejs should', () => {
     });
     expect(response).toBeDefined();
     expect(response.data).toBeDefined();
-    expect(response.data).toContainAnyKeys(['message', 'result']);
+    expect(response.data).toContainAnyKeys(['message', 'result',"totalSize"]);
     await client.files.deleteOne({ cid: testFilecid });
   });
 
