@@ -1,20 +1,20 @@
 # User API
 
-The User API allows you to manage user accounts and authentication in Fileroom. 
+The User API allows you to manage user accounts and authentication in Fileroom.
 
-## Usage
+## Usage 
 
 Import the UserAPI from the client:
 
 ```js
-const { user } = client;
+const { user } = client; 
 ```
 
 ## Methods
 
-### login(options) 
+### login(options)
 
-Log in an existing user and retrieve an access token.
+Log in an existing user and retrieve an access token. 
 
 There are two ways to call the login method:
 
@@ -22,22 +22,22 @@ With username and password:
 
 ```js
 const token = await user.login({
-  username: 'myusername', 
-  password: 'mypassword'
+  username: 'myusername',
+  password: 'mypassword' 
 });
 ```
 
 With a Dartroom auth token:
 
-```js
+```js 
 const token = await user.login({
-  dartroomToken: 'dartroom_auth_token' 
+  dartroomToken: 'dartroom_auth_token'
 });
 ```
 
 The login options are:
 
-| Option | Type | Description |
+| Option | Type | Description | 
 |-|-|-|
 | username | string | The user's username |
 | password | string | The user's password |
@@ -45,17 +45,30 @@ The login options are:
 
 One of `username` & `password` or `dartroomToken` is required.
 
-Returns: `Promise<{data: string}>` - The returned `token` can be used to authenticate further requests.
+Returns:
+
+```json
+{
+  "data": "xyz123..." 
+}
+```
+
 
 ### validateToken()
 
 Validates the user's access token.
 
 ```js
-const isValid = await user.validateToken();
+const isValid = await user.validateToken(); 
 ```
 
-Returns: `Promise<{isValid: boolean}>` - Returns whether the token is valid.
+Returns: 
+
+```json
+{
+  "isValid": true
+}
+```
 
 ### create(options)
 
@@ -65,21 +78,29 @@ Creates a new user account.
 const {id, token} = await user.create({
   username: 'newuser',
   email: 'newuser@example.com',
-  password: 'password123' 
+  password: 'password123'
 });
 ```
 
 The create options are:
 
 | Option | Type | Description |
-|-|-|-|
-| userId | string | The Dartroom user ID (optional) |  
+|-|-|-|  
+| userId | string | The Dartroom user ID (optional) |
 | email | string | The user's email address |
 | password | string | The user's password |
 
-At least `email` and `password` are required.
+At least `email` and `password` are required. 
 
-Returns: `Promise<{id: string, token: string}>` - The new user's ID and an access token.
+Returns:
+
+```json 
+{
+  "id": "user123",
+  "token": "xyz984..." 
+}
+```
+
 ### update(options)
 
 Updates the user's account settings.
@@ -95,22 +116,24 @@ The update options are:
 
 | Option | Type | Description |
 |-|-|-|
-| addIP | string | IP address to allow |
+| addIP | string | IP address to allow |  
 | removeIP | string | IP address to deny |
-| addDomain | string | Domain to allow | 
+| addDomain | string | Domain to allow |
 | removeDomain | string | Domain to deny |
 | restrictIPs | boolean | Restrict access to allowed IPs |
 | restrictDomains | boolean | Restrict access to allowed domains |
 | showAll | boolean | Whether to show all files or only latest |
 
-Returns: `Promise<updateUserResponse>` - updateUserResponse is:
+Returns: 
 
-```ts
-interface updateUserResponse {
-  data: {
-    updated: FileDoc; // the updated user document
+```json
+{
+  "data": {
+    "updated": {
+      "addIP": "192.168.0.1",
+      "restrictDomains": true 
+    }
   }
 }
 ```
 
-So it returns the updated user document.
