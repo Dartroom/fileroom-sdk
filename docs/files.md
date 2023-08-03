@@ -10,49 +10,50 @@ Import the FilesAPI from the client:
 const { files } = client;
 ```
 
-## Methods 
+## Methods
 
 ### list(options)
 
-List a user's files.
+List a user's files. 
 
 ```js
-const files = await files.list(); 
+const files = await files.list();
 ```
 
 | Option | Description |
-|-|-|
+|-|-|  
 | limit | Number of files to return |
 | skip | Number of files to skip |
 | sortDsc | Sort descending |
 | sortBy | Field to sort by |
 
-Returns: 
+Returns:
 
-```json
+```json 
 {
   "data": {
     "docs": [
       {
         "_id": "63f33b3d20b07f001a5a1658",
-        "name": "image.png",
-        "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+        "name": "image.png",  
+        "cid": "Qabc123",
         "size": 85910,
         ...
       }
     ],
     "totalDocs": 1,
     "limit": 10,
-    "offset": 0,   
+    "offset": 0,    
     "totalPages": 1,
     "page": 1,
-    "pagingCounter": 1, 
+    "pagingCounter": 1,  
     "hasPrevPage": false,
     "hasNextPage": false,
     "prevPage": null,
     "nextPage": null
   }
 }
+
 ```
 
 ### awaitUpload(id)
@@ -74,7 +75,7 @@ Returns:
   "data": {
     "_id": "63f33b3d20b07f001a5a1658",
     "name": "image.png", 
-    "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+    "cid": "Qabc123",
     "size": 85910,
     ...
   }
@@ -108,7 +109,7 @@ Returns:
       }
     ],
     "deletedItems": [
-      "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"
+      "Qabc123"
     ],
     "filesDeleted": 1,
     "storageSaved": 85910
@@ -145,14 +146,15 @@ Returns:
       }
     ],
     "deletedItems": [
-      "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
-      "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdj"
+      "Qabc123",
+      "Qxyz456" 
     ],
     "filesDeleted": 2,
     "storageSaved": 171820
   }
 }
 ```
+
 
 ### uploadFiles(files, options)
 
