@@ -7,10 +7,10 @@ The IpfsAPI allows you to interact with IPFS through Fileroom.
 Import the IpfsAPI from the client:
 
 ```js
-const { ipfs } = client; 
+const { ipfs } = client;
 ```
 
-## Methods
+## Methods 
 
 ### status(cid)
 
@@ -20,27 +20,31 @@ Check the pinning status of a CID.
 const status = await ipfs.status('Qmabc123...');
 ```
 
-Returns: `Promise<statusResponse>` 
+Returns: 
 
-The statusResponse object contains:
-
-- peername - name of pinning peer
-- status - pin status 
-- ipfs_peer_id - peer ID
-- ipfs_peer_addresses - peer addresses   
-- timestamp
-- error
-- attempt_count
-- priority_pin - boolean indicating if pinned with priority
-- metadata - pin metadata
-- created - ISO date string
+```json
+{
+  "peername": "peer name",
+  "status": "pinned", 
+  "ipfs_peer_id": "peer id",
+  "ipfs_peer_addresses": [
+    "/ip4/127.0.0.1/tcp/4001/ipfs/QmPeerId"
+  ],
+  "timestamp": "ISO date string",
+  "error": "",
+  "attempt_count": 1,
+  "priority_pin": true,
+  "metadata": {},
+  "created": "ISO date string"
+}
+```
 
 ### get(cid, options?)
 
 Fetch a file from the gateway by CID.
 
 ```js
-const stream = await ipfs.get('Qmabc123...'); 
+const stream = await ipfs.get('Qmabc123...');
 ```
 
 | Option | Type | Description |
@@ -48,13 +52,13 @@ const stream = await ipfs.get('Qmabc123...');
 | origin | string | Gateway origin, defaults to Fileroom gateway |
 | size | string | Preview size string (e.g. '200x200') |
 
-Returns: `Promise<Stream>` 
+Returns: `Promise<Stream>`
 
-### pin(cid, options?) 
+### pin(cid, options?)
 
 Pin a CID to Fileroom's IPFS cluster.
 
-```js
+```js 
 await ipfs.pin('Qmabc123...');
 ```
 
@@ -62,10 +66,29 @@ await ipfs.pin('Qmabc123...');
 |-|-|-|
 | resize | string[] | Array of preview size strings to generate on pinning |
 
-Returns: `Promise<pinResponse>`
+Returns: 
 
-The pinResponse object contains:
+```json
+{
+  "message": "pinned successfully",
+  "result": {
+    "docId": "doc id",
+    "cid": "pinned cid",
+    "previews": [
+      {
+        "cid": "preview cid 1",
+        "size": "200x200" 
+      },
+      {
+        "cid": "preview cid 2",
+        "size": "400x400"
+      }
+    ]
+  },
+  "listenTo": {
+    "wsUrl": "ws url",
+    "event": "pinning_progress"
+  }
+}
+```
 
-- message - pinning result message
-- result - pin result object 
-- listenTo - socket details to listen for pinning progress
