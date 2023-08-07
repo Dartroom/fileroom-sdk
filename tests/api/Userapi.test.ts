@@ -27,7 +27,6 @@ describe('UserApi in nodejs should', () => {
       expect(response.data).toBeDefined();
       expect(response.data.isValid).toBeDefined();
       expect(response.data.isValid).toBe(true);
-      
     } catch (error: any) {
       expect(error).toBeDefined();
       expect(error.message).toContain('Invalid access token');

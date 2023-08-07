@@ -1,9 +1,12 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 import { promises } from 'fs';
 import { HttpClientResponseInterface } from '../../src/interfaces';
+import * as matchers from 'jest-extended';
+expect.extend(matchers);
 let browser: Browser;
 let page: Page;
 let script: string; // library bundle for the browser;
+let file: any;
 import dotenv from 'dotenv';
 dotenv.config();
 let testDevApiKEY = process.env.TEST_DEV_API_KEY as string;
@@ -22,6 +25,27 @@ beforeAll(async () => {
   script = await promises.readFile(
     process.cwd() + '/dist/browser/index.js',
     'utf-8',
+  );
+
+  // create a fileInput with puppeteer
+  await page.evaluate(() => {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.id = 'fileInput';
+    // set to Multiple
+    input.multiple = true;
+    document.body.appendChild(input);
+  });
+
+  // set fileInput to files
+  file = await page.$('#fileInput');
+  await file.uploadFile(
+    process.cwd() + '/tests/sampleF.gif',
+  );
+  await file.evaluate((upload:any) => {
+     console.log(upload.files);
+    return upload.dispatchEvent(new Event('change', { bubbles: true }))
+  }
   );
 });
 
@@ -163,9 +187,7 @@ describe('ipfsApi in the browser should', () => {
       expect(contentLength).toBeDefined();
       expect(bytes).toBeDefined();
       expect(bytes.toString()).toEqual(contentLength);
-    } catch (error) { 
-      
-    }
+    } catch (error) {}
   });
 
   it("import a file by cid and pin it's cid", async () => {
@@ -173,9 +195,15 @@ describe('ipfsApi in the browser should', () => {
            
           async function importBycid () {
         let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
-        let result = await client.ipfs.pin('${testFilecid}');
+        let result = await client.ipfs.pin('${testFilecid}',{
+          resize:[]
+        });
         
         respo = result;
+
+        // deleted the created file;
+
+        await client.files.deleteOne({cid:'${testFilecid}'})
         
           };
          importBycid();
@@ -184,11 +212,7 @@ describe('ipfsApi in the browser should', () => {
     let response: any = await page.evaluate('respo');
     expect(response).toBeDefined();
     expect(response.data).toBeDefined();
-    expect(response.data).toEqual(
-      expect.objectContaining({
-        message: expect.any(String),
-      }),
-    );
+    expect(response.data).toContainAnyKeys(['message', 'result', 'totalSize']);
   });
 
   it('throw error if cid is incorrect or file is not found when pinning a file', async () => {
@@ -198,5 +222,46 @@ describe('ipfsApi in the browser should', () => {
     })()`;
 
     expect(async () => await page.evaluate(call)).rejects.toThrowError();
+  });
+
+  it('upload a single file with resize options with progress', async () => {
+    let call = `
+
+      let  uploadApi;
+      let file;
+      let result;
+      let files;
+
+            async function MakeRequest () {
+let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+let {files}  = client;
+ let httpClient = client.__HttpClient;
+        file = document.getElementById('fileInput').files[0];
+        uploadApi = await files.uploadFiles(file,{
+          resize:["130x130"],
+        });
+         
+        uploadApi.on('progress', (progress) => {});
+        uploadApi.on('complete', (data) => {
+          result = data;
+
+        });
+     
+    }
+       
+        MakeRequest(); 
+
+          `;
+
+    try {
+      let result = await page.evaluate(call);
+      let uploadApi: any = await page.evaluate('uploadApi');
+      let file: any = await page.evaluate('file');
+
+      expect(uploadApi).toBeDefined();
+      expect(file).toBeDefined();
+    } catch (error) {
+      console.log(error);
+    }
   });
 });

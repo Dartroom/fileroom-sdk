@@ -1,4 +1,4 @@
-import { Client, ConfigOptions } from '../../';
+import { Client, ConfigOptions, listOptions } from '../../';
 import fs from 'fs';
 import * as matchers from 'jest-extended';
 expect.extend(matchers);
@@ -41,6 +41,36 @@ describe('filesAPi in nodejs should', () => {
       }),
     );
   });
+  it('list files with options { limit, skip } etc', async () => {
+    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+    const options = {
+      limit: 1,
+      skip: 1,
+      sortBy: 'original.cid',
+      sortDsc: true,
+    } as listOptions;
+
+    let response: any = await client.files.list(options);
+    expect(response).toBeDefined();
+    expect(response.data).toBeDefined();
+
+    expect(response.data).toEqual(
+      expect.objectContaining({
+        docs: expect.any(Array),
+        totalDocs: expect.any(Number),
+        limit: expect.any(Number),
+        hasNextPage: expect.any(Boolean),
+        hasPrevPage: expect.any(Boolean),
+        page: expect.any(Number),
+        totalPages: expect.any(Number),
+        pagingCounter: expect.any(Number),
+        prevPage: expect.toBeOneOf([expect.any(Number), null]),
+        offset: expect.any(Number),
+        nextPage: expect.toBeOneOf([expect.any(Number), null]),
+      }),
+    );
+  });
+
   it('await for an uploaded file or throw error the file is not found ', async () => {
     let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
     try {
@@ -123,22 +153,87 @@ describe('filesAPi in nodejs should', () => {
     }
   });
 
-  it.skip('upload a single file to fileroom with resizeOptions', async () => {
-    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+  it('upload a single file with resize options with progress', async () => {
+       let client = new Client({
+         accessToken: testDevApiKEY,
+         env: fileroomEvn,
+       });
+    let path = process.cwd() + '/tests/sampleF.gif';
+    let { files } = client;
+    const stream = fs.createReadStream(path);
 
-    let path = process.cwd() + '/tests/';
-    let readStream = fs.createReadStream(path + 'sample.gif');
-    try {
-      let upload = await client.files.uploadFiles(readStream, {
-        resize: ['500x500'],
-      });
+    let response = await files.uploadFiles(stream, {
+      resize: ['100x100', '200x200'],
+    });
 
-      expect(upload).toBeDefined();
-      // listen for upload progress
-      let progress: any = {};
-    } catch (error: any) {
-      console.log(error);
-      expect(error).toBeDefined();
-    }
+    expect(response).toBeDefined();
+
+    let spy = jest.fn();
+    response?.on('progress', progress => {
+      expect(progress).toBeDefined();
+    });
+
+    response?.on('completed', async data => {
+      try {
+        let id = data.hasOwnProperty('file') ? data.file._id : data._id;
+
+        await files.deleteOne({ docID: id });
+        expect(data).toBeDefined();
+        expect(data?.file).toBeDefined();
+      } catch (error: any) {
+        console.log(error);
+        expect(error).toBeDefined();
+      }
+    });
   });
+
+  it('upload a  multiple files  with  different resize options', async () => {
+       let client = new Client({
+         accessToken: testDevApiKEY,
+         env: fileroomEvn,
+       });
+    let path = process.cwd() + '/tests/sampleF.gif';
+    let path2 = process.cwd() + '/tests/sample2.gif';
+    let { files } = client;
+    const stream = fs.createReadStream(path);
+    const stream2 = fs.createReadStream(path2);
+    let opts = [
+      {
+        resize: ['100x100', '200x200'],
+      },
+      {
+        resize: ['300x300', '400x400'],
+      },
+    ];
+    let response = await files.uploadFiles([stream2, stream], opts);
+
+    expect(response).toBeDefined();
+
+    response?.on('allCompleted', async results => {
+      let data = results[0];
+
+      try {
+        let ids = results.map(d =>
+          d.hasOwnProperty('file') ? d.file._id : d._id,
+        );
+        for (let id of ids) {
+          let done = await files.deleteOne({ docID: id });
+        }
+
+        expect(data).toBeDefined();
+        expect(data?.file).toBeDefined();
+
+        let d = data && data.hasOwnProperty('file') ? data?.file : data;
+
+        // expect(sizes).toEqual(expect.arrayContaining(opts[0]?.resize));
+      } catch (error: any) {
+        expect(error).toBeDefined();
+      } finally {
+        stream.close();
+        stream2.close();
+      }
+    });
+  });
+  
+  
 });

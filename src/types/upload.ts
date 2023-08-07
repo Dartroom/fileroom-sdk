@@ -81,3 +81,16 @@ export type UploadDeleteResponse = {
   file?: FileDoc | null;
   deleted: true;
 };
+
+export type SocketData =  {
+    status: EventName;
+    progress?: {
+      percent: number | string;
+      job: string;
+      result?: UploadResult;
+    };
+    filename?: string;
+    result?: UploadResult;
+    current?: number;
+    totalJobs?: number;
+}
