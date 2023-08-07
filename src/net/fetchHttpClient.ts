@@ -1,5 +1,6 @@
 // source:github.com/strip/stripe-node;
 import fetch from 'cross-fetch';
+import { Timeout } from '../functions';
 import { TestOpts, ProdOpts } from './defaultRequestOptions';
 import { isBrowser } from 'browser-or-node';
 import { RequestData, RequestHeaders, ResponseHeaders } from '../types';
@@ -165,7 +166,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     });
     */
 
-    return Promise.race([fetchPromise])
+    return Promise.race([fetchPromise, Timeout(timeout)])
       .then(res => {
         return new FetchHttpClientResponse(res as Response);
       })

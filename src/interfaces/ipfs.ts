@@ -4,6 +4,7 @@ import {
   GlobalProgress,
   ProgressEvent,
   UploadResult,
+  SocketData
 } from '../types';
 export interface statusResponse {
   peername: string;
@@ -58,19 +59,10 @@ export interface pinResponse {
 
 export interface socketEvent {
   event: string;
-  data?: {
-    status: EventName;
-    progress?: {
-      percent: number | string;
-      job: string;
-      result?: UploadResult;
-    };
-    filename?: string;
-    result?: UploadResult;
-    current?: number;
-    totalJobs?: number;
-  };
+  data?:SocketData;
 }
+
+  
 
 export interface EventProgress {
   percent: number | string;
