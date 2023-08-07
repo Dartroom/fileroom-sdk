@@ -9,41 +9,49 @@ describe('createObjTemplate', () => {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'InterFs Upload': {
         progress: 0,
         used: false,
         expectedStage: 3,
+        jobs: new Map(),
       },
       'InterFs Download': {
         progress: 0,
         used: false,
         expectedStage: 3,
+        jobs: new Map(),
       },
       'Ipfs Upload': {
         progress: 0,
         used: false,
         expectedStage: 2,
+        jobs: new Map(),
       },
       'Original Processed': {
         progress: 100,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Preview Completed': {
         progress: 100,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Video Transcode': {
         progress: 0,
         used: false,
         expectedStage: 2,
+        jobs: new Map(),
       },
       'CDN Upload': {
         progress: 0,
         used: false,
         expectedStage: 2,
+        jobs: new Map(),
       },
     });
   });
@@ -56,21 +64,25 @@ describe('createObjTemplate', () => {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'InterFs Upload': {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'InterFs Download': {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Original Processed': {
         progress: 100,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
     });
   });
@@ -83,21 +95,25 @@ describe('createObjTemplate', () => {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Ipfs Upload': {
         progress: 0,
         used: false,
         expectedStage: 2,
+        jobs: new Map(),
       },
       'CDN Upload': {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Preview Completed': {
         progress: 100,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
     });
   });
@@ -110,16 +126,19 @@ describe('createObjTemplate', () => {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Ipfs Upload': {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Preview Completed': {
         progress: 100,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
     });
   });
@@ -132,21 +151,25 @@ describe('createObjTemplate', () => {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Ipfs Upload': {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'CDN Upload': {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Preview Completed': {
         progress: 100,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
     });
   });
@@ -159,11 +182,13 @@ describe('createObjTemplate', () => {
         progress: 0,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
       'Preview Completed': {
         progress: 100,
         used: false,
         expectedStage: 1,
+        jobs: new Map(),
       },
     });
   });
