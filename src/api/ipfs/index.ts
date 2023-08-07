@@ -17,7 +17,7 @@ import { propagateErrors } from '../../functions';
 export class IpfsApi extends BaseApi {
   public returnedHeaders: Record<string, string> = {};
   /**check pinning status of the given cid
-   * @param {cid} cid 
+   * @param {cid} cid
    * @returns {statusResponse} statusResponse
    */
   async status(cid: string) {
@@ -33,7 +33,7 @@ export class IpfsApi extends BaseApi {
   /**
    *  get a file from the gateway
    * @param cid - cid of the file to fetch
-   * @param {getOptions} options 
+   * @param {getOptions} options
    * @returns {{StreamResponse}} StreamResponse
    * */
   async get(cid: string, options?: getOptions): Promise<StreamResponse> {
