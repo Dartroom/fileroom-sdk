@@ -111,7 +111,9 @@ export class UploadApi extends EventEmitter<UploadListners> {
     this.uploadMultiple = multiple;
     const Secure = protocol === 'https';
     this._isSecure = Secure;
-    this._rawUrl = `${Secure ? 'https' : 'http'}://${host}:${port}`;
+    this._rawUrl = `${Secure ? 'https' : 'http'}://${host}${
+      port ? ':' + port : ''
+    }`;
     const url = new URL(this._path, this._rawUrl);
     url.port = port as string;
     this._url = url.toString();

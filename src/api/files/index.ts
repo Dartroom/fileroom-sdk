@@ -116,7 +116,8 @@ export class FilesApi extends BaseApi {
 
     propagateErrors(json);
     return json as deleteResponse;
-  }  /**
+  }
+  /**
    * upload a file or an array of files with individual options(array)  or one globaloptions(see uploadOptions)
    * @param {UploadFile} file
    * @param {uploadOptions} options
