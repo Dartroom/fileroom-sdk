@@ -56,7 +56,7 @@ describe('ipfsApi in nodejs should', () => {
       let Previewcid = String(client.ipfs.returnedHeaders['etag']);
 
       expect(response).toBeDefined();
-    } catch (error) {
+    } catch (error:any) {
       expect(error).toBeDefined();
       expect(error.message).toContain('API_ERROR: NOT_FOUND 404');
     }
