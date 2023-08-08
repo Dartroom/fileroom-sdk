@@ -23,19 +23,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run build --if-present
-      - name: Add .env file
-        uses: SpicyPizza/create-envfile@v2.0
+      - name: Decrypt our env variables
+        uses: anthonykgross/ansible-vault-cli-github-action@v1
         with:
-            TEST_USER_DARTROOM_TOKEN: ${{ secrets.TEST_USER_DARTROOM_TOKEN }}
-            TEST_DEV_USERNAME: ${{ secrets.TEST_DEV_USERNAME }}
-            TEST_DEV_PASSWORD: ${{ secrets.TEST_DEV_PASSWORD }}
-            TEST_DEV_API_KEY: ${{ secrets.TEST_DEV_API_KEY }}
-            FILEROOM_ENV: ${{ secrets.FILEROOM_ENV }}
-            TEST_FILECID: ${{ secrets.TEST_FILECID }}
+          vault_key: ${{secrets.VAULT_KEY }}
+          command: 'ansible-vault decrypt .encrypted && mv .encrypted .env'
 
-      - run:  |
-           ls 
-           npm test 
+      - run: npm test
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
