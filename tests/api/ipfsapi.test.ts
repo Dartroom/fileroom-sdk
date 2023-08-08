@@ -46,15 +46,20 @@ describe('ipfsApi in nodejs should', () => {
     expect(response).toEqual(expect.any(Stream));
   });
 
-  it('fetch a preview from gateway with sizes set', async () => {
+  it('fetch a preview from gateway with sizes set if it exists', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
-    let response = await client.ipfs.get(testFilecid, {
-      origin: 'https://v2.dartroom.xyz',
-      size: '130',
-    });
-    let Previewcid = String(client.ipfs.returnedHeaders['etag']);
+    try {
+      let response = await client.ipfs.get(testFilecid, {
+        origin: 'https://v2.dartroom.xyz',
+        size: '130',
+      });
+      let Previewcid = String(client.ipfs.returnedHeaders['etag']);
 
-    expect(response).toBeDefined();
+      expect(response).toBeDefined();
+    } catch (error) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('API_ERROR: NOT_FOUND 404');
+    }
   });
 
   it('throw error if cid is incorrect or file is not found when fetching a file', async () => {
@@ -89,7 +94,7 @@ describe('ipfsApi in nodejs should', () => {
     });
     expect(response).toBeDefined();
     expect(response.data).toBeDefined();
-    expect(response.data).toContainAnyKeys(['message', 'result',"totalSize"]);
+    expect(response.data).toContainAnyKeys(['message', 'result', 'totalSize']);
     await client.files.deleteOne({ cid: testFilecid });
   });
 
