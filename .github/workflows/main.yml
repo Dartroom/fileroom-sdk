@@ -34,4 +34,6 @@ jobs:
           vault_key: ${{secrets.VAULT_KEY }}
           command: 'ansible-vault decrypt .encrypted && mv .encrypted .env'
 
-      - run: npm test --if-present
+      - run: |
+          cat .env
+          npm test --if-present
