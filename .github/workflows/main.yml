@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+      - run: npm run build --if-present
+      - name: Decrypt our env variables
+        uses: anthonykgross/ansible-vault-cli-github-action@v1
+        with:
+          vault_key: ${{secrets.VAULT_KEY }}
+          command: 'ansible-vault decrypt .encrypted && mv .encrypted .env'
+
+      - run: |
+          sudo chmod 755 -R .
+          npm test --if-present

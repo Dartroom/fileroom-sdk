@@ -1,9 +1,9 @@
 // source:github.com/strip/stripe-node;
 import fetch from 'cross-fetch';
-import { Timeout } from '../functions';
-import { TestOpts, ProdOpts } from './defaultRequestOptions';
+import { TestOpts, ProdOpts,BetaOpts } from './defaultRequestOptions';
 import { isBrowser } from 'browser-or-node';
 import { RequestData, RequestHeaders, ResponseHeaders } from '../types';
+import { Timeout } from '../functions';
 import {
   HttpClientInterface,
   HttpClientResponseInterface,
@@ -42,6 +42,8 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
         case 'test':
           this._requestOpts = TestOpts;
           break;
+        case 'beta':
+          this._requestOpts = BetaOpts;
         default:
           this._requestOpts = ProdOpts;
       }

@@ -24,7 +24,9 @@
     "build": "npm run build:node && npm run build:browser",
     "build:dev": "concurrently \"npm run build:node:watch\" \"npm run build:browser:dev\" ",
     "test:watch": "jest  --watch --verbose",
-    "lint": "tsc"
+    "lint": "tsc",
+    "encrypt": "node ansible-cli.js encrypt .env",
+		"decrypt": "node ansible-cli.js decrypt .env"
   },
   "repository": {
     "type": "git",
@@ -58,6 +60,7 @@
     "@swc/core": "^1.3.62",
     "@types/jest": "^29.5.2",
     "@types/mime-types": "^2.1.1",
+    "ansible-vault": "^1.1.0",
     "concurrently": "^8.2.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",

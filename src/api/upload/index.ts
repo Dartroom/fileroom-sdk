@@ -111,12 +111,14 @@ export class UploadApi extends EventEmitter<UploadListners> {
     this.uploadMultiple = multiple;
     const Secure = protocol === 'https';
     this._isSecure = Secure;
-    this._rawUrl = `${Secure ? 'https' : 'http'}://${host}:${port}`;
+    this._rawUrl = `${Secure ? 'https' : 'http'}://${host}${
+      port ? ':' + port : ''
+    }`;
     const url = new URL(this._path, this._rawUrl);
     url.port = port as string;
     this._url = url.toString();
     this.createHttpRequest.extendHeaders({
-      'X-Forwarded-Proto': protocol as string,
+      'X-Forwarded-Proto': Secure ? 'https' : 'http',
     });
     this._headers = this.createHttpRequest._Headers;
     if (options) {
@@ -177,7 +179,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
       headers: this._headers as any,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       removeFingerprintOnSuccess: true,
-      chunkSize: 5 * 1024 * 1024,
+      chunkSize: 1 * 1024 * 1024,
 
       onError: error => {
         this.emit('error', error);

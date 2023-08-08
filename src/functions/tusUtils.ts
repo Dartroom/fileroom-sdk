@@ -73,7 +73,6 @@ export const proxyHandler = {
         return true;
       }
     } catch (error) {
-      console.log(error);
       return true;
     }
   },
