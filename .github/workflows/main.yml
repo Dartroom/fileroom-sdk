@@ -41,4 +41,6 @@ jobs:
           env_key_FILEROOM_ENV: ${{ secrets.FILEROOM_ENV }}
           env_key_TEST_FILECID: ${{ secrets.TEST_FILECID }}
       - name: Run tests
-        run: npm  test
+        run: |
+          cat .env 
+          npm test --if-present
