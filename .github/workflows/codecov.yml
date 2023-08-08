@@ -37,7 +37,7 @@ jobs:
           env_key_TEST_FILECID: ${{ secrets.TEST_FILECID }}
 
       - name: Run tests
-        run: npm test -- --coverage --coverage
+        run: npm test -- --coverage 
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

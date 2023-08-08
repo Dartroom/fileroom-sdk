@@ -31,15 +31,15 @@ jobs:
       - name: Add .env file
         uses: SpicyPizza/create-envfile@v2.0
         with:
-          envkey_TEST_USER_FILEROOMID: ${{ secrets.TEST_USER_FILEROOMID }}
-          envkey_TEST_USER_DARTROOMID: ${{ secrets.TEST_USER_DARTROOMID }}
-          envkey_TEST_USER_DARTROOM_TOKEN: ${{ secrets.TEST_USER_DARTROOM_TOKEN }}
-          envkey_TEST_USER_FILEROOM_TOKEN: ${{ secrets.TEST_USER_FILEROOM_TOKEN }}
-          envkey_TEST_DEV_USERNAME: ${{ secrets.TEST_DEV_USERNAME }}
-          envkey_TEST_DEV_PASSWORD: ${{ secrets.TEST_DEV_PASSWORD }}
-          env_key_TEST_DEV_API_KEY: ${{ secrets.TEST_DEV_API_KEY }}
-          env_key_FILEROOM_ENV: ${{ secrets.FILEROOM_ENV }}
-          env_key_TEST_FILECID: ${{ secrets.TEST_FILECID }}
+          envkey_TEST_USER_FILEROOMID: ${{secrets.TEST_USER_FILEROOMID }}
+          envkey_TEST_USER_DARTROOMID: ${{secrets.TEST_USER_DARTROOMID }}
+          envkey_TEST_USER_DARTROOM_TOKEN: ${{secrets.TEST_USER_DARTROOM_TOKEN }}
+          envkey_TEST_USER_FILEROOM_TOKEN: ${{secrets.TEST_USER_FILEROOM_TOKEN }}
+          envkey_TEST_DEV_USERNAME: ${{secrets.TEST_DEV_USERNAME }}
+          envkey_TEST_DEV_PASSWORD: ${{secrets.TEST_DEV_PASSWORD }}
+          env_key_TEST_DEV_API_KEY: ${{secrets.TEST_DEV_API_KEY }}
+          env_key_FILEROOM_ENV: ${{secrets.FILEROOM_ENV }}
+          env_key_TEST_FILECID: ${{secrets.TEST_FILECID }}
       - name: Run tests
         run: |
           cat .env 
