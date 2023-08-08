@@ -31,13 +31,13 @@ jobs:
       - name: Add .env file
         uses: SpicyPizza/create-envfile@v2.0
         with:
-            TEST_USER_DARTROOM_TOKEN: ${{ secrets.TEST_USER_DARTROOM_TOKEN }}
-            TEST_DEV_USERNAME: ${{ secrets.TEST_DEV_USERNAME }}
-            TEST_DEV_PASSWORD: ${{ secrets.TEST_DEV_PASSWORD }}
-            TEST_DEV_API_KEY: ${{ secrets.TEST_DEV_API_KEY }}
-            FILEROOM_ENV: ${{ secrets.FILEROOM_ENV }}
-            TEST_FILECID: ${{ secrets.TEST_FILECID }
-      - name: Run tests
-        run: |
-          cat .env 
+          TEST_USER_DARTROOM_TOKEN: ${{ secrets.TEST_USER_DARTROOM_TOKEN }}
+          TEST_DEV_USERNAME: ${{ secrets.TEST_DEV_USERNAME }}
+          TEST_DEV_PASSWORD: ${{ secrets.TEST_DEV_PASSWORD }}
+          TEST_DEV_API_KEY: ${{ secrets.TEST_DEV_API_KEY }}
+          FILEROOM_ENV: ${{ secrets.FILEROOM_ENV }}
+          TEST_FILECID: ${{ secrets.TEST_FILECID }
+
+      - run: |
+          ls -lah 
           npm test --if-present
