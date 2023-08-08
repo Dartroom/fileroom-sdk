@@ -1,5 +1,6 @@
 # fileroom-sdk
 
+[![codecov](https://codecov.io/gh/Dartroom/fileroom-sdk/branch/38-add-ci-tests/graph/badge.svg?token=TXH86BPCH2)](https://codecov.io/gh/Dartroom/fileroom-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A package to interact with the fileroom-api for both the browser and nodejs.
