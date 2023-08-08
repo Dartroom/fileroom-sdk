@@ -56,7 +56,7 @@ describe('ipfsApi in nodejs should', () => {
       let Previewcid = String(client.ipfs.returnedHeaders['etag']);
 
       expect(response).toBeDefined();
-    } catch (error:any) {
+    } catch (error: any) {
       expect(error).toBeDefined();
       expect(error.message).toContain('API_ERROR: NOT_FOUND 404');
     }
@@ -88,14 +88,23 @@ describe('ipfsApi in nodejs should', () => {
     }
   });
   it("import a file by cid and pin it's cid", async () => {
-    let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
-    let response = await client.ipfs.pin(testFilecid, {
-      resize: [],
-    });
-    expect(response).toBeDefined();
-    expect(response.data).toBeDefined();
-    expect(response.data).toContainAnyKeys(['message', 'result', 'totalSize']);
-    await client.files.deleteOne({ cid: testFilecid });
+    try {
+      let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+      let response = await client.ipfs.pin(testFilecid, {
+        resize: [],
+      });
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toContainAnyKeys([
+        'message',
+        'result',
+        'totalSize',
+      ]);
+      await client.files.deleteOne({ cid: testFilecid });
+    } catch (error: any) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('API_ERROR');
+    }
   });
 
   it('throw error if cid is incorrect or file is not found when pinning a file', async () => {

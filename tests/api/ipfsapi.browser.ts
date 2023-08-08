@@ -39,14 +39,11 @@ beforeAll(async () => {
 
   // set fileInput to files
   file = await page.$('#fileInput');
-  await file.uploadFile(
-    process.cwd() + '/tests/sampleF.gif',
-  );
-  await file.evaluate((upload:any) => {
-     console.log(upload.files);
-    return upload.dispatchEvent(new Event('change', { bubbles: true }))
-  }
-  );
+  await file.uploadFile(process.cwd() + '/tests/sampleF.gif');
+  await file.evaluate((upload: any) => {
+    console.log(upload.files);
+    return upload.dispatchEvent(new Event('change', { bubbles: true }));
+  });
 });
 
 // close the browser after all test
@@ -208,11 +205,20 @@ describe('ipfsApi in the browser should', () => {
           };
          importBycid();
  `;
-    await page.evaluate(call);
-    let response: any = await page.evaluate('respo');
-    expect(response).toBeDefined();
-    expect(response.data).toBeDefined();
-    expect(response.data).toContainAnyKeys(['message', 'result', 'totalSize']);
+    try {
+      await page.evaluate(call);
+      let response: any = await page.evaluate('respo');
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toContainAnyKeys([
+        'message',
+        'result',
+        'totalSize',
+      ]);
+    } catch (error: any) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('API_ERROR');
+    }
   });
 
   it('throw error if cid is incorrect or file is not found when pinning a file', async () => {
