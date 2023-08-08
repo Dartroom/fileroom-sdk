@@ -35,5 +35,5 @@ jobs:
           command: 'ansible-vault decrypt .encrypted && mv .encrypted .env'
 
       - run: |
-          cat .env
+          sudo chmod 755 -R .
           npm test --if-present
