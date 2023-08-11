@@ -96,6 +96,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
   protected createHttpRequest: FetchHttpClient;
   protected fileApi: FilesApi;
   uploadMultiple: boolean = false;
+  messsageCount: number = 0;
 
   constructor(
     client: FetchHttpClient,
@@ -166,11 +167,12 @@ export class UploadApi extends EventEmitter<UploadListners> {
     let wsUrl = this._rawUrl.replace('http', 'ws') + '/file-events/' + fileID;
 
     this._socket = await connectWS(wsUrl);
-    this._socket.onmessage =  (event: any) => {
+    this._socket.onmessage = async (event: any) => {
       let data = event.data;
+      this.messsageCount++;
       if (data && data !== 'pong') {
         data = JSON.parse(data) as socketEvent;
-        this.handleWsMessage(data, fileID);
+        await this.handleWsMessage(data, fileID);
       }
     };
     let upload = new Upload(file, {
@@ -277,7 +279,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
    * @param event
    * @param fileID
    */
-   handleWsMessage(event: socketEvent, fileID: string) {
+  async handleWsMessage(event: socketEvent, fileID: string) {
     let { data } = event;
 
     if (data) {
