@@ -96,6 +96,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
   protected createHttpRequest: FetchHttpClient;
   protected fileApi: FilesApi;
   uploadMultiple: boolean = false;
+  messsageCount: number = 0;
 
   constructor(
     client: FetchHttpClient,
@@ -168,9 +169,10 @@ export class UploadApi extends EventEmitter<UploadListners> {
     this._socket = await connectWS(wsUrl);
     this._socket.onmessage = async (event: any) => {
       let data = event.data;
+      this.messsageCount++;
       if (data && data !== 'pong') {
         data = JSON.parse(data) as socketEvent;
-        this.handleWsMessage(data, fileID);
+        await this.handleWsMessage(data, fileID);
       }
     };
     let upload = new Upload(file, {
@@ -346,13 +348,11 @@ export class UploadApi extends EventEmitter<UploadListners> {
           if (this._uploadCount === this._progressMap.size - 1) {
             this.emit('allCompleted', this._results);
             // close the socket
-            this._socket?.close();
           }
         }
 
         this.emit('completed', result);
         // close the socket after the upload
-        this._socket?.close();
       }
     }
   }

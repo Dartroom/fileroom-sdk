@@ -1,0 +1,62 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - v*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v3
+
+      - name: Get tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          strip_v: true
+
+      - name: Update version
+        uses: deef0000dragon1/json-edit-action@v1
+        env:
+          KEY: version
+          VALUE: ${{ steps.tag.outputs.tag }}
+          FILE: package.json
+
+      - name: Create Pull Request to update version
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update version
+          title: Update version
+          body: Update version to ${{ steps.tag.outputs.tag }}
+          branch: update-version-${{ steps.tag.outputs.tag }}
+          branch-suffix: timestamp
+          delete-branch: true
+          signoff: true
+          draft: false
+
+      # publish to the NPM registry
+
+      - name: Publish to NPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@dartroom'
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@dartroom'
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

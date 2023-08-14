@@ -8,7 +8,7 @@ import {
   uploadOptions,
   existsResponse,
 } from '../../interfaces';
-import { propagateErrors } from '../../functions';
+import { propagateErrors, sleep } from '../../functions';
 
 import { UploadApi } from '../upload';
 import { UploadFile, UploadEvents } from '../../types';
@@ -152,6 +152,8 @@ export class FilesApi extends BaseApi {
       for (let [index, file] of Object.entries(files)) {
         let opts = Array.isArray(options) ? options[Number(index)] : undefined;
         this.upload = await this.upload.start(file, opts);
+        // sleep for 200ms
+        await sleep(200);
       }
       return this.upload;
     } catch (err) {

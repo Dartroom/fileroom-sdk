@@ -26,7 +26,7 @@
     "test:watch": "jest  --watch --verbose",
     "lint": "tsc",
     "encrypt": "node ansible-cli.js encrypt .env",
-		"decrypt": "node ansible-cli.js decrypt .env"
+    "decrypt": "node ansible-cli.js decrypt .env"
   },
   "repository": {
     "type": "git",

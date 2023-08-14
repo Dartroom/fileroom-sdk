@@ -22,6 +22,7 @@ export async function connectWS(url: string): Promise<WebSocket> {
 
     server.onclose = () => {
       clearInterval(interval);
+      console.log('connection closed');
     };
   });
 }

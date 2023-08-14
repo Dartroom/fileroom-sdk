@@ -1,4 +1,5 @@
 # fileroom-sdk
+
 [![CI](https://github.com/Dartroom/fileroom-sdk/actions/workflows/main.yml/badge.svg)](https://github.com/Dartroom/fileroom-sdk/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/Dartroom/fileroom-sdk/branch/38-add-ci-tests/graph/badge.svg?token=TXH86BPCH2)](https://codecov.io/gh/Dartroom/fileroom-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -34,7 +35,7 @@ Use of this SDK requires the following:
 ### browser
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@dartroom/fileroom-sdk"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dartroom/fileroom-sdk/dist/browser/index.min.js"></script>
 ```
 
 ```javascript
