@@ -30,6 +30,8 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           message: Update version to ${{ steps.tag.outputs.tag }}
+          default_author: github_actions
+          push: true
 
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
