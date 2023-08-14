@@ -38,7 +38,8 @@ jobs:
           branch-suffix: timestamp
           signoff: true
           draft: false
-
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
       # Publish to the NPM registry
   job2:
     needs: job1
@@ -57,7 +58,7 @@ jobs:
           scope: '@dartroom'
 
       - run: |
-          git checkout update-version-${{ steps.tag.outputs.tag }}
+          git checkout update-version-${{needs.job1.outputs.tag }}
              npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -70,7 +71,7 @@ jobs:
           scope: '@dartroom'
 
       - run: |
-          git checkout update-version-${{ steps.tag.outputs.tag }}
+          git checkout update-version-${{ needs.job1.outputs.tag}}
              npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
