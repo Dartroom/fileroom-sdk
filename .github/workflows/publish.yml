@@ -32,7 +32,7 @@ jobs:
           title: Update version
           body: Update version to ${{ steps.tag.outputs.tag }}
           branch: update-version-${{ steps.tag.outputs.tag }}
-          base: update-version-${{ steps.tag.outputs.tag }}
+          base: main
           branch-suffix: timestamp
           delete-branch: true
           signoff: true
