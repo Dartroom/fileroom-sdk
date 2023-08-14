@@ -26,18 +26,11 @@ jobs:
           VALUE: ${{ steps.tag.outputs.tag }}
           FILE: package.json
 
-      - name: Create Pull Request to update version
-        uses: peter-evans/create-pull-request@v5
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: Update version
-          title: Update version
-          body: Update version to ${{ steps.tag.outputs.tag }}
-          branch: update-version-${{ steps.tag.outputs.tag }}
-          base: main
-          branch-suffix: timestamp
-          signoff: true
-          draft: false
+          message: Update version to ${{ steps.tag.outputs.tag }}
+
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       # Publish to the NPM registry
@@ -58,8 +51,7 @@ jobs:
           scope: '@dartroom'
 
       - run: |
-          git checkout update-version-${{needs.job1.outputs.tag }}
-             npm publish
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -71,7 +63,6 @@ jobs:
           scope: '@dartroom'
 
       - run: |
-          git checkout update-version-${{ needs.job1.outputs.tag}}
-             npm publish
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
