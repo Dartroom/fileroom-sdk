@@ -13,6 +13,8 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@v3
 
+      - run: git checkout main
+
       - name: Get tag
         id: tag
         uses: dawidd6/action-get-tag@v1
