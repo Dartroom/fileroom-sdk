@@ -12,7 +12,6 @@ jobs:
     steps:
       - name: Checkout files
         uses: actions/checkout@v3
-        
 
       - name: Get tag
         id: tag
@@ -28,12 +27,16 @@ jobs:
           FILE: package.json
 
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9
+        uses: peter-evans/create-pull-request@v5
         with:
-          message: Update version to ${{ steps.tag.outputs.tag }}
-          default_author: github_actions
-          push: true
-
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update version
+          title: Update version
+          body: Update version to ${{ steps.tag.outputs.tag }}
+          branch: update-version-${{ steps.tag.outputs.tag }}
+          base: main
+          signoff: true
+          draft: false
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       # Publish to the NPM registry
@@ -54,7 +57,9 @@ jobs:
           scope: '@dartroom'
 
       - run: |
-          npm publish
+               git fetch origin 
+               git checkout update-version-${{needs.job1.outputs.tag }}
+               npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -65,7 +70,9 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dartroom'
 
-      - run: |
-          npm publish
+      - run: | 
+             git fetch origin 
+             git checkout update-version-${{ needs.job1.outputs.tag}}
+             npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
