@@ -32,12 +32,13 @@ jobs:
           title: Update version
           body: Update version to ${{ steps.tag.outputs.tag }}
           branch: update-version-${{ steps.tag.outputs.tag }}
+          base: update-version-${{ steps.tag.outputs.tag }}
           branch-suffix: timestamp
           delete-branch: true
           signoff: true
           draft: false
 
-      # publish to the NPM registry
+      # Publish to the NPM registry
 
       - name: Publish to NPM
         uses: actions/setup-node@v3
