@@ -5,7 +5,8 @@ on:
     tags:
       - v*
 jobs:
-  build:
+  job1:
+    name: fetch tag and update Package
     runs-on: ubuntu-latest
 
     steps:
@@ -35,11 +36,18 @@ jobs:
           branch: update-version-${{ steps.tag.outputs.tag }}
           base: main
           branch-suffix: timestamp
-          delete-branch: true
           signoff: true
           draft: false
 
       # Publish to the NPM registry
+  job2:
+    needs: job1
+    name: Publishing to Repositories(NPM & GitHub Packages)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v3
 
       - name: Publish to NPM
         uses: actions/setup-node@v3
@@ -48,7 +56,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           scope: '@dartroom'
 
-      - run: npm publish
+      - run: |
+          git checkout update-version-${{ steps.tag.outputs.tag }}
+             npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -59,6 +69,8 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dartroom'
 
-      - run: npm publish
+      - run: |
+          git checkout update-version-${{ steps.tag.outputs.tag }}
+             npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
