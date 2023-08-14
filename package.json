@@ -1,5 +1,5 @@
 {
-  "name": "fileroom-sdk",
+  "name": "@dartroom/fileroom-sdk",
   "version": "0.1.0-beta",
   "description": "A package to interact with the fileroom-api for both the browser and nodejs.",
   "main": "dist/index.js",
