@@ -59,7 +59,7 @@ jobs:
       - run: |
                git fetch origin 
                git checkout update-version-${{needs.job1.outputs.tag }}
-               npm publish
+               npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
