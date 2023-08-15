@@ -1,5 +1,5 @@
 # fileroom-sdk
-
+[![npm version](https://badge.fury.io/js/@dartroom%2Ffileroom-sdk.svg)](https://badge.fury.io/js/@dartroom%2Ffileroom-sdk)
 [![CI](https://github.com/Dartroom/fileroom-sdk/actions/workflows/main.yml/badge.svg)](https://github.com/Dartroom/fileroom-sdk/actions/workflows/main.yml)
 [![Publish](https://github.com/Dartroom/fileroom-sdk/actions/workflows/publish.yml/badge.svg)](https://github.com/Dartroom/fileroom-sdk/actions/workflows/publish.yml)
 [![codecov](https://codecov.io/gh/Dartroom/fileroom-sdk/branch/38-add-ci-tests/graph/badge.svg?token=TXH86BPCH2)](https://codecov.io/gh/Dartroom/fileroom-sdk)
