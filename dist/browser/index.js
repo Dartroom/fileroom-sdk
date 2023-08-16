@@ -47581,6 +47581,8 @@ function _ts_generator(thisArg, body) {
         _define_property(_assert_this_initialized(_this), "fileApi", void 0);
         _define_property(_assert_this_initialized(_this), "uploadMultiple", false);
         _define_property(_assert_this_initialized(_this), "messsageCount", 0);
+        _define_property(_assert_this_initialized(_this), "finished", false);
+        _define_property(_assert_this_initialized(_this), "connections", []);
         var reqOpts = client._requestOpts;
         var host = reqOpts.host, port = reqOpts.port, protocol = reqOpts.protocol, timeout = reqOpts.timeout;
         var config = client._config;
@@ -47693,6 +47695,7 @@ function _ts_generator(thisArg, body) {
                                 ];
                             case 4:
                                 _this._socket = _state.sent();
+                                _this.connections.push(_this._socket);
                                 _this._socket.onmessage = function() {
                                     var _ref = _async_to_generator(function(event) {
                                         var data;
@@ -47963,71 +47966,122 @@ function _ts_generator(thisArg, body) {
                 return _async_to_generator(function() {
                     var data, _data_progress, status, result, Globallisteners, Singlelisteners, totalProgress, expectedSize, obj, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _step_value, key, value, progress, newKey, overallProgress, percent, completed;
                     return _ts_generator(this, function(_state) {
-                        data = event.data;
-                        if (data) {
-                            ;
-                            status = data.status;
-                            _this._progressMap.get(fileID)[status] = data;
-                            result = data.result || ((_data_progress = data.progress) === null || _data_progress === void 0 ? void 0 : _data_progress.result);
-                            if (!_this.uploadMultiple) _this.emit("progress", _this._progressMap.get(fileID));
-                            Globallisteners = _to_consumable_array(_this.listeners("globalProgress")).concat(_to_consumable_array(_this.listeners("allCompleted")));
-                            if (!_this.uploadMultiple && Globallisteners.length) {
-                                throw new Error("globalProgress and allCompleted listeners are required for multiple uploads, listen to the completed and progress events instead");
-                            }
-                            Singlelisteners = _to_consumable_array(_this.listeners("progress")).concat(_to_consumable_array(_this.listeners("completed")));
-                            if (_this.uploadMultiple) {
-                                if (Singlelisteners.length) {
-                                    throw new Error("progress and completed listeners are required for single uploads, listen to the globalProgress and allCompleted events instead");
+                        switch(_state.label){
+                            case 0:
+                                data = event.data;
+                                if (!data) return [
+                                    3,
+                                    4
+                                ];
+                                status = data.status;
+                                _this._progressMap.get(fileID)[status] = data;
+                                result = data.result || ((_data_progress = data.progress) === null || _data_progress === void 0 ? void 0 : _data_progress.result);
+                                if (!_this.uploadMultiple) _this.emit("progress", _this._progressMap.get(fileID));
+                                Globallisteners = _to_consumable_array(_this.listeners("globalProgress")).concat(_to_consumable_array(_this.listeners("allCompleted")));
+                                if (!_this.uploadMultiple && Globallisteners.length) {
+                                    throw new Error("globalProgress and allCompleted listeners are required for multiple uploads, listen to the completed and progress events instead");
                                 }
-                            }
-                            totalProgress = 0;
-                            expectedSize = _to_consumable_array(_this._progressMap.keys()).filter(function(event) {
-                                return event !== "totalProgress";
-                            }).length;
-                            obj = {};
-                            _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                            try {
-                                for(_iterator = _this._progressMap[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                                    _step_value = _sliced_to_array(_step.value, 2), key = _step_value[0], value = _step_value[1];
-                                    progress = value;
-                                    newKey = _this.uploads[key] || key;
-                                    if (newKey) obj[newKey] = value;
-                                    overallProgress = progress.overallProgress;
-                                    if (overallProgress) totalProgress += overallProgress;
-                                }
-                            } catch (err) {
-                                _didIteratorError = true;
-                                _iteratorError = err;
-                            } finally{
-                                try {
-                                    if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                        _iterator.return();
-                                    }
-                                } finally{
-                                    if (_didIteratorError) {
-                                        throw _iteratorError;
-                                    }
-                                }
-                            }
-                            percent = totalProgress / (expectedSize * 100) * 100;
-                            _this._progressMap.set("totalProgress", Number(percent.toFixed(2)));
-                            obj.totalProgress = Number(percent.toFixed(2));
-                            _this.emit("globalProgress", obj);
-                            completed = result && result.hasOwnProperty("file") ? result.file : result;
-                            if (result && completed.expectedPreviewCount === completed.currentPreviewCount) {
+                                Singlelisteners = _to_consumable_array(_this.listeners("progress")).concat(_to_consumable_array(_this.listeners("completed")));
                                 if (_this.uploadMultiple) {
-                                    _this._results.push(result);
-                                    // when each upload is completed, upload
-                                    _this._uploadCount++;
-                                    if (_this._uploadCount === _this._progressMap.size - 1) {
-                                        _this.emit("allCompleted", _this._results);
-                                    // close the socket
+                                    if (Singlelisteners.length) {
+                                        throw new Error("progress and completed listeners are required for single uploads, listen to the globalProgress and allCompleted events instead");
                                     }
                                 }
+                                totalProgress = 0;
+                                expectedSize = _to_consumable_array(_this._progressMap.keys()).filter(function(event) {
+                                    return event !== "totalProgress";
+                                }).length;
+                                obj = {};
+                                _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                                try {
+                                    for(_iterator = _this._progressMap[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                                        _step_value = _sliced_to_array(_step.value, 2), key = _step_value[0], value = _step_value[1];
+                                        progress = value;
+                                        newKey = _this.uploads[key] || key;
+                                        if (newKey) obj[newKey] = value;
+                                        overallProgress = progress.overallProgress;
+                                        if (overallProgress) totalProgress += overallProgress;
+                                    }
+                                } catch (err) {
+                                    _didIteratorError = true;
+                                    _iteratorError = err;
+                                } finally{
+                                    try {
+                                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                            _iterator.return();
+                                        }
+                                    } finally{
+                                        if (_didIteratorError) {
+                                            throw _iteratorError;
+                                        }
+                                    }
+                                }
+                                percent = totalProgress / (expectedSize * 100) * 100;
+                                _this._progressMap.set("totalProgress", Number(percent.toFixed(2)));
+                                obj.totalProgress = Number(percent.toFixed(2));
+                                _this.emit("globalProgress", obj);
+                                completed = result && result.hasOwnProperty("file") ? result.file : result;
+                                if (!(result && completed.expectedPreviewCount === completed.currentPreviewCount)) return [
+                                    3,
+                                    4
+                                ];
+                                if (!_this.uploadMultiple) return [
+                                    3,
+                                    2
+                                ];
+                                _this._results.push(result);
+                                // when each upload is completed, upload
+                                _this._uploadCount++;
+                                if (!(_this._uploadCount === _this._progressMap.size - 1)) return [
+                                    3,
+                                    2
+                                ];
+                                _this.finished = true;
+                                _this.emit("allCompleted", _this._results);
+                                if (!_this.finished) return [
+                                    3,
+                                    2
+                                ];
+                                return [
+                                    4,
+                                    _this.closeConnections()
+                                ];
+                            case 1:
+                                _state.sent();
+                                _state.label = 2;
+                            case 2:
                                 _this.emit("completed", result);
-                            // close the socket after the upload
-                            }
+                                _this.finished = true;
+                                if (!(!_this.uploadMultiple && _this.finished)) return [
+                                    3,
+                                    4
+                                ];
+                                return [
+                                    4,
+                                    _this.closeConnections()
+                                ];
+                            case 3:
+                                _state.sent();
+                                _state.label = 4;
+                            case 4:
+                                return [
+                                    2
+                                ];
                         }
+                    });
+                })();
+            }
+        },
+        {
+            key: "closeConnections",
+            value: function closeConnections() {
+                var _this = this;
+                return _async_to_generator(function() {
+                    return _ts_generator(this, function(_state) {
+                        // close the connection
+                        _this.connections.forEach(function(cons) {
+                            cons.close();
+                        });
                         return [
                             2
                         ];
@@ -48912,7 +48966,6 @@ function _connectWS() {
                     };
                     server.onclose = function() {
                         clearInterval(interval);
-                        console.log("connection closed");
                     };
                 })
             ];
@@ -49158,6 +49211,7 @@ var generateUUID = function() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Timeout: () => (/* reexport safe */ _timeout__WEBPACK_IMPORTED_MODULE_8__.Timeout),
+/* harmony export */   TimeoutTracker: () => (/* reexport safe */ _timeout__WEBPACK_IMPORTED_MODULE_8__.TimeoutTracker),
 /* harmony export */   classifyFile: () => (/* reexport safe */ _classifyFile__WEBPACK_IMPORTED_MODULE_6__.classifyFile),
 /* harmony export */   connectWS: () => (/* reexport safe */ _connectWs__WEBPACK_IMPORTED_MODULE_7__.connectWS),
 /* harmony export */   createObjTemplate: () => (/* reexport safe */ _createObjectTemplate__WEBPACK_IMPORTED_MODULE_5__.createObjTemplate),
@@ -49438,11 +49492,16 @@ function _streamToBuff() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Timeout: () => (/* binding */ Timeout)
+/* harmony export */   Timeout: () => (/* binding */ Timeout),
+/* harmony export */   TimeoutTracker: () => (/* binding */ TimeoutTracker)
 /* harmony export */ });
+var TimeoutTracker = {
+    timeout: null
+};
 var Timeout = function(num) {
     return new Promise(function(resolve, reject) {
-        var id = setTimeout(function() {
+        TimeoutTracker.timeout = setTimeout(function() {
+            TimeoutTracker.timeout = null;
             reject(new Error("Request timed out"));
         }, num);
     });
@@ -50003,21 +50062,14 @@ var FetchHttpClient = /*#__PURE__*/ function(HttpClient) {
                 // to be established followed by 20s for the body, Fetch would timeout but
                 // Node would not. The more fine-grained timeout cannot be implemented with
                 // fetch.
-                var pendingTimeoutId;
-                /*const timeoutPromise = new Promise((_, reject) => {
-      pendingTimeoutId = setTimeout(() => {
-        pendingTimeoutId = null;
-        reject(HttpClient.makeTimeoutError());
-      }, timeout);
-    });
-    */ return Promise.race([
+                return Promise.race([
                     fetchPromise,
                     (0,_functions__WEBPACK_IMPORTED_MODULE_3__.Timeout)(timeout)
                 ]).then(function(res) {
                     return new FetchHttpClientResponse(res);
                 }).finally(function() {
-                    if (pendingTimeoutId) {
-                        clearTimeout(pendingTimeoutId);
+                    if (_functions__WEBPACK_IMPORTED_MODULE_3__.TimeoutTracker.timeout) {
+                        clearTimeout(_functions__WEBPACK_IMPORTED_MODULE_3__.TimeoutTracker.timeout);
                     }
                 });
             }
