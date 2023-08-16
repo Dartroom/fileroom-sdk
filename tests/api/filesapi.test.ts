@@ -154,10 +154,10 @@ describe('filesAPi in nodejs should', () => {
   });
 
   it('upload a single file with resize options with progress', async () => {
-       let client = new Client({
-         accessToken: testDevApiKEY,
-         env: fileroomEvn,
-       });
+    let client = new Client({
+      accessToken: testDevApiKEY,
+      env: fileroomEvn,
+    });
     let path = process.cwd() + '/tests/sampleF.gif';
     let { files } = client;
     const stream = fs.createReadStream(path);
@@ -188,10 +188,10 @@ describe('filesAPi in nodejs should', () => {
   });
 
   it('upload a  multiple files  with  different resize options', async () => {
-       let client = new Client({
-         accessToken: testDevApiKEY,
-         env: fileroomEvn,
-       });
+    let client = new Client({
+      accessToken: testDevApiKEY,
+      env: fileroomEvn,
+    });
     let path = process.cwd() + '/tests/sampleF.gif';
     let path2 = process.cwd() + '/tests/sample2.gif';
     let { files } = client;
@@ -234,6 +234,4 @@ describe('filesAPi in nodejs should', () => {
       }
     });
   });
-  
-  
 });

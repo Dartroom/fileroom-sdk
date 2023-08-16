@@ -97,6 +97,8 @@ export class UploadApi extends EventEmitter<UploadListners> {
   protected fileApi: FilesApi;
   uploadMultiple: boolean = false;
   messsageCount: number = 0;
+  finished = false;
+  connections: Array <WebSocket> = [];
 
   constructor(
     client: FetchHttpClient,
@@ -167,6 +169,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
     let wsUrl = this._rawUrl.replace('http', 'ws') + '/file-events/' + fileID;
 
     this._socket = await connectWS(wsUrl);
+     this.connections.push(this._socket);
     this._socket.onmessage = async (event: any) => {
       let data = event.data;
       this.messsageCount++;
@@ -206,6 +209,7 @@ export class UploadApi extends EventEmitter<UploadListners> {
     });
     upload.start();
     this._tus = upload;
+   
 
     return this;
   }
@@ -346,14 +350,25 @@ export class UploadApi extends EventEmitter<UploadListners> {
           // when each upload is completed, upload
           this._uploadCount++;
           if (this._uploadCount === this._progressMap.size - 1) {
+            this.finished = true;
             this.emit('allCompleted', this._results);
+           if(this.finished)  await this.closeConnections();
             // close the socket
           }
         }
 
         this.emit('completed', result);
+        this.finished = true;
+        if (!this.uploadMultiple && this.finished) await this.closeConnections();
         // close the socket after the upload
       }
     }
   }
+  async closeConnections() { 
+    // close the connection
+    this.connections.forEach((cons:WebSocket) => {
+      cons.close();
+     })
+  }
+  
 }
