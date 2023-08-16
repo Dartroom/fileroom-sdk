@@ -538,6 +538,8 @@ declare class UploadApi extends EventEmitter<UploadListners> {
     protected fileApi: FilesApi;
     uploadMultiple: boolean;
     messsageCount: number;
+    finished: boolean;
+    connections: Array<WebSocket>;
     constructor(client: FetchHttpClient, options?: uploadOptions, multiple?: boolean);
     start(file: UploadFile, options?: uploadOptions): Promise<UploadApi>;
     /**
@@ -552,6 +554,7 @@ declare class UploadApi extends EventEmitter<UploadListners> {
      * @param fileID
      */
     handleWsMessage(event: socketEvent, fileID: string): Promise<void>;
+    closeConnections(): Promise<void>;
 }
 
 /**

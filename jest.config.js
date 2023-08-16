@@ -4,7 +4,7 @@ module.exports = {
   testTimeout: 100000,
   openHandlesTimeout: 0,
   detectOpenHandles: false,
-  forceExit: true,
+
   collectCoverageFrom: ['src/**/*.ts'],
   setupFilesAfterEnv: ['jest-extended/all'],
   maxWorkers: 2,

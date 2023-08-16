@@ -331,14 +331,17 @@ async function connectWS(url) {
     };
     server.onclose = () => {
       clearInterval(interval);
-      console.log("connection closed");
     };
   });
 }
 
 // src/functions/timeout.ts
+var TimeoutTracker = {
+  timeout: null
+};
 var Timeout = (num) => new Promise((resolve, reject) => {
-  setTimeout(() => {
+  TimeoutTracker.timeout = setTimeout(() => {
+    TimeoutTracker.timeout = null;
     reject(new Error("Request timed out"));
   }, num);
 });
@@ -492,6 +495,9 @@ var FetchHttpClient = class extends HttpClient {
     return Promise.race([fetchPromise, Timeout(timeout)]).then((res) => {
       return new FetchHttpClientResponse(res);
     }).finally(() => {
+      if (TimeoutTracker.timeout) {
+        clearTimeout(TimeoutTracker.timeout);
+      }
     });
   }
 };
@@ -727,6 +733,8 @@ var UploadApi = class extends eeTs.EventEmitter {
     this.uploads = {};
     this.uploadMultiple = false;
     this.messsageCount = 0;
+    this.finished = false;
+    this.connections = [];
     let reqOpts = client._requestOpts;
     let { host, port, protocol, timeout } = reqOpts;
     client._config;
@@ -772,6 +780,7 @@ var UploadApi = class extends eeTs.EventEmitter {
     }
     let wsUrl = this._rawUrl.replace("http", "ws") + "/file-events/" + fileID;
     this._socket = await connectWS(wsUrl);
+    this.connections.push(this._socket);
     this._socket.onmessage = async (event) => {
       let data = event.data;
       this.messsageCount++;
@@ -916,12 +925,23 @@ var UploadApi = class extends eeTs.EventEmitter {
           this._results.push(result);
           this._uploadCount++;
           if (this._uploadCount === this._progressMap.size - 1) {
+            this.finished = true;
             this.emit("allCompleted", this._results);
+            if (this.finished)
+              await this.closeConnections();
           }
         }
         this.emit("completed", result);
+        this.finished = true;
+        if (!this.uploadMultiple && this.finished)
+          await this.closeConnections();
       }
     }
+  }
+  async closeConnections() {
+    this.connections.forEach((cons) => {
+      cons.close();
+    });
   }
 };
 

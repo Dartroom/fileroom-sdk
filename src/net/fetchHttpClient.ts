@@ -1,9 +1,9 @@
 // source:github.com/strip/stripe-node;
 import fetch from 'cross-fetch';
-import { TestOpts, ProdOpts,BetaOpts } from './defaultRequestOptions';
+import { TestOpts, ProdOpts, BetaOpts } from './defaultRequestOptions';
 import { isBrowser } from 'browser-or-node';
 import { RequestData, RequestHeaders, ResponseHeaders } from '../types';
-import { Timeout } from '../functions';
+import { Timeout, TimeoutTracker } from '../functions';
 import {
   HttpClientInterface,
   HttpClientResponseInterface,
@@ -159,22 +159,13 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     // Node would not. The more fine-grained timeout cannot be implemented with
     // fetch.
 
-    let pendingTimeoutId: NodeJS.Timeout | null;
-    /*const timeoutPromise = new Promise((_, reject) => {
-      pendingTimeoutId = setTimeout(() => {
-        pendingTimeoutId = null;
-        reject(HttpClient.makeTimeoutError());
-      }, timeout);
-    });
-    */
-
     return Promise.race([fetchPromise, Timeout(timeout)])
       .then(res => {
         return new FetchHttpClientResponse(res as Response);
       })
       .finally(() => {
-        if (pendingTimeoutId) {
-          clearTimeout(pendingTimeoutId);
+        if (TimeoutTracker.timeout) {
+          clearTimeout(TimeoutTracker.timeout);
         }
       });
   }
