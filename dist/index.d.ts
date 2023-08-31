@@ -14,6 +14,10 @@ declare const enum PinStatus {
     QUEUED = "queued",
     UNPINNED = "unpinned"
 }
+declare const enum AccountType {
+    DARTROOM = "DARTROOM",
+    FILEROOM = "EXTERNAL"
+}
 
 /**Events recieved from  fileroom*/
 type EventName = 'Create checksum' | 'Tus Upload' | 'Original Processed' | 'InterFs Upload' | 'InterFs Download' | 'IPfs Upload' | 'IPfs Download' | 'CDN Upload' | 'Pin Status' | 'Video Transcode' | 'Preview Completed';
@@ -86,6 +90,32 @@ type SocketData = {
     totalJobs?: number;
 };
 
+type Long = {
+    low: number;
+    high: number;
+    unsigned: boolean;
+};
+type UserDoc = {
+    _id: string;
+    userId: string;
+    accountType: AccountType;
+    bandwidthUsage: Long;
+    totalStorageUsage: Long;
+    uploadLimit: Long;
+    storageLimit: Long;
+    Filesuploaded: Number;
+    FilesRecentStored: Number;
+    apiToken: Array<{
+        name: string;
+        key: string;
+    }>;
+    restrictIPs: Boolean;
+    restrictDomains: Boolean;
+    ipWhitelist: Array<String>;
+    domainWhitelist: Array<String>;
+    showAll: Boolean;
+};
+
 type RequestData = Record<string, any>;
 type RequestHeaders = Record<string, string | number | string[]> | typeof Request;
 type ResponseHeaderValue = string | string[];
@@ -145,6 +175,8 @@ interface updateUserOptions {
     restrictIPs?: string;
     restrictDomains?: boolean;
     showAll?: boolean;
+    addApiKey?: Record<string, string>;
+    removeApiKey?: string;
 }
 /**Input Options for client.user.login */
 interface loginOptions {
@@ -162,7 +194,7 @@ interface createUserResponse {
 /** Return Object from client.user.update */
 interface updateUserResponse {
     data: {
-        updated: FileDoc;
+        updated: UserDoc;
     };
 }
 /** Return Object from client.user.login */
@@ -639,4 +671,4 @@ declare class Client {
     protected checkAuth(): Promise<validatedTokenResponse | undefined>;
 }
 
-export { Client, Color, ConfigOptions, EventName, EventProgress, FetchHttpClient, FetchHttpClientResponse, FileDoc, FileroomError, GlobalProgress, HttpClientInterface, HttpClientResponseInterface, LegacybrowserRawResponse, ProgressEvent, ProgressMap, RGBA, RequestData, RequestHeaders, RequestOptions, ResponseHeaderValue, ResponseHeaders, SocketData, StreamResponse, TimeoutError, UploadApi, UploadDeleteResponse, UploadEvents, UploadFile, UploadListners, UploadResult, awaitUploadResponse, createUserOptions, createUserResponse, deleteOneOptions, deleteResponse, existsResponse, getOptions, listOptions, listResponse, loginOptions, loginResponse, pinOptions, pinResponse, socketEvent, statusResponse, updateUserOptions, updateUserResponse, uploadOptions, validatedTokenResponse };
+export { Client, Color, ConfigOptions, EventName, EventProgress, FetchHttpClient, FetchHttpClientResponse, FileDoc, FileroomError, GlobalProgress, HttpClientInterface, HttpClientResponseInterface, LegacybrowserRawResponse, ProgressEvent, ProgressMap, RGBA, RequestData, RequestHeaders, RequestOptions, ResponseHeaderValue, ResponseHeaders, SocketData, StreamResponse, TimeoutError, UploadApi, UploadDeleteResponse, UploadEvents, UploadFile, UploadListners, UploadResult, UserDoc, awaitUploadResponse, createUserOptions, createUserResponse, deleteOneOptions, deleteResponse, existsResponse, getOptions, listOptions, listResponse, loginOptions, loginResponse, pinOptions, pinResponse, socketEvent, statusResponse, updateUserOptions, updateUserResponse, uploadOptions, validatedTokenResponse };

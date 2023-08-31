@@ -44,9 +44,8 @@ function propagateErrors(json) {
   if (json && json.errors) {
     let error = json.errors[0];
     let status = error.status || 404;
-    let message = status >= 403 ? "NOT_FOUND" : error.message;
-    status = status >= 403 ? 404 : status;
-    throw new Error("API_ERROR: " + message + " " + status);
+    let message = error.message;
+    throw new Error("API_ERROR: " + status + " reason: " + message);
   }
 }
 
@@ -574,7 +573,8 @@ var UsersApi = class extends BaseApi {
       "POST",
       data
     );
-    let json = response.toJSON();
+    let json = await response.toJSON();
+    propagateErrors(json);
     return json;
   }
   /** update a Fileroom User
@@ -590,7 +590,9 @@ var UsersApi = class extends BaseApi {
       "removeDomain",
       "restrictIPs",
       "restrictDomains",
-      "showAll"
+      "showAll",
+      "addApiKey",
+      "removeApiKey"
     ];
     if (!data || data && !Object.keys(data).length)
       throw new TypeError(
@@ -601,12 +603,17 @@ var UsersApi = class extends BaseApi {
         "at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll"
       );
     }
+    let payload = { ...data };
+    if (data.addApiKey) {
+      payload.addApiKey = JSON.stringify(data.addApiKey);
+    }
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + "/update",
       "POST",
-      data
+      payload
     );
-    let json = response.toJSON();
+    let json = await response.toJSON();
+    propagateErrors(json);
     return json;
   }
   /** login dev user with their username and password
@@ -629,6 +636,7 @@ var UsersApi = class extends BaseApi {
       data
     );
     let json = await response.toJSON();
+    propagateErrors(json);
     if (json.data) {
       this.createHttpRequest.setToken(json.data);
     }

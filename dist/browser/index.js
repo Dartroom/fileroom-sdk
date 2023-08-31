@@ -48195,6 +48195,21 @@ function _inherits(subClass, superClass) {
     });
     if (superClass) _set_prototype_of(subClass, superClass);
 }
+function _object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            _define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
 function _possible_constructor_return(self, call) {
     if (call && (_type_of(call) === "object" || typeof call === "function")) {
         return call;
@@ -48396,7 +48411,13 @@ function _ts_generator(thisArg, body) {
                                 ];
                             case 1:
                                 response = _state.sent();
-                                json = response.toJSON();
+                                return [
+                                    4,
+                                    response.toJSON()
+                                ];
+                            case 2:
+                                json = _state.sent();
+                                (0,_functions__WEBPACK_IMPORTED_MODULE_1__.propagateErrors)(json);
                                 return [
                                     2,
                                     json
@@ -48415,7 +48436,7 @@ function _ts_generator(thisArg, body) {
    */ function update(data) {
                 var _this = this;
                 return _async_to_generator(function() {
-                    var allowedFields, response, json;
+                    var allowedFields, payload, response, json;
                     return _ts_generator(this, function(_state) {
                         switch(_state.label){
                             case 0:
@@ -48426,7 +48447,9 @@ function _ts_generator(thisArg, body) {
                                     "removeDomain",
                                     "restrictIPs",
                                     "restrictDomains",
-                                    "showAll"
+                                    "showAll",
+                                    "addApiKey",
+                                    "removeApiKey"
                                 ];
                                 if (!data || data && !Object.keys(data).length) throw new TypeError("at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll");
                                 if (!Object.keys(data).every(function(k) {
@@ -48434,13 +48457,23 @@ function _ts_generator(thisArg, body) {
                                 })) {
                                     throw new TypeError("at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll");
                                 }
+                                payload = _object_spread({}, data);
+                                if (data.addApiKey) {
+                                    payload.addApiKey = JSON.stringify(data.addApiKey);
+                                }
                                 return [
                                     4,
-                                    _this.createHttpRequest.makeRequestwithDefault(_this._path + "/update", "POST", data)
+                                    _this.createHttpRequest.makeRequestwithDefault(_this._path + "/update", "POST", payload)
                                 ];
                             case 1:
                                 response = _state.sent();
-                                json = response.toJSON();
+                                return [
+                                    4,
+                                    response.toJSON()
+                                ];
+                            case 2:
+                                json = _state.sent();
+                                (0,_functions__WEBPACK_IMPORTED_MODULE_1__.propagateErrors)(json);
                                 return [
                                     2,
                                     json
@@ -48480,6 +48513,7 @@ function _ts_generator(thisArg, body) {
                                 ];
                             case 2:
                                 json = _state.sent();
+                                (0,_functions__WEBPACK_IMPORTED_MODULE_1__.propagateErrors)(json);
                                 if (json.data) {
                                     _this.createHttpRequest.setToken(json.data);
                                 }
@@ -48739,6 +48773,7 @@ function _ts_generator(thisArg, body) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AccountType: () => (/* binding */ AccountType),
 /* harmony export */   FileType: () => (/* binding */ FileType),
 /* harmony export */   PinStatus: () => (/* binding */ PinStatus)
 /* harmony export */ });
@@ -48756,6 +48791,11 @@ var FileType;
     FileType["ANY"] = "any";
     FileType["UNSUPPORTED"] = "unsupported";
 })(FileType || (FileType = {}));
+var AccountType;
+(function(AccountType) {
+    AccountType["DARTROOM"] = "DARTROOM";
+    AccountType["FILEROOM"] = "EXTERNAL";
+})(AccountType || (AccountType = {}));
 
 
 /***/ }),
@@ -49283,9 +49323,8 @@ function propagateErrors(json) {
     if (json && json.errors) {
         var error = json.errors[0];
         var status = error.status || 404;
-        var message = status >= 403 ? "NOT_FOUND" : error.message;
-        status = status >= 403 ? 404 : status;
-        throw new Error("API_ERROR: " + message + " " + status);
+        var message = error.message;
+        throw new Error("API_ERROR: " + status + " " + "reason: " + message);
     }
 }
 
@@ -50302,6 +50341,8 @@ var HttpClientResponse = /*#__PURE__*/ function() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _upload__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./upload */ "./src/types/upload.ts");
+/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./user */ "./src/types/user.ts");
+
 
 
 
@@ -50311,6 +50352,19 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./src/types/upload.ts ***!
   \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+
+
+/***/ }),
+
+/***/ "./src/types/user.ts":
+/*!***************************!*\
+  !*** ./src/types/user.ts ***!
+  \***************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
