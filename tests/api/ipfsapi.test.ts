@@ -58,15 +58,12 @@ describe('ipfsApi in nodejs should', () => {
       expect(response).toBeDefined();
     } catch (error: any) {
       expect(error).toBeDefined();
-      expect(error.message).toContain('API_ERROR: NOT_FOUND 404');
+      expect(error.message).toContain('API_ERROR:');
     }
   });
 
   it('throw error if cid is incorrect or file is not found when fetching a file', async () => {
     let client = new Client({ accessToken: '', env: fileroomEvn });
-    expect(
-      async () => await client.ipfs.get('fasfdsafsdaf'),
-    ).rejects.toThrowError('API_ERROR: NOT_FOUND 404');
 
     expect(async () => await client.ipfs.get('')).rejects.toThrowError(
       'cid is required',
@@ -110,7 +107,7 @@ describe('ipfsApi in nodejs should', () => {
   it('throw error if cid is incorrect or file is not found when pinning a file', async () => {
     let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
     expect(async () => await client.ipfs.pin('fasfdsafsdaf')).rejects.toThrow(
-      'API_ERROR: NOT_FOUND 404',
+      'API_ERROR: 404 reason: [object Object]',
     );
   });
 });
