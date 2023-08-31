@@ -1,4 +1,5 @@
-import { FileDoc } from "../types";
+import { FileDoc,UserDoc} from '../types';
+
 
 /**Input Options for client.user.create
  * @param userId - the userId can be provided without other fields to create a fileroom Account only for dartroomUsers.
@@ -22,6 +23,8 @@ export interface updateUserOptions {
   restrictIPs?: string;
   restrictDomains?: boolean;
   showAll?: boolean;
+  addApiKey?: Record<string, string>;
+  removeApiKey?: string;
 }
 
 /**Input Options for client.user.login */
@@ -44,7 +47,7 @@ export interface createUserResponse {
 /** Return Object from client.user.update */
 export interface updateUserResponse {
   data: {
-    updated:FileDoc; // update the document
+    updated: UserDoc; // update the document
   };
 }
 
@@ -59,3 +62,4 @@ export interface validatedTokenResponse {
     isValid: boolean;
   };
 }
+
