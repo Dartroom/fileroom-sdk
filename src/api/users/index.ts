@@ -26,7 +26,7 @@ export class UsersApi extends BaseApi {
       'POST',
     );
 
-     let json = await response.toJSON();
+    let json = await response.toJSON();
 
     propagateErrors(json);
     return json as validatedTokenResponse;
@@ -47,8 +47,10 @@ export class UsersApi extends BaseApi {
       'POST',
       data,
     );
-    let json = response.toJSON();
-    return json;
+    let json = await response.toJSON();
+
+    propagateErrors(json);
+    return json as createUserResponse;
   }
   /** update a Fileroom User
    *
@@ -64,6 +66,8 @@ export class UsersApi extends BaseApi {
       'restrictIPs',
       'restrictDomains',
       'showAll',
+      'addApiKey',
+      'removeApiKey',
     ];
 
     if (!data || (data && !Object.keys(data).length))
@@ -76,12 +80,21 @@ export class UsersApi extends BaseApi {
         'at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll',
       );
     }
+  
+    // stringify the addApiKey object
+    let payload:any = {...data};
+    if (data.addApiKey) {
+      payload.addApiKey = JSON.stringify(data.addApiKey);
+    }
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + '/update',
       'POST',
-      data,
+      payload,
     );
-    let json = response.toJSON();
+
+    let json = await response.toJSON();
+
+    propagateErrors(json);
     return json;
   }
 
@@ -106,9 +119,11 @@ export class UsersApi extends BaseApi {
       data,
     );
     let json = await response.toJSON();
+
+    propagateErrors(json);
     if (json.data) {
       this.createHttpRequest.setToken(json.data);
     }
-    return json;
+    return json as loginResponse;
   }
 }
