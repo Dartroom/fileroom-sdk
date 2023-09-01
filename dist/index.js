@@ -3,18 +3,18 @@
 var fetch = require('cross-fetch');
 var browserOrNode = require('browser-or-node');
 var WebSocket = require('isomorphic-ws');
+var crypo = require('crypto');
 var eeTs = require('ee-ts');
 var tusJsClient = require('tus-js-client');
 var mime = require('mime-types');
 var stream = require('stream');
-var crypo = require('crypto');
 
 function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
 var fetch__default = /*#__PURE__*/_interopDefault(fetch);
 var WebSocket__default = /*#__PURE__*/_interopDefault(WebSocket);
-var mime__default = /*#__PURE__*/_interopDefault(mime);
 var crypo__default = /*#__PURE__*/_interopDefault(crypo);
+var mime__default = /*#__PURE__*/_interopDefault(mime);
 
 // src/net/fetchHttpClient.ts
 
@@ -351,6 +351,9 @@ function sleep(ms) {
     throw new Error("ms must be a positive number");
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+function generateApiKey() {
+  return crypo__default.default.randomBytes(20).toString("hex");
+}
 
 // src/net/httpClient.ts
 var HttpClient = class {
@@ -605,7 +608,9 @@ var UsersApi = class extends BaseApi {
     }
     let payload = { ...data };
     if (data.addApiKey) {
-      payload.addApiKey = JSON.stringify(data.addApiKey);
+      let apiKey = generateApiKey();
+      let keyObject = { [data.addApiKey]: apiKey };
+      payload.addApiKey = JSON.stringify(keyObject);
     }
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + "/update",

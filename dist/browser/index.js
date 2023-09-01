@@ -48436,7 +48436,7 @@ function _ts_generator(thisArg, body) {
    */ function update(data) {
                 var _this = this;
                 return _async_to_generator(function() {
-                    var allowedFields, payload, response, json;
+                    var allowedFields, payload, apiKey, keyObject, response, json;
                     return _ts_generator(this, function(_state) {
                         switch(_state.label){
                             case 0:
@@ -48459,7 +48459,9 @@ function _ts_generator(thisArg, body) {
                                 }
                                 payload = _object_spread({}, data);
                                 if (data.addApiKey) {
-                                    payload.addApiKey = JSON.stringify(data.addApiKey);
+                                    apiKey = (0,_functions__WEBPACK_IMPORTED_MODULE_1__.generateApiKey)();
+                                    keyObject = _define_property({}, data.addApiKey, apiKey);
+                                    payload.addApiKey = JSON.stringify(keyObject);
                                 }
                                 return [
                                     4,
@@ -49241,6 +49243,26 @@ var generateUUID = function() {
 
 /***/ }),
 
+/***/ "./src/functions/generateApiKey.ts":
+/*!*****************************************!*\
+  !*** ./src/functions/generateApiKey.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateApiKey: () => (/* binding */ generateApiKey)
+/* harmony export */ });
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! crypto */ "./node_modules/crypto-browserify/index.js");
+
+function generateApiKey() {
+    return crypto__WEBPACK_IMPORTED_MODULE_0__.randomBytes(20).toString("hex");
+}
+
+
+/***/ }),
+
 /***/ "./src/functions/index.ts":
 /*!********************************!*\
   !*** ./src/functions/index.ts ***!
@@ -49255,6 +49277,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   classifyFile: () => (/* reexport safe */ _classifyFile__WEBPACK_IMPORTED_MODULE_6__.classifyFile),
 /* harmony export */   connectWS: () => (/* reexport safe */ _connectWs__WEBPACK_IMPORTED_MODULE_7__.connectWS),
 /* harmony export */   createObjTemplate: () => (/* reexport safe */ _createObjectTemplate__WEBPACK_IMPORTED_MODULE_5__.createObjTemplate),
+/* harmony export */   generateApiKey: () => (/* reexport safe */ _generateApiKey__WEBPACK_IMPORTED_MODULE_10__.generateApiKey),
 /* harmony export */   generateUUID: () => (/* reexport safe */ _genUUID__WEBPACK_IMPORTED_MODULE_3__.generateUUID),
 /* harmony export */   incrementGlobalProgress: () => (/* reexport safe */ _tusUtils__WEBPACK_IMPORTED_MODULE_4__.incrementGlobalProgress),
 /* harmony export */   isApikey: () => (/* reexport safe */ _isApikey__WEBPACK_IMPORTED_MODULE_0__.isApikey),
@@ -49273,6 +49296,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _connectWs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./connectWs */ "./src/functions/connectWs.ts");
 /* harmony import */ var _timeout__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./timeout */ "./src/functions/timeout.ts");
 /* harmony import */ var _sleep__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./sleep */ "./src/functions/sleep.ts");
+/* harmony import */ var _generateApiKey__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./generateApiKey */ "./src/functions/generateApiKey.ts");
+
 
 
 

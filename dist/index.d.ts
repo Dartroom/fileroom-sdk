@@ -175,7 +175,7 @@ interface updateUserOptions {
     restrictIPs?: string;
     restrictDomains?: boolean;
     showAll?: boolean;
-    addApiKey?: Record<string, string>;
+    addApiKey?: string;
     removeApiKey?: string;
 }
 /**Input Options for client.user.login */

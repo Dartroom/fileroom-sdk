@@ -1,11 +1,11 @@
 import fetch from 'cross-fetch';
 import { isBrowser } from 'browser-or-node';
 import WebSocket from 'isomorphic-ws';
+import crypo from 'crypto';
 import { EventEmitter } from 'ee-ts';
 import { Upload } from 'tus-js-client';
 import mime from 'mime-types';
 import { Stream } from 'stream';
-import crypo from 'crypto';
 
 // src/net/fetchHttpClient.ts
 
@@ -342,6 +342,9 @@ function sleep(ms) {
     throw new Error("ms must be a positive number");
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+function generateApiKey() {
+  return crypo.randomBytes(20).toString("hex");
+}
 
 // src/net/httpClient.ts
 var HttpClient = class {
@@ -596,7 +599,9 @@ var UsersApi = class extends BaseApi {
     }
     let payload = { ...data };
     if (data.addApiKey) {
-      payload.addApiKey = JSON.stringify(data.addApiKey);
+      let apiKey = generateApiKey();
+      let keyObject = { [data.addApiKey]: apiKey };
+      payload.addApiKey = JSON.stringify(keyObject);
     }
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + "/update",
