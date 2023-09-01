@@ -8,7 +8,7 @@ import {
   loginResponse,
   validatedTokenResponse,
 } from '../../interfaces';
-import { propagateErrors } from '../../functions';
+import { propagateErrors, generateApiKey } from '../../functions';
 
 /**
  *
@@ -80,11 +80,14 @@ export class UsersApi extends BaseApi {
         'at least one of the following fields is required: addIP,removeIP,addDomain,removeDomain,restrictIPs,restrictDomains,showAll',
       );
     }
-  
+
     // stringify the addApiKey object
-    let payload:any = {...data};
+    let payload: any = { ...data };
     if (data.addApiKey) {
-      payload.addApiKey = JSON.stringify(data.addApiKey);
+      let apiKey = generateApiKey();
+      let keyObject = { [data.addApiKey]: apiKey };
+
+      payload.addApiKey = JSON.stringify(keyObject);
     }
     const response = await this.createHttpRequest.makeRequestwithDefault(
       this._path + '/update',

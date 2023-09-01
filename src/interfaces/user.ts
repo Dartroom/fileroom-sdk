@@ -23,7 +23,7 @@ export interface updateUserOptions {
   restrictIPs?: string;
   restrictDomains?: boolean;
   showAll?: boolean;
-  addApiKey?: Record<string, string>;
+  addApiKey?: string;
   removeApiKey?: string;
 }
 
