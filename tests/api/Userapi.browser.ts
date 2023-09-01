@@ -168,4 +168,18 @@ describe('UserApi in the browser should', () => {
       }),
     );
   });
+
+  it('throw an error if any of the right update options are passed, or any empty is passed ', async () => {
+    let call = ` 
+    
+          async function updateRequest () {
+        let client = new Fileroom.Client({accessToken: '${testDevApiKEY}', env: '${fileroomEvn}'});
+        let user = await client.user.update({});
+          return  user;
+          };
+        updateRequest();
+ `;
+
+    expect(async () => await page.evaluate(call)).rejects.toThrowError();
+  });
 });

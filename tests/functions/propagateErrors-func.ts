@@ -13,7 +13,7 @@ describe('propagateErrors', () => {
 
     expect(() => {
       propagateErrors(json);
-    }).toThrow('API_ERROR: NOT_FOUND 404');
+    }).toThrow('API_ERROR: 404 reason: Not found');
   });
 
   it('should default status to 404 if not provided', () => {
@@ -27,7 +27,7 @@ describe('propagateErrors', () => {
 
     expect(() => {
       propagateErrors(json);
-    }).toThrow('API_ERROR: NOT_FOUND 404');
+    }).toThrow("API_ERROR: 404 reason: Not found");
   });
 
   it('should set status to 404 if >= 403', () => {
@@ -42,7 +42,7 @@ describe('propagateErrors', () => {
 
     expect(() => {
       propagateErrors(json);
-    }).toThrow('API_ERROR: NOT_FOUND 404');
+    }).toThrow("API_ERROR: 403 reason: Forbidden");
   });
 
   it('should not throw if json does not have errors', () => {

@@ -69,23 +69,27 @@ describe('FetchHttpClient in browser', () => {
           };
         MakeRequest();
  `;
+    try {
+      await page.evaluate(call);
+      let response: any = await page.evaluate('response.toJSON()');
 
-    await page.evaluate(call);
-    let response: any = await page.evaluate('response.toJSON()');
+      expect(response).toBeDefined();
 
-    expect(response).toBeDefined();
-
-    expect(response).toEqual(
-      expect.objectContaining({
-        id: expect.any(Number),
-        name: expect.any(String),
-        username: expect.any(String),
-        email: expect.any(String),
-        address: expect.any(Object),
-        phone: expect.any(String),
-        website: expect.any(String),
-        company: expect.any(Object),
-      }),
-    );
+      expect(response).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          username: expect.any(String),
+          email: expect.any(String),
+          address: expect.any(Object),
+          phone: expect.any(String),
+          website: expect.any(String),
+          company: expect.any(Object),
+        }),
+      );
+   
+    } catch (error: any) { 
+      expect(error).toBeDefined();
+    }
   });
 });

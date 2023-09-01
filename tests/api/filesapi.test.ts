@@ -149,7 +149,9 @@ describe('filesAPi in nodejs should', () => {
     } catch (error: any) {
       expect(error).toBeDefined();
 
-      expect(error.message).toContain('NOT_FOUND');
+      expect(error.message).toContain(
+        `API_ERROR: 404 reason: File not found: ${testFilecid}`,
+      );
     }
   });
 

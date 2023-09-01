@@ -26,3 +26,4 @@ export type UploadFile =
   | Readable;
 
 export * from './upload';
+export * from './user';

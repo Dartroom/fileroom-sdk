@@ -8,3 +8,4 @@ export * from './classifyFile';
 export * from './connectWs';
 export * from './timeout';
 export * from './sleep';
+export * from './generateApiKey';

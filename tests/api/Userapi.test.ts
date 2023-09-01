@@ -33,6 +33,28 @@ describe('UserApi in nodejs should', () => {
     }
   });
 
+  it('create a Dev user with his password and username', async () => {
+    let client = new Client({
+      accessToken: '',
+      env: fileroomEvn,
+    });
+     
+    try {
+      let response = await client.user.create({
+        name: testDevUsername,
+        password: testDevPassword,
+        email: testDevUsername
+      });
+      expect(response).toEqual(
+        expect.objectContaining({
+          data: expect.any(String),
+        }),
+      );
+    } catch (error: any) { 
+      expect(error).toBeDefined();
+      expect(error.message).toContain('User already exists');
+    }
+  });
   it('login a Dev user with his password and username', async () => {
     let client = new Client({
       accessToken: '',
