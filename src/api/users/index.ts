@@ -9,6 +9,7 @@ import {
   validatedTokenResponse,
 } from '../../interfaces';
 import { propagateErrors, generateApiKey } from '../../functions';
+import { UserStats, DateRange } from '../../types';
 
 /**
  *
@@ -128,5 +129,30 @@ export class UsersApi extends BaseApi {
       this.createHttpRequest.setToken(json.data);
     }
     return json as loginResponse;
+  }
+  /** get the stats of a user with a given range of dates
+   *
+   * @param range {DateRange}
+   * @returns {UserStats}
+   */
+
+  async stats(range?: DateRange): Promise<UserStats> {
+    let url = this._path + '/stats';
+    let rangeParams = new URLSearchParams();
+    if (range) {
+      for (let [key, value] of Object.entries(range) as any) {
+        rangeParams.append(key, value);
+      }
+      url = url + '?' + rangeParams.toString();
+    }
+
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      url,
+      'GET',
+    );
+    let json = await response.toJSON();
+
+    propagateErrors(json);
+    return json as UserStats;
   }
 }
