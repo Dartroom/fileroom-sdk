@@ -1,25 +1,19 @@
 import { AccountType } from '../enums';
 
-type Long = {
-  low: number;
-  high: number;
-  unsigned: boolean;
-}
-
 export type UserDoc = {
   _id: string;
   userId: string;
   accountType: AccountType;
-  bandwidthUsage: Long;
-  totalStorageUsage: Long;
-  uploadLimit: Long;
-  storageLimit: Long;
-  Filesuploaded: Number;
-  FilesRecentStored: Number;
+  bandwidthUsage: number;
+  totalStorageUsage: number;
+  uploadLimit: number;
+  storageLimit: number;
+  Filesuploaded: number;
+  FilesRecentStored: number;
   apiToken: Array<{ name: string; key: string }>;
-  restrictIPs: Boolean;
-  restrictDomains: Boolean;
+  restrictIPs: boolean;
+  restrictDomains: boolean;
   ipWhitelist: Array<String>;
   domainWhitelist: Array<String>;
-  showAll: Boolean;
+  showAll: boolean;
 };
