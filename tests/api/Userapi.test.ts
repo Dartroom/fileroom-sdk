@@ -119,4 +119,49 @@ describe('UserApi in nodejs should', () => {
       }),
     );
   });
+  describe.skip('userAPI.stats', () => { 
+
+    it('get the stats of a user with a given range of dates', async () => { 
+      let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+      let response = await client.user.stats({
+        from: new Date('2021-01-01').toLocaleDateString(),
+        to: new Date().toLocaleDateString(),
+      });
+
+      expect(response).toBeDefined();
+
+      expect(response.data).toBeDefined();
+      expect(response.data).toEqual(
+        expect.objectContaining({
+          storageUsage: expect.any(Number),
+          filesUploaded: expect.any(Number),
+          uploadLimit: expect.any(Number),
+          storageLimit: expect.any(Number),
+          filesRecentlyStored: expect.any(Number),
+          monthlyStats: expect.any(Array),
+        }),
+      );
+    });
+    
+    // throws error if the range is not valid
+
+    it('throws error if the range is not valid, from is greater than to', async () => { 
+
+      let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
+
+
+      expect(async () => await client.user.stats({from: '2023-11-11', to: '2023-01-01'})).rejects.toThrowError(
+       
+      );
+
+      // use an invalid date
+      expect(async () => await client.user.stats({from: '2023-11-11', to: '2023-28-02'})).rejects.toThrowError(
+        TypeError("API_ERROR: 400 reason: Invalid date")
+      );
+
+      
+    });
+
+  });
+  
 });
