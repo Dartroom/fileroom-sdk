@@ -48109,6 +48109,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _baseApi__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../baseApi */ "./src/api/baseApi.ts");
 /* harmony import */ var _functions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../functions */ "./src/functions/index.ts");
+function _array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function _array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
 function _assert_this_initialized(self) {
     if (self === void 0) {
         throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -48195,6 +48203,33 @@ function _inherits(subClass, superClass) {
     });
     if (superClass) _set_prototype_of(subClass, superClass);
 }
+function _iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function _non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
 function _object_spread(target) {
     for(var i = 1; i < arguments.length; i++){
         var source = arguments[i] != null ? arguments[i] : {};
@@ -48223,9 +48258,20 @@ function _set_prototype_of(o, p) {
     };
     return _set_prototype_of(o, p);
 }
+function _sliced_to_array(arr, i) {
+    return _array_with_holes(arr) || _iterable_to_array_limit(arr, i) || _unsupported_iterable_to_array(arr, i) || _non_iterable_rest();
+}
 function _type_of(obj) {
     "@swc/helpers - typeof";
     return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function _unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _array_like_to_array(o, minLen);
 }
 function _is_native_reflect_construct() {
     if (typeof Reflect === "undefined" || !Reflect.construct) return false;
@@ -48519,6 +48565,66 @@ function _ts_generator(thisArg, body) {
                                 if (json.data) {
                                     _this.createHttpRequest.setToken(json.data);
                                 }
+                                return [
+                                    2,
+                                    json
+                                ];
+                        }
+                    });
+                })();
+            }
+        },
+        {
+            key: "stats",
+            value: /** get the stats of a user with a given range of dates
+   *
+   * @param range {DateRange}
+   * @returns {UserStats}
+   */ function stats(range) {
+                var _this = this;
+                return _async_to_generator(function() {
+                    var url, rangeParams, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _step_value, key, value, response, json;
+                    return _ts_generator(this, function(_state) {
+                        switch(_state.label){
+                            case 0:
+                                url = _this._path + "/stats";
+                                rangeParams = new URLSearchParams();
+                                if (range) {
+                                    _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                                    try {
+                                        for(_iterator = Object.entries(range)[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                                            _step_value = _sliced_to_array(_step.value, 2), key = _step_value[0], value = _step_value[1];
+                                            rangeParams.append(key, value);
+                                        }
+                                    } catch (err) {
+                                        _didIteratorError = true;
+                                        _iteratorError = err;
+                                    } finally{
+                                        try {
+                                            if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                                _iterator.return();
+                                            }
+                                        } finally{
+                                            if (_didIteratorError) {
+                                                throw _iteratorError;
+                                            }
+                                        }
+                                    }
+                                    url = url + "?" + rangeParams.toString();
+                                }
+                                return [
+                                    4,
+                                    _this.createHttpRequest.makeRequestwithDefault(url, "GET")
+                                ];
+                            case 1:
+                                response = _state.sent();
+                                return [
+                                    4,
+                                    response.toJSON()
+                                ];
+                            case 2:
+                                json = _state.sent();
+                                (0,_functions__WEBPACK_IMPORTED_MODULE_1__.propagateErrors)(json);
                                 return [
                                     2,
                                     json
