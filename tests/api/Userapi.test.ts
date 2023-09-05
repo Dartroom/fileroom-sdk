@@ -119,7 +119,7 @@ describe('UserApi in nodejs should', () => {
       }),
     );
   });
-  describe.skip('userAPI.stats', () => { 
+  describe('userAPI.stats', () => { 
 
     it('get the stats of a user with a given range of dates', async () => { 
       let client = new Client({ accessToken: testDevApiKEY, env: fileroomEvn });
