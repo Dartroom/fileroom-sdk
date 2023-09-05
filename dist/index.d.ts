@@ -90,30 +90,47 @@ type SocketData = {
     totalJobs?: number;
 };
 
-type Long = {
-    low: number;
-    high: number;
-    unsigned: boolean;
-};
 type UserDoc = {
     _id: string;
     userId: string;
     accountType: AccountType;
-    bandwidthUsage: Long;
-    totalStorageUsage: Long;
-    uploadLimit: Long;
-    storageLimit: Long;
-    Filesuploaded: Number;
-    FilesRecentStored: Number;
+    bandwidthUsage: number;
+    totalStorageUsage: number;
+    uploadLimit: number;
+    storageLimit: number;
+    Filesuploaded: number;
+    FilesRecentStored: number;
     apiToken: Array<{
         name: string;
         key: string;
     }>;
-    restrictIPs: Boolean;
-    restrictDomains: Boolean;
+    restrictIPs: boolean;
+    restrictDomains: boolean;
     ipWhitelist: Array<String>;
     domainWhitelist: Array<String>;
-    showAll: Boolean;
+    showAll: boolean;
+};
+type UserStats = {
+    data: {
+        storageUsage: number;
+        filesUploaded: number;
+        uploadLimit: number;
+        storageLimit: number;
+        filesRecentlyStored: number;
+        monthlyStats: Array<MonthlyStats>;
+    };
+};
+type MonthlyStats = {
+    month: string;
+    year: number;
+    bandwidthUsage: number;
+    filesUploaded: number;
+    requests: number;
+};
+/** user stats option */
+type DateRange = {
+    from?: string;
+    to?: string;
 };
 
 type RequestData = Record<string, any>;
@@ -473,6 +490,12 @@ declare class UsersApi extends BaseApi {
      * @returns loginResponse - {data:string} - the accessToken
      */
     login(data: loginOptions): Promise<loginResponse>;
+    /** get the stats of a user with a given range of dates
+     *
+     * @param range {DateRange}
+     * @returns {UserStats}
+     */
+    stats(range?: DateRange): Promise<UserStats>;
 }
 
 /**
@@ -671,4 +694,4 @@ declare class Client {
     protected checkAuth(): Promise<validatedTokenResponse | undefined>;
 }
 
-export { Client, Color, ConfigOptions, EventName, EventProgress, FetchHttpClient, FetchHttpClientResponse, FileDoc, FileroomError, GlobalProgress, HttpClientInterface, HttpClientResponseInterface, LegacybrowserRawResponse, ProgressEvent, ProgressMap, RGBA, RequestData, RequestHeaders, RequestOptions, ResponseHeaderValue, ResponseHeaders, SocketData, StreamResponse, TimeoutError, UploadApi, UploadDeleteResponse, UploadEvents, UploadFile, UploadListners, UploadResult, UserDoc, awaitUploadResponse, createUserOptions, createUserResponse, deleteOneOptions, deleteResponse, existsResponse, getOptions, listOptions, listResponse, loginOptions, loginResponse, pinOptions, pinResponse, socketEvent, statusResponse, updateUserOptions, updateUserResponse, uploadOptions, validatedTokenResponse };
+export { Client, Color, ConfigOptions, DateRange, EventName, EventProgress, FetchHttpClient, FetchHttpClientResponse, FileDoc, FileroomError, GlobalProgress, HttpClientInterface, HttpClientResponseInterface, LegacybrowserRawResponse, ProgressEvent, ProgressMap, RGBA, RequestData, RequestHeaders, RequestOptions, ResponseHeaderValue, ResponseHeaders, SocketData, StreamResponse, TimeoutError, UploadApi, UploadDeleteResponse, UploadEvents, UploadFile, UploadListners, UploadResult, UserDoc, UserStats, awaitUploadResponse, createUserOptions, createUserResponse, deleteOneOptions, deleteResponse, existsResponse, getOptions, listOptions, listResponse, loginOptions, loginResponse, pinOptions, pinResponse, socketEvent, statusResponse, updateUserOptions, updateUserResponse, uploadOptions, validatedTokenResponse };

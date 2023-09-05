@@ -1,5 +1,4 @@
-import { FileDoc,UserDoc} from '../types';
-
+import { FileDoc, UserDoc } from '../types';
 
 /**Input Options for client.user.create
  * @param userId - the userId can be provided without other fields to create a fileroom Account only for dartroomUsers.

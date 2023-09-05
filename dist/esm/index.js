@@ -638,6 +638,28 @@ var UsersApi = class extends BaseApi {
     }
     return json;
   }
+  /** get the stats of a user with a given range of dates
+   *
+   * @param range {DateRange}
+   * @returns {UserStats}
+   */
+  async stats(range) {
+    let url = this._path + "/stats";
+    let rangeParams = new URLSearchParams();
+    if (range) {
+      for (let [key, value] of Object.entries(range)) {
+        rangeParams.append(key, value);
+      }
+      url = url + "?" + rangeParams.toString();
+    }
+    const response = await this.createHttpRequest.makeRequestwithDefault(
+      url,
+      "GET"
+    );
+    let json = await response.toJSON();
+    propagateErrors(json);
+    return json;
+  }
 };
 var IpfsApi = class extends BaseApi {
   constructor() {
