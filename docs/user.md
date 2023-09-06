@@ -137,3 +137,55 @@ Returns:
 }
 ```
 
+
+### stats(options)
+
+Get the user's account stats.
+
+```js 
+const stats = await user.stats(
+  {to:'', // Date in MM/DD/YYYY format
+   from:"" // Date in MM/DD/YYYY format
+  }
+);
+```
+
+The stats options are:
+
+| Option | Type | Description |
+|-|-|-|
+| to | string | End date in MM/DD/YYYY format |
+| from | string | Start date in MM/DD/YYYY format |
+
+Returns: 
+
+```json 
+ {
+  "data" :{
+  "storageUsage": 2309978,
+  "filesUploaded": 147,
+  "uploadLimit": 1048576000000,
+  "storageLimit": 100737418240000,
+  "filesRecentlyStored": 0,
+  "monthlyStats": [
+    {
+      "month": "August",
+      "year": 2023,
+      "bandwidthUsage": 0,
+      "filesUploaded": 363,
+      "requests": 363
+    },
+    {
+      "month": "September",
+      "year": 2023,
+      "bandwidthUsage": 6152223847,
+      "filesUploaded": 89,
+      "requests": 131
+    }
+  ]
+}
+
+  
+ }
+
+```
